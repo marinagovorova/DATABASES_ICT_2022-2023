@@ -50,7 +50,7 @@
 
 **Практикум** по работе программой [здесь](https://docs.google.com/document/d/1aoODWLUCXRH-wtTYRdcCGrnJTk3mPbhv/edit?usp=sharing&ouid=112553411084970929730&rtpof=true&sd=true)
 
-Старая версия Erwin Process Modeler [здесь](https://drive.google.com/file/d/1VVIfaP7Hk77IAvNNFXS6Jspf8VL1e_H6/view?usp=sharing).
+Старая версия Erwin Process Modeler [здесь](https://drive.google.com/file/d/19qjjku4oE4h7yK-y54-B1WIRYsyXD2Yl/view?usp=sharing).
 
 Пример и объяснение того, как сделать функциональную модель, можно посмотреть [здесь](https://www.youtube.com/watch?v=flGjJMsjnG0).
 
