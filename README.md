@@ -89,7 +89,7 @@
 
 Пример и объяснение того, как сделать модель данных в нотации IDEF1X, можно посмотреть [здесь](https://www.youtube.com/watch?v=L_uQeX3zT3I)
 
-Дополнительный лабораторный практикум по Erwin Data Modeler [здесь]()
+Дополнительный лабораторный практикум по Erwin Data Modeler [здесь](https://docs.google.com/document/d/1bM56EtJ9JvAPJOuDQOSOs20G7JQsAui1/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 
 Модель БД перед сдачей отчета должна быть согласована (на занятии или консультации).
 
