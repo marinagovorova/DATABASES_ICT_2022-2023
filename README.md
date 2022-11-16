@@ -108,18 +108,18 @@
 ## Раздел 3 ВВЕДЕНИЕ В SQL
 ##  Лекция 3.1  РЕЛЯЦИОННАЯ АЛГЕБРА
 ### Лекция 3.1 РЕЛЯЦИОННАЯ АЛГЕБРА
-Материалы лекции доступны [здесь]()
+Материалы лекции доступны [здесь](https://docs.google.com/presentation/d/1yzyzY8SrXa3YFQ272XgOZvysDWiH2ZjP/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 #### Лекция 3.1.1 Дополнительно Операции РА
-Материалы доступны [здесь]()
+Материалы доступны [здесь](https://docs.google.com/presentation/d/1RBfhSJvMu0t8pgME6A1ld3xdfoWbahl6/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 #### Дополнительно: 
-[Реляционная алгебра]() 
+[Реляционная алгебра](https://docs.google.com/document/d/1iHpkCxrjLorlBZzh7-1xUo0xKlRS5YLf/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true) 
 ##  Лекция 3.2 ОПИСАНИЕ ДАННЫХ И МАНИПУЛИРОВАНИЕ ДАННЫМИ SQL. DDL, DML, SELECT
 ### 3.2.1 ВВЕДЕНИЕ В SQL
-Материалы доступны [здесь]()
+Материалы доступны [здесь](https://docs.google.com/presentation/d/17VzxTE_BLLsxRAIcw032vjAGZ7QSGxMo/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 ### 3.2.2 КОМАНДЫ DDL И DML SQL
-Материалы доступны [здесь]()
+Материалы доступны [здесь](https://docs.google.com/presentation/d/16ESat7S_rnQlQ-Ooic1t0NUW2O6xCSto/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 ### 3.2.3 SELECT SQL. Базовая конструкция
-Материалы доступны [здесь]()
+Материалы доступны [здесь](https://docs.google.com/presentation/d/1Y34V9rbIVbvHKw7rasGk4mwAeM2DSHEc/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
 ### 3.2.4 SELECT SQL. Переменные таблицы Множественные операторы
 Материалы доступны [здесь]()
 ### 3.2.5 SELECT SQL. Подзапросы
