@@ -101,11 +101,11 @@
 ##  Лекция 2.3  КЛАСИФИКАЦИЯ МОДЕЛЕЙ ДАННЫХ. РЕЛЯЦИОННАЯ МОДЕЛЬ ДАННЫХ
 ### Лекция 2.3.1 КЛАСИФИКАЦИЯ МОДЕЛЕЙ ДАННЫХ. РЕЛЯЦИОННАЯ МОДЕЛЬ ДАННЫХ
 Материалы лекции доступны [здесь](https://docs.google.com/presentation/d/1ozEsHyyOcRo8UJxGEBi2-EhCQGA4VRMo/edit?usp=sharing&ouid=112553411084970929730&rtpof=true&sd=true)
-### Лекция 2.3.1 ПРЕОБРАЗОВАНИЕ ИНФОЛОГИЧЕКОЙ МОДЕЛИ ДАННЫХ В РЕЛЯЦИОННУЮ
+### Лекция 2.3. ПРЕОБРАЗОВАНИЕ ИНФОЛОГИЧЕКОЙ МОДЕЛИ ДАННЫХ В РЕЛЯЦИОННУЮ
 Материалы лекции доступны [здесь](https://docs.google.com/presentation/d/18XIqUpmS_fpY_dd9xx8Whhjr49gAZxKy/edit?usp=sharing&ouid=112553411084970929730&rtpof=true&sd=true)
 ### 12 правил Кодда
 Материалы доступны [здесь](https://docs.google.com/document/d/19wybMQNSmkjcxnfU6MYpL5vaILdNDC_Q/edit?usp=share_link&ouid=112553411084970929730&rtpof=true&sd=true)
-## Ращдел 3 ВВЕДЕНИЕ В SQL
+## Раздел 3 ВВЕДЕНИЕ В SQL
 ##  Лекция 3.1  РЕЛЯЦИОННАЯ АЛГЕБРА
 ### Лекция 3.1 РЕЛЯЦИОННАЯ АЛГЕБРА
 Материалы лекции доступны [здесь]()
