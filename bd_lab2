@@ -1,0 +1,875 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2 (Ubuntu 15.2-1.pgdg18.04+1)
+-- Dumped by pg_dump version 15.2 (Ubuntu 15.2-1.pgdg18.04+1)
+
+-- Started on 2023-03-13 00:53:16 MSK
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 16391)
+-- Name: Library; Type: SCHEMA; Schema: -; Owner: ivan
+--
+
+CREATE SCHEMA "Library";
+
+
+ALTER SCHEMA "Library" OWNER TO ivan;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 227 (class 1259 OID 49309)
+-- Name: Act_of_accounting; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Act_of_accounting" (
+    accounting_act_id integer NOT NULL,
+    employee_id integer NOT NULL,
+    act_date date NOT NULL,
+    revaluation_factor numeric NOT NULL,
+    act_type character varying(20) NOT NULL,
+    status character varying(20) NOT NULL,
+    CONSTRAINT act_of_accounting_chk_1 CHECK ((revaluation_factor >= (0)::numeric))
+);
+
+
+ALTER TABLE "Library"."Act_of_accounting" OWNER TO ivan;
+
+--
+-- TOC entry 230 (class 1259 OID 81929)
+-- Name: Act_of_accounting_accounting_act_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Act_of_accounting" ALTER COLUMN accounting_act_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Act_of_accounting_accounting_act_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 224 (class 1259 OID 49296)
+-- Name: Admission; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Admission" (
+    admission_id integer NOT NULL,
+    waybill_code integer NOT NULL,
+    library_edition_code character varying(10) NOT NULL,
+    initial_cost integer NOT NULL,
+    CONSTRAINT admission_chk_1 CHECK ((initial_cost > 0))
+);
+
+
+ALTER TABLE "Library"."Admission" OWNER TO ivan;
+
+--
+-- TOC entry 231 (class 1259 OID 81943)
+-- Name: Admission_admission_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Admission" ALTER COLUMN admission_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Admission_admission_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 221 (class 1259 OID 32819)
+-- Name: Book_information; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Book_information" (
+    book_code integer NOT NULL,
+    name_b character varying(30) NOT NULL,
+    field_of_knowledge character varying(20) NOT NULL,
+    origional_language character varying(20) NOT NULL,
+    type_v character varying(20) NOT NULL,
+    author character varying(50) NOT NULL
+);
+
+
+ALTER TABLE "Library"."Book_information" OWNER TO ivan;
+
+--
+-- TOC entry 233 (class 1259 OID 90123)
+-- Name: Book_information_book_code_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Book_information" ALTER COLUMN book_code ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Book_information_book_code_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 24582)
+-- Name: Copy; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Copy" (
+    copy_id integer NOT NULL,
+    library_edition_code character varying(10) NOT NULL,
+    storage_location_id integer NOT NULL
+);
+
+
+ALTER TABLE "Library"."Copy" OWNER TO ivan;
+
+--
+-- TOC entry 235 (class 1259 OID 90150)
+-- Name: Copy_copy_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Copy" ALTER COLUMN copy_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Copy_copy_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 220 (class 1259 OID 32809)
+-- Name: Edition; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Edition" (
+    library_edition_code character varying(10) NOT NULL,
+    publishing_id integer NOT NULL,
+    book_code integer NOT NULL,
+    edition_name character varying(20) NOT NULL,
+    register_value integer NOT NULL,
+    former character varying(20) NOT NULL,
+    eddition_number integer NOT NULL,
+    edition_language character varying(20) NOT NULL,
+    library_description character varying(120) NOT NULL,
+    edition_date date NOT NULL,
+    CONSTRAINT edition_chk_1 CHECK ((edition_date > '1800-01-01'::date))
+);
+
+
+ALTER TABLE "Library"."Edition" OWNER TO ivan;
+
+--
+-- TOC entry 215 (class 1259 OID 16400)
+-- Name: Librarian; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Librarian" (
+    employee_id integer NOT NULL,
+    full_name character varying(30) NOT NULL,
+    post character varying(20) NOT NULL
+);
+
+
+ALTER TABLE "Library"."Librarian" OWNER TO ivan;
+
+--
+-- TOC entry 229 (class 1259 OID 81926)
+-- Name: Librarian_employee_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Librarian" ALTER COLUMN employee_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Librarian_employee_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 228 (class 1259 OID 57350)
+-- Name: Library_card; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Library_card" (
+    card_id integer NOT NULL,
+    status character varying(30) NOT NULL,
+    reason character varying(30) NOT NULL,
+    reader_id integer NOT NULL
+);
+
+
+ALTER TABLE "Library"."Library_card" OWNER TO ivan;
+
+--
+-- TOC entry 226 (class 1259 OID 49306)
+-- Name: Operation; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Operation" (
+    copy_id integer NOT NULL,
+    admission_id integer NOT NULL,
+    accounting_act_id integer NOT NULL
+);
+
+
+ALTER TABLE "Library"."Operation" OWNER TO ivan;
+
+--
+-- TOC entry 223 (class 1259 OID 49271)
+-- Name: Publishing_house; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Publishing_house" (
+    publishing_house_id integer NOT NULL,
+    publishing_name character varying(30) NOT NULL,
+    city character varying(30) NOT NULL
+);
+
+
+ALTER TABLE "Library"."Publishing_house" OWNER TO ivan;
+
+--
+-- TOC entry 234 (class 1259 OID 90126)
+-- Name: Publishing_house_publishing_house_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Publishing_house" ALTER COLUMN publishing_house_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Publishing_house_publishing_house_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 49158)
+-- Name: Reader; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Reader" (
+    reader_id integer NOT NULL,
+    full_name character varying(40) NOT NULL,
+    passport_data integer NOT NULL,
+    address character varying(30) NOT NULL,
+    email character varying(30) NOT NULL,
+    telephone_number bigint NOT NULL,
+    CONSTRAINT reader_chk_1 CHECK ((telephone_number > '80000000000'::bigint)),
+    CONSTRAINT reader_chk_2 CHECK ((passport_data > 10000000))
+);
+
+
+ALTER TABLE "Library"."Reader" OWNER TO ivan;
+
+--
+-- TOC entry 219 (class 1259 OID 32799)
+-- Name: Storage; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Storage" (
+    storage_id integer NOT NULL,
+    room integer NOT NULL,
+    shelf integer NOT NULL,
+    shelving integer NOT NULL,
+    CONSTRAINT "Storage_chk_1" CHECK ((room > 0)),
+    CONSTRAINT "Storage_chk_2" CHECK ((shelf > 0)),
+    CONSTRAINT "Storage_chk_3" CHECK ((shelving > 0))
+);
+
+
+ALTER TABLE "Library"."Storage" OWNER TO ivan;
+
+--
+-- TOC entry 236 (class 1259 OID 90156)
+-- Name: Storage_storage_id_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Storage" ALTER COLUMN storage_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Storage_storage_id_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 32791)
+-- Name: Stored; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Stored" (
+    copy_id integer NOT NULL,
+    storage_id integer NOT NULL,
+    stored_from date NOT NULL,
+    stored_until date NOT NULL,
+    status character varying(30) NOT NULL,
+    CONSTRAINT "Stored_chk_1" CHECK ((stored_until > stored_from))
+);
+
+
+ALTER TABLE "Library"."Stored" OWNER TO ivan;
+
+--
+-- TOC entry 216 (class 1259 OID 16405)
+-- Name: Subscription; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Subscription" (
+    return_date date NOT NULL,
+    fine integer,
+    "from" date NOT NULL,
+    "to" date NOT NULL,
+    copy_id integer NOT NULL,
+    card_id integer NOT NULL,
+    CONSTRAINT "Subscription_chk_1" CHECK ((fine >= 0)),
+    CONSTRAINT "Subscription_chk_2" CHECK (('to'::text > 'from'::text))
+);
+
+
+ALTER TABLE "Library"."Subscription" OWNER TO ivan;
+
+--
+-- TOC entry 225 (class 1259 OID 49301)
+-- Name: Waybill; Type: TABLE; Schema: Library; Owner: ivan
+--
+
+CREATE TABLE "Library"."Waybill" (
+    waybill_code integer NOT NULL,
+    provider character varying(20) NOT NULL,
+    w_date date NOT NULL
+);
+
+
+ALTER TABLE "Library"."Waybill" OWNER TO ivan;
+
+--
+-- TOC entry 232 (class 1259 OID 81954)
+-- Name: Waybill_waybill_code_seq; Type: SEQUENCE; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE "Library"."Waybill" ALTER COLUMN waybill_code ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME "Library"."Waybill_waybill_code_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 3412 (class 0 OID 49309)
+-- Dependencies: 227
+-- Data for Name: Act_of_accounting; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Act_of_accounting" (accounting_act_id, employee_id, act_date, revaluation_factor, act_type, status) FROM stdin;
+1	2	2022-10-20	0.01	выдача	оформлен
+2	3	2022-10-21	0.02	принятие	ошибка
+3	4	2022-10-22	0.03	принятие	оформлен
+4	5	2022-10-10	0.015	выдача	оформлен
+\.
+
+
+--
+-- TOC entry 3409 (class 0 OID 49296)
+-- Dependencies: 224
+-- Data for Name: Admission; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Admission" (admission_id, waybill_code, library_edition_code, initial_cost) FROM stdin;
+3	1	bb-33	500
+4	2	bb-44	400
+5	3	bb-55	1100
+6	4	bb-66	250
+\.
+
+
+--
+-- TOC entry 3406 (class 0 OID 32819)
+-- Dependencies: 221
+-- Data for Name: Book_information; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Book_information" (book_code, name_b, field_of_knowledge, origional_language, type_v, author) FROM stdin;
+1	Игрок	худ. литература	русский	роман	Ф.М. Достоевский
+2	Заводной апельсин	худ. литература	русский	антиутопия	Энтони Бёрджесс
+3	Физика	образовательная	русский	учебник	д. Джанколи
+4	Мартин Иден	худ. литература	английский	роман	Джек Лондон
+\.
+
+
+--
+-- TOC entry 3402 (class 0 OID 24582)
+-- Dependencies: 217
+-- Data for Name: Copy; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Copy" (copy_id, library_edition_code, storage_location_id) FROM stdin;
+1	bb-33	100
+2	bb-44	101
+3	bb-55	102
+4	bb-66	103
+\.
+
+
+--
+-- TOC entry 3405 (class 0 OID 32809)
+-- Dependencies: 220
+-- Data for Name: Edition; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Edition" (library_edition_code, publishing_id, book_code, edition_name, register_value, former, eddition_number, edition_language, library_description, edition_date) FROM stdin;
+bb-33	1	1	русская классика	303	А. Ферез	1	русский	Роману присущи автобиографические мотивы, ведь азартным игроком был и сам Достоевский	2021-12-23
+bb-44	2	2	зарубежная классика	304	А. Ферез	12	русский	Скандальный роман, являющийся литературным парадоксом 20 века	2017-04-18
+bb-55	3	3	учебный материал	305	Ю.А. Данилова	13	русский	Книга охватывающая большой материал по всем разделам классической и современной физики	1990-12-23
+bb-66	4	4	зарубежная классика	306	А. Матвеева	14	английский	Адаптированный текст знаменитого романа Джека Лондона с подробными комментариями	2018-04-23
+\.
+
+
+--
+-- TOC entry 3400 (class 0 OID 16400)
+-- Dependencies: 215
+-- Data for Name: Librarian; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Librarian" (employee_id, full_name, post) FROM stdin;
+2	Игорь	зам. директора
+3	Михаил	директор
+4	Евгения	библиотекарь
+5	Людмила	библиотекарь
+\.
+
+
+--
+-- TOC entry 3413 (class 0 OID 57350)
+-- Dependencies: 228
+-- Data for Name: Library_card; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Library_card" (card_id, status, reason, reader_id) FROM stdin;
+100	действующий	-	1
+101	действующий	-	2
+102	остановлена	просрочен	3
+103	действующий	-	4
+\.
+
+
+--
+-- TOC entry 3411 (class 0 OID 49306)
+-- Dependencies: 226
+-- Data for Name: Operation; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Operation" (copy_id, admission_id, accounting_act_id) FROM stdin;
+1	3	1
+2	4	2
+3	5	3
+4	6	4
+\.
+
+
+--
+-- TOC entry 3408 (class 0 OID 49271)
+-- Dependencies: 223
+-- Data for Name: Publishing_house; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Publishing_house" (publishing_house_id, publishing_name, city) FROM stdin;
+1	АСТ	Санкт-Петербург
+2	Мир	Москва
+3	АСТ	Санкт-Петербург
+4	АСТ	Санкт-Петербург
+\.
+
+
+--
+-- TOC entry 3407 (class 0 OID 49158)
+-- Dependencies: 222
+-- Data for Name: Reader; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Reader" (reader_id, full_name, passport_data, address, email, telephone_number) FROM stdin;
+1	Борисов Юрий Александрович	78787878	набережная Фонтанки 28	ry@gmail@com	89112345678
+2	Кирилл	50560633	улица Яхтенная 16	banshi@gmail.com	89117456758
+3	Ира	30347455	улица Туристская	lobster@gmail.com	89113563435
+4	Женя	20230322	улица Яхтенная 15	whale@gmail.com	89112442323
+\.
+
+
+--
+-- TOC entry 3404 (class 0 OID 32799)
+-- Dependencies: 219
+-- Data for Name: Storage; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Storage" (storage_id, room, shelf, shelving) FROM stdin;
+1	1	8	3
+2	1	6	5
+3	2	11	2
+4	3	16	2
+\.
+
+
+--
+-- TOC entry 3403 (class 0 OID 32791)
+-- Dependencies: 218
+-- Data for Name: Stored; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Stored" (copy_id, storage_id, stored_from, stored_until, status) FROM stdin;
+1	1	2021-12-12	2021-12-31	в наличии
+2	2	2021-10-12	2022-01-29	в наличии
+3	3	2021-11-13	2022-02-05	занята
+4	4	2021-09-01	2021-11-11	в наличии
+\.
+
+
+--
+-- TOC entry 3401 (class 0 OID 16405)
+-- Dependencies: 216
+-- Data for Name: Subscription; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Subscription" (return_date, fine, "from", "to", copy_id, card_id) FROM stdin;
+2023-04-19	0	2022-02-01	2024-02-01	1	100
+2023-02-13	0	2023-01-18	2023-02-26	2	101
+2023-01-16	0	2022-11-15	2023-02-02	3	102
+2023-02-09	1000	2022-12-10	2023-02-01	4	103
+\.
+
+
+--
+-- TOC entry 3410 (class 0 OID 49301)
+-- Dependencies: 225
+-- Data for Name: Waybill; Type: TABLE DATA; Schema: Library; Owner: ivan
+--
+
+COPY "Library"."Waybill" (waybill_code, provider, w_date) FROM stdin;
+1	Буквоед	2022-09-12
+2	Буквоед	2022-09-14
+3	отсутствует	2022-09-01
+4	Буквоед	2022-09-19
+\.
+
+
+--
+-- TOC entry 3427 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: Act_of_accounting_accounting_act_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Act_of_accounting_accounting_act_id_seq"', 4, true);
+
+
+--
+-- TOC entry 3428 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: Admission_admission_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Admission_admission_id_seq"', 6, true);
+
+
+--
+-- TOC entry 3429 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: Book_information_book_code_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Book_information_book_code_seq"', 4, true);
+
+
+--
+-- TOC entry 3430 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: Copy_copy_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Copy_copy_id_seq"', 4, true);
+
+
+--
+-- TOC entry 3431 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: Librarian_employee_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Librarian_employee_id_seq"', 5, true);
+
+
+--
+-- TOC entry 3432 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: Publishing_house_publishing_house_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Publishing_house_publishing_house_id_seq"', 4, true);
+
+
+--
+-- TOC entry 3433 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: Storage_storage_id_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Storage_storage_id_seq"', 4, true);
+
+
+--
+-- TOC entry 3434 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: Waybill_waybill_code_seq; Type: SEQUENCE SET; Schema: Library; Owner: ivan
+--
+
+SELECT pg_catalog.setval('"Library"."Waybill_waybill_code_seq"', 4, true);
+
+
+--
+-- TOC entry 3244 (class 2606 OID 57354)
+-- Name: Library_card Library_card_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Library_card"
+    ADD CONSTRAINT "Library_card_pkey" PRIMARY KEY (card_id);
+
+
+--
+-- TOC entry 3234 (class 2606 OID 49164)
+-- Name: Reader Reader_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Reader"
+    ADD CONSTRAINT "Reader_pkey" PRIMARY KEY (reader_id);
+
+
+--
+-- TOC entry 3242 (class 2606 OID 49315)
+-- Name: Act_of_accounting accounting_act_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Act_of_accounting"
+    ADD CONSTRAINT accounting_act_pkey PRIMARY KEY (accounting_act_id);
+
+
+--
+-- TOC entry 3238 (class 2606 OID 49300)
+-- Name: Admission admission_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Admission"
+    ADD CONSTRAINT admission_pkey PRIMARY KEY (admission_id);
+
+
+--
+-- TOC entry 3232 (class 2606 OID 32823)
+-- Name: Book_information book_information_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Book_information"
+    ADD CONSTRAINT book_information_pkey PRIMARY KEY (book_code);
+
+
+--
+-- TOC entry 3226 (class 2606 OID 24586)
+-- Name: Copy copy_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Copy"
+    ADD CONSTRAINT copy_pkey PRIMARY KEY (copy_id);
+
+
+--
+-- TOC entry 3230 (class 2606 OID 49220)
+-- Name: Edition edition_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Edition"
+    ADD CONSTRAINT edition_pkey PRIMARY KEY (library_edition_code);
+
+
+--
+-- TOC entry 3224 (class 2606 OID 16404)
+-- Name: Librarian librarian_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Librarian"
+    ADD CONSTRAINT librarian_pkey PRIMARY KEY (employee_id);
+
+
+--
+-- TOC entry 3236 (class 2606 OID 49275)
+-- Name: Publishing_house publishing_house_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Publishing_house"
+    ADD CONSTRAINT publishing_house_pkey PRIMARY KEY (publishing_house_id);
+
+
+--
+-- TOC entry 3228 (class 2606 OID 32803)
+-- Name: Storage storage_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Storage"
+    ADD CONSTRAINT storage_pkey PRIMARY KEY (storage_id);
+
+
+--
+-- TOC entry 3240 (class 2606 OID 49305)
+-- Name: Waybill waybill_pkey; Type: CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Waybill"
+    ADD CONSTRAINT waybill_pkey PRIMARY KEY (waybill_code);
+
+
+--
+-- TOC entry 3257 (class 2606 OID 73734)
+-- Name: Library_card Reader_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Library_card"
+    ADD CONSTRAINT "Reader_fkey" FOREIGN KEY (reader_id) REFERENCES "Library"."Reader"(reader_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3253 (class 2606 OID 81949)
+-- Name: Operation act_of_accounting_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Operation"
+    ADD CONSTRAINT act_of_accounting_fkey FOREIGN KEY (accounting_act_id) REFERENCES "Library"."Act_of_accounting"(accounting_act_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3254 (class 2606 OID 81944)
+-- Name: Operation admission_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Operation"
+    ADD CONSTRAINT admission_fkey FOREIGN KEY (admission_id) REFERENCES "Library"."Admission"(admission_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3248 (class 2606 OID 65577)
+-- Name: Stored copy_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Stored"
+    ADD CONSTRAINT copy_fkey FOREIGN KEY (copy_id) REFERENCES "Library"."Copy"(copy_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3245 (class 2606 OID 90162)
+-- Name: Subscription copy_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Subscription"
+    ADD CONSTRAINT copy_fkey FOREIGN KEY (copy_id) REFERENCES "Library"."Copy"(copy_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3255 (class 2606 OID 90167)
+-- Name: Operation copy_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Operation"
+    ADD CONSTRAINT copy_fkey FOREIGN KEY (copy_id) REFERENCES "Library"."Copy"(copy_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3247 (class 2606 OID 90151)
+-- Name: Copy edition_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Copy"
+    ADD CONSTRAINT edition_fkey FOREIGN KEY (library_edition_code) REFERENCES "Library"."Edition"(library_edition_code) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3250 (class 2606 OID 90132)
+-- Name: Edition information_book_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Edition"
+    ADD CONSTRAINT information_book_fkey FOREIGN KEY (book_code) REFERENCES "Library"."Book_information"(book_code) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3256 (class 2606 OID 81930)
+-- Name: Act_of_accounting librarian_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Act_of_accounting"
+    ADD CONSTRAINT librarian_fkey FOREIGN KEY (employee_id) REFERENCES "Library"."Librarian"(employee_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3246 (class 2606 OID 73739)
+-- Name: Subscription library_card_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Subscription"
+    ADD CONSTRAINT library_card_fkey FOREIGN KEY (card_id) REFERENCES "Library"."Library_card"(card_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3251 (class 2606 OID 90127)
+-- Name: Edition publishing_house_id; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Edition"
+    ADD CONSTRAINT publishing_house_id FOREIGN KEY (publishing_id) REFERENCES "Library"."Publishing_house"(publishing_house_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3249 (class 2606 OID 90157)
+-- Name: Stored storage_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Stored"
+    ADD CONSTRAINT storage_fkey FOREIGN KEY (storage_id) REFERENCES "Library"."Storage"(storage_id) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3252 (class 2606 OID 90118)
+-- Name: Admission waybill_fkey; Type: FK CONSTRAINT; Schema: Library; Owner: ivan
+--
+
+ALTER TABLE ONLY "Library"."Admission"
+    ADD CONSTRAINT waybill_fkey FOREIGN KEY (waybill_code) REFERENCES "Library"."Waybill"(waybill_code) ON UPDATE RESTRICT ON DELETE RESTRICT;
+
+
+-- Completed on 2023-03-13 00:53:16 MSK
+
+--
+-- PostgreSQL database dump complete
+--
+
