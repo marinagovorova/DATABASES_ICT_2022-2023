@@ -1,0 +1,1 @@
+select * from Аэропорт.airport
