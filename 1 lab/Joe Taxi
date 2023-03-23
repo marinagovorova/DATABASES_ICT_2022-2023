@@ -1,0 +1,539 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-03-23 21:08:35
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2 (class 3079 OID 16384)
+-- Name: adminpack; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS adminpack WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 3397 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION adminpack; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION adminpack IS 'administrative functions for PostgreSQL';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 216 (class 1259 OID 16406)
+-- Name: Car; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Car" (
+    "Car_Id" integer NOT NULL,
+    "Mark_id" integer NOT NULL,
+    "Last_TO_date" date NOT NULL,
+    "Gos_Number" character varying(255) NOT NULL,
+    "Run" integer NOT NULL,
+    "Cost" integer NOT NULL
+);
+
+
+ALTER TABLE public."Car" OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16411)
+-- Name: Car_Model; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Car_Model" (
+    "Mark_Id" integer NOT NULL,
+    "Year_of_Creating" date NOT NULL,
+    "Country" character varying(255) NOT NULL,
+    "Attributes" character varying(255) NOT NULL,
+    "Tarif_Id" integer NOT NULL
+);
+
+
+ALTER TABLE public."Car_Model" OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16401)
+-- Name: Client; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Client" (
+    "Clients_Code" integer NOT NULL,
+    "Full_Name" character varying(255) NOT NULL,
+    "Balance" integer NOT NULL
+);
+
+
+ALTER TABLE public."Client" OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16451)
+-- Name: Order; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Order" (
+    "Order_Id" integer NOT NULL,
+    "Client_Id" integer NOT NULL,
+    "Arriving_Date" date NOT NULL,
+    "Departure_Date" date NOT NULL,
+    "Price" integer NOT NULL,
+    "Distance" numeric NOT NULL,
+    "Time_Of_Waiting" numeric NOT NULL,
+    "Ratio" numeric NOT NULL,
+    "Arriving_Adress" character varying(255) NOT NULL,
+    "Departure_Adress" character varying(255) NOT NULL,
+    "Feedback" character varying(255) NOT NULL,
+    "Type_Of_Payment" character varying(255) NOT NULL,
+    "Planned_departure_time" date NOT NULL,
+    "Car_Id" integer NOT NULL,
+    "Worker_id" integer NOT NULL
+);
+
+
+ALTER TABLE public."Order" OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16437)
+-- Name: Schedule; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Schedule" (
+    "Schedule_Id" integer NOT NULL,
+    "Shift_Id" integer NOT NULL,
+    "Status" character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public."Schedule" OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16432)
+-- Name: Shift; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Shift" (
+    "Shift_id" integer NOT NULL,
+    "Begin_date" date NOT NULL,
+    "End_date" date NOT NULL
+);
+
+
+ALTER TABLE public."Shift" OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 16418)
+-- Name: Tarif; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Tarif" (
+    "Tarif_Id" integer NOT NULL,
+    "Tarif_Name" character varying NOT NULL,
+    "Tarif_Cost" integer NOT NULL
+);
+
+
+ALTER TABLE public."Tarif" OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16425)
+-- Name: Tarif_Cost; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Tarif_Cost" (
+    "Cost_Id" integer NOT NULL,
+    "Begin_date" date NOT NULL,
+    "End_date" date NOT NULL,
+    "Sale" numeric NOT NULL,
+    "Time" character varying NOT NULL,
+    "Cost_per_km" numeric NOT NULL
+);
+
+
+ALTER TABLE public."Tarif_Cost" OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 16444)
+-- Name: Worker; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public."Worker" (
+    "Worker_Id" integer NOT NULL,
+    "Full_Name" character varying(255) NOT NULL,
+    "State" character varying(255) NOT NULL,
+    "Title" character varying(255) NOT NULL,
+    "Phone_Number" character varying(255) NOT NULL,
+    "Adress" character varying(255) NOT NULL,
+    "Schedule_Id" integer NOT NULL
+);
+
+
+ALTER TABLE public."Worker" OWNER TO postgres;
+
+--
+-- TOC entry 3384 (class 0 OID 16406)
+-- Dependencies: 216
+-- Data for Name: Car; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Car" ("Car_Id", "Mark_id", "Last_TO_date", "Gos_Number", "Run", "Cost") FROM stdin;
+1	1	2000-01-01	666	1	30
+\.
+
+
+--
+-- TOC entry 3385 (class 0 OID 16411)
+-- Dependencies: 217
+-- Data for Name: Car_Model; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Car_Model" ("Mark_Id", "Year_of_Creating", "Country", "Attributes", "Tarif_Id") FROM stdin;
+1	2000-01-01	Russia	lada kalina	1
+\.
+
+
+--
+-- TOC entry 3383 (class 0 OID 16401)
+-- Dependencies: 215
+-- Data for Name: Client; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Client" ("Clients_Code", "Full_Name", "Balance") FROM stdin;
+1	Boris	1
+\.
+
+
+--
+-- TOC entry 3391 (class 0 OID 16451)
+-- Dependencies: 223
+-- Data for Name: Order; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Order" ("Order_Id", "Client_Id", "Arriving_Date", "Departure_Date", "Price", "Distance", "Time_Of_Waiting", "Ratio", "Arriving_Adress", "Departure_Adress", "Feedback", "Type_Of_Payment", "Planned_departure_time", "Car_Id", "Worker_id") FROM stdin;
+1	1	2000-02-02	2000-01-01	5	5	5	5	Abrikosovaya	Tenistaya	norm	nalom	2000-02-01	1	1
+\.
+
+
+--
+-- TOC entry 3389 (class 0 OID 16437)
+-- Dependencies: 221
+-- Data for Name: Schedule; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Schedule" ("Schedule_Id", "Shift_Id", "Status") FROM stdin;
+1	1	zero
+\.
+
+
+--
+-- TOC entry 3388 (class 0 OID 16432)
+-- Dependencies: 220
+-- Data for Name: Shift; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Shift" ("Shift_id", "Begin_date", "End_date") FROM stdin;
+1	2000-01-01	2000-02-02
+\.
+
+
+--
+-- TOC entry 3386 (class 0 OID 16418)
+-- Dependencies: 218
+-- Data for Name: Tarif; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Tarif" ("Tarif_Id", "Tarif_Name", "Tarif_Cost") FROM stdin;
+1	tarifische	1
+\.
+
+
+--
+-- TOC entry 3387 (class 0 OID 16425)
+-- Dependencies: 219
+-- Data for Name: Tarif_Cost; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Tarif_Cost" ("Cost_Id", "Begin_date", "End_date", "Sale", "Time", "Cost_per_km") FROM stdin;
+1	2000-01-01	2000-02-02	1	23	1
+\.
+
+
+--
+-- TOC entry 3390 (class 0 OID 16444)
+-- Dependencies: 222
+-- Data for Name: Worker; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public."Worker" ("Worker_Id", "Full_Name", "State", "Title", "Phone_Number", "Adress", "Schedule_Id") FROM stdin;
+1	Anton	vodila	good	88005553535	Vinogradnaya	1
+\.
+
+
+--
+-- TOC entry 3220 (class 2606 OID 16417)
+-- Name: Car_Model Car_Model_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Car_Model"
+    ADD CONSTRAINT "Car_Model_pkey" PRIMARY KEY ("Mark_Id");
+
+
+--
+-- TOC entry 3205 (class 2606 OID 16512)
+-- Name: Car Car_Run_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Car"
+    ADD CONSTRAINT "Car_Run_check" CHECK (("Run" >= 0)) NOT VALID;
+
+
+--
+-- TOC entry 3218 (class 2606 OID 16410)
+-- Name: Car Car_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Car"
+    ADD CONSTRAINT "Car_pkey" PRIMARY KEY ("Car_Id");
+
+
+--
+-- TOC entry 3216 (class 2606 OID 16405)
+-- Name: Client Client_Code; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Client"
+    ADD CONSTRAINT "Client_Code" PRIMARY KEY ("Clients_Code");
+
+
+--
+-- TOC entry 3210 (class 2606 OID 16516)
+-- Name: Order Order_Distance_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Order"
+    ADD CONSTRAINT "Order_Distance_check" CHECK (("Distance" > (0)::numeric)) NOT VALID;
+
+
+--
+-- TOC entry 3211 (class 2606 OID 16515)
+-- Name: Order Order_Price_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Order"
+    ADD CONSTRAINT "Order_Price_check" CHECK (("Price" > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3212 (class 2606 OID 16517)
+-- Name: Order Order_Time_Of_Waiting_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Order"
+    ADD CONSTRAINT "Order_Time_Of_Waiting_check" CHECK (("Time_Of_Waiting" > (0)::numeric)) NOT VALID;
+
+
+--
+-- TOC entry 3213 (class 2606 OID 16518)
+-- Name: Order Order_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Order"
+    ADD CONSTRAINT "Order_check" CHECK (("Arriving_Date" > "Departure_Date")) NOT VALID;
+
+
+--
+-- TOC entry 3214 (class 2606 OID 16534)
+-- Name: Order Order_check1; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Order"
+    ADD CONSTRAINT "Order_check1" CHECK (("Planned_departure_time" > "Departure_Date")) NOT VALID;
+
+
+--
+-- TOC entry 3232 (class 2606 OID 16457)
+-- Name: Order Order_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_pkey" PRIMARY KEY ("Order_Id");
+
+
+--
+-- TOC entry 3228 (class 2606 OID 16443)
+-- Name: Schedule Schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Schedule"
+    ADD CONSTRAINT "Schedule_pkey" PRIMARY KEY ("Schedule_Id");
+
+
+--
+-- TOC entry 3209 (class 2606 OID 16519)
+-- Name: Shift Shift_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Shift"
+    ADD CONSTRAINT "Shift_check" CHECK (("End_date" > "Begin_date")) NOT VALID;
+
+
+--
+-- TOC entry 3226 (class 2606 OID 16436)
+-- Name: Shift Shift_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Shift"
+    ADD CONSTRAINT "Shift_pkey" PRIMARY KEY ("Shift_id");
+
+
+--
+-- TOC entry 3206 (class 2606 OID 16528)
+-- Name: Tarif_Cost Tarif_Cost_Cost_per_km_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Tarif_Cost"
+    ADD CONSTRAINT "Tarif_Cost_Cost_per_km_check" CHECK (("Cost_per_km" > (0)::numeric)) NOT VALID;
+
+
+--
+-- TOC entry 3207 (class 2606 OID 16527)
+-- Name: Tarif_Cost Tarif_Cost_Sale_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Tarif_Cost"
+    ADD CONSTRAINT "Tarif_Cost_Sale_check" CHECK (("Sale" >= (0)::numeric)) NOT VALID;
+
+
+--
+-- TOC entry 3208 (class 2606 OID 16526)
+-- Name: Tarif_Cost Tarif_Cost_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public."Tarif_Cost"
+    ADD CONSTRAINT "Tarif_Cost_check" CHECK (("Begin_date" < "End_date")) NOT VALID;
+
+
+--
+-- TOC entry 3224 (class 2606 OID 16431)
+-- Name: Tarif_Cost Tarif_Cost_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Tarif_Cost"
+    ADD CONSTRAINT "Tarif_Cost_pkey" PRIMARY KEY ("Cost_Id");
+
+
+--
+-- TOC entry 3222 (class 2606 OID 16424)
+-- Name: Tarif Tarif_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Tarif"
+    ADD CONSTRAINT "Tarif_pkey" PRIMARY KEY ("Tarif_Id");
+
+
+--
+-- TOC entry 3230 (class 2606 OID 16450)
+-- Name: Worker Worker_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Worker"
+    ADD CONSTRAINT "Worker_pkey" PRIMARY KEY ("Worker_Id");
+
+
+--
+-- TOC entry 3234 (class 2606 OID 16497)
+-- Name: Car_Model Car_Model_Tarif_Id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Car_Model"
+    ADD CONSTRAINT "Car_Model_Tarif_Id_fkey" FOREIGN KEY ("Tarif_Id") REFERENCES public."Tarif"("Tarif_Id") NOT VALID;
+
+
+--
+-- TOC entry 3233 (class 2606 OID 16458)
+-- Name: Car Mark_Id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Car"
+    ADD CONSTRAINT "Mark_Id" FOREIGN KEY ("Mark_id") REFERENCES public."Car_Model"("Mark_Id") NOT VALID;
+
+
+--
+-- TOC entry 3238 (class 2606 OID 16502)
+-- Name: Order Order_Car_Id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_Car_Id_fkey" FOREIGN KEY ("Car_Id") REFERENCES public."Car"("Car_Id") NOT VALID;
+
+
+--
+-- TOC entry 3239 (class 2606 OID 16473)
+-- Name: Order Order_Client_Id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_Client_Id_fkey" FOREIGN KEY ("Client_Id") REFERENCES public."Client"("Clients_Code") NOT VALID;
+
+
+--
+-- TOC entry 3240 (class 2606 OID 16507)
+-- Name: Order Order_Worker_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_Worker_id_fkey" FOREIGN KEY ("Worker_id") REFERENCES public."Worker"("Worker_Id") NOT VALID;
+
+
+--
+-- TOC entry 3236 (class 2606 OID 16463)
+-- Name: Schedule Schedule_Shift_Id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Schedule"
+    ADD CONSTRAINT "Schedule_Shift_Id_fkey" FOREIGN KEY ("Shift_Id") REFERENCES public."Shift"("Shift_id") NOT VALID;
+
+
+--
+-- TOC entry 3235 (class 2606 OID 16487)
+-- Name: Tarif Tarif_Tarif_Cost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Tarif"
+    ADD CONSTRAINT "Tarif_Tarif_Cost_fkey" FOREIGN KEY ("Tarif_Cost") REFERENCES public."Tarif_Cost"("Cost_Id") NOT VALID;
+
+
+--
+-- TOC entry 3237 (class 2606 OID 16529)
+-- Name: Worker Worker_Schedule_Id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public."Worker"
+    ADD CONSTRAINT "Worker_Schedule_Id_fkey" FOREIGN KEY ("Schedule_Id") REFERENCES public."Schedule"("Schedule_Id") NOT VALID;
+
+
+-- Completed on 2023-03-23 21:08:35
+
+--
+-- PostgreSQL database dump complete
+--
+
