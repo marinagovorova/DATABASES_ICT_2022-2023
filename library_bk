@@ -1,0 +1,945 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-03-23 23:41:46
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 228 (class 1259 OID 17311)
+-- Name: act_of_debiting; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.act_of_debiting (
+    number_document integer NOT NULL,
+    date_document date NOT NULL,
+    type_document character varying(10) NOT NULL,
+    id_employee integer NOT NULL,
+    reason_debiting character varying(150) NOT NULL,
+    revaluation_coefficient numeric(4,2) NOT NULL,
+    cost_after_revaluation numeric(4,2) NOT NULL,
+    CONSTRAINT cost_after_revaluation CHECK ((cost_after_revaluation > (0)::numeric)),
+    CONSTRAINT date_act_check CHECK ((date_document >= CURRENT_DATE)),
+    CONSTRAINT revaluation_coefficient_check CHECK ((revaluation_coefficient > (0)::numeric)),
+    CONSTRAINT type_document_check CHECK (((type_document)::text = ANY ((ARRAY['Списание'::character varying, 'Переоценка'::character varying, 'Дарение'::character varying, 'Прием на учет'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.act_of_debiting OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 17261)
+-- Name: book; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.book (
+    id_book integer NOT NULL,
+    title character varying(100) NOT NULL,
+    author character varying(80) NOT NULL,
+    year_of_publication integer NOT NULL,
+    language character varying(15) NOT NULL,
+    description character varying(250),
+    id_publishing integer NOT NULL,
+    area_of_knowledge character varying(80) NOT NULL,
+    type_of_publication character varying(20) NOT NULL,
+    number_of_instances integer NOT NULL,
+    CONSTRAINT number_of_instances CHECK ((number_of_instances >= 1)),
+    CONSTRAINT year_of_publication CHECK (((year_of_publication)::numeric < EXTRACT(year FROM CURRENT_DATE)))
+);
+
+
+ALTER TABLE public.book OWNER TO postgres;
+
+--
+-- TOC entry 224 (class 1259 OID 17260)
+-- Name: book_id_book_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.book_id_book_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.book_id_book_seq OWNER TO postgres;
+
+--
+-- TOC entry 3463 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: book_id_book_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.book_id_book_seq OWNED BY public.book.id_book;
+
+
+--
+-- TOC entry 215 (class 1259 OID 17217)
+-- Name: city; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.city (
+    id_city integer NOT NULL,
+    city character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.city OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 17216)
+-- Name: city_id_city_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.city_id_city_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.city_id_city_seq OWNER TO postgres;
+
+--
+-- TOC entry 3464 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: city_id_city_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.city_id_city_seq OWNED BY public.city.id_city;
+
+
+--
+-- TOC entry 221 (class 1259 OID 17244)
+-- Name: employee; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.employee (
+    id_employee integer NOT NULL,
+    name character varying(60) NOT NULL,
+    "position" character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.employee OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 17243)
+-- Name: employee_id_employee_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.employee_id_employee_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.employee_id_employee_seq OWNER TO postgres;
+
+--
+-- TOC entry 3465 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: employee_id_employee_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.employee_id_employee_seq OWNED BY public.employee.id_employee;
+
+
+--
+-- TOC entry 232 (class 1259 OID 17358)
+-- Name: form; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.form (
+    number_ticket character varying(10) NOT NULL,
+    reader character varying(60) NOT NULL,
+    date_registration date NOT NULL,
+    passport_data character varying(20) NOT NULL,
+    address character varying(100) NOT NULL,
+    phone_number character varying(20),
+    email character varying(50),
+    CONSTRAINT date_registration_check CHECK ((date_registration <= CURRENT_DATE)),
+    CONSTRAINT email_check CHECK (((email)::text ~ '^[a-zA-Z0-9\)\(\+\_\@]+$'::text)),
+    CONSTRAINT number_ticket_check CHECK (((number_ticket)::text ~ '^[0-9\-\/]+$'::text)),
+    CONSTRAINT phone_number_check CHECK (((phone_number)::text ~ '^[0-9\)\(\+\-]+$'::text))
+);
+
+
+ALTER TABLE public.form OWNER TO postgres;
+
+--
+-- TOC entry 230 (class 1259 OID 17328)
+-- Name: instance; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.instance (
+    id_instance integer NOT NULL,
+    id_book integer NOT NULL,
+    id_location integer NOT NULL,
+    cost_of_book numeric(6,2) NOT NULL,
+    CONSTRAINT cost_of_book_check CHECK ((cost_of_book > (0)::numeric))
+);
+
+
+ALTER TABLE public.instance OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 17327)
+-- Name: instance_id_instance_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.instance_id_instance_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.instance_id_instance_seq OWNER TO postgres;
+
+--
+-- TOC entry 3466 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: instance_id_instance_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.instance_id_instance_seq OWNED BY public.instance.id_instance;
+
+
+--
+-- TOC entry 233 (class 1259 OID 17367)
+-- Name: issuance_books; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.issuance_books (
+    number_ticket character varying(10) NOT NULL,
+    id_instance integer NOT NULL,
+    id_employee integer NOT NULL,
+    date_of_issue date NOT NULL,
+    date_of_return date NOT NULL,
+    CONSTRAINT date_of_issue_check CHECK ((date_of_issue >= CURRENT_DATE)),
+    CONSTRAINT date_of_return_check CHECK ((date_of_issue >= CURRENT_DATE))
+);
+
+
+ALTER TABLE public.issuance_books OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 17345)
+-- Name: list_of_debiting; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.list_of_debiting (
+    id_instance integer NOT NULL,
+    number_document integer NOT NULL
+);
+
+
+ALTER TABLE public.list_of_debiting OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 17298)
+-- Name: list_of_parish; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.list_of_parish (
+    id_book integer NOT NULL,
+    number_document integer NOT NULL
+);
+
+
+ALTER TABLE public.list_of_parish OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 17276)
+-- Name: parish_document; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.parish_document (
+    number_document integer NOT NULL,
+    date_document date NOT NULL,
+    type_document character varying(10) NOT NULL,
+    id_provider integer NOT NULL,
+    id_employee integer NOT NULL,
+    number_books integer NOT NULL,
+    amount_parish numeric(12,2) NOT NULL,
+    CONSTRAINT parish_document_date_check1 CHECK ((date_document <= CURRENT_DATE)),
+    CONSTRAINT parish_document_delivery_amount_check CHECK ((amount_parish >= (0)::numeric)),
+    CONSTRAINT parish_document_number_books_check CHECK ((number_books >= 1)),
+    CONSTRAINT parish_document_number_document_check CHECK ((number_document > 0)),
+    CONSTRAINT parish_document_type_document_check CHECK (((type_document)::text = ANY ((ARRAY['Накладная'::character varying, 'Акт'::character varying])::text[])))
+);
+
+
+ALTER TABLE public.parish_document OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 17236)
+-- Name: provider; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.provider (
+    id_provider integer NOT NULL,
+    name character varying(50) NOT NULL,
+    address character varying(100) NOT NULL,
+    phone_number character varying(20) NOT NULL,
+    CONSTRAINT provider_phone_number_check CHECK (((phone_number)::text ~ '[0-9\)\(\+\-]+'::text))
+);
+
+
+ALTER TABLE public.provider OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 17235)
+-- Name: provider_id_provider_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.provider_id_provider_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.provider_id_provider_seq OWNER TO postgres;
+
+--
+-- TOC entry 3467 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: provider_id_provider_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.provider_id_provider_seq OWNED BY public.provider.id_provider;
+
+
+--
+-- TOC entry 217 (class 1259 OID 17224)
+-- Name: publishing; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.publishing (
+    id_publishing integer NOT NULL,
+    publishing character varying(15) NOT NULL,
+    id_city integer NOT NULL
+);
+
+
+ALTER TABLE public.publishing OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 17223)
+-- Name: publishing_id_publishing_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.publishing_id_publishing_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.publishing_id_publishing_seq OWNER TO postgres;
+
+--
+-- TOC entry 3468 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: publishing_id_publishing_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.publishing_id_publishing_seq OWNED BY public.publishing.id_publishing;
+
+
+--
+-- TOC entry 223 (class 1259 OID 17251)
+-- Name: storage_location; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.storage_location (
+    id_location integer NOT NULL,
+    room_number integer NOT NULL,
+    rack_number integer NOT NULL,
+    shelf_number integer NOT NULL,
+    CONSTRAINT storage_location_rack_number_check CHECK ((rack_number >= 1)),
+    CONSTRAINT storage_location_room_number_check CHECK ((room_number >= 1)),
+    CONSTRAINT storage_location_shelf_number_check CHECK ((shelf_number >= 1))
+);
+
+
+ALTER TABLE public.storage_location OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 17250)
+-- Name: storage_location_id_location_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.storage_location_id_location_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.storage_location_id_location_seq OWNER TO postgres;
+
+--
+-- TOC entry 3469 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: storage_location_id_location_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.storage_location_id_location_seq OWNED BY public.storage_location.id_location;
+
+
+--
+-- TOC entry 3232 (class 2604 OID 17264)
+-- Name: book id_book; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book ALTER COLUMN id_book SET DEFAULT nextval('public.book_id_book_seq'::regclass);
+
+
+--
+-- TOC entry 3227 (class 2604 OID 17220)
+-- Name: city id_city; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.city ALTER COLUMN id_city SET DEFAULT nextval('public.city_id_city_seq'::regclass);
+
+
+--
+-- TOC entry 3230 (class 2604 OID 17247)
+-- Name: employee id_employee; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employee ALTER COLUMN id_employee SET DEFAULT nextval('public.employee_id_employee_seq'::regclass);
+
+
+--
+-- TOC entry 3233 (class 2604 OID 17331)
+-- Name: instance id_instance; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.instance ALTER COLUMN id_instance SET DEFAULT nextval('public.instance_id_instance_seq'::regclass);
+
+
+--
+-- TOC entry 3229 (class 2604 OID 17239)
+-- Name: provider id_provider; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.provider ALTER COLUMN id_provider SET DEFAULT nextval('public.provider_id_provider_seq'::regclass);
+
+
+--
+-- TOC entry 3228 (class 2604 OID 17227)
+-- Name: publishing id_publishing; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.publishing ALTER COLUMN id_publishing SET DEFAULT nextval('public.publishing_id_publishing_seq'::regclass);
+
+
+--
+-- TOC entry 3231 (class 2604 OID 17254)
+-- Name: storage_location id_location; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.storage_location ALTER COLUMN id_location SET DEFAULT nextval('public.storage_location_id_location_seq'::regclass);
+
+
+--
+-- TOC entry 3452 (class 0 OID 17311)
+-- Dependencies: 228
+-- Data for Name: act_of_debiting; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.act_of_debiting (number_document, date_document, type_document, id_employee, reason_debiting, revaluation_coefficient, cost_after_revaluation) FROM stdin;
+1	2023-03-23	Дарение	2	Книга с ошибками	0.30	60.90
+\.
+
+
+--
+-- TOC entry 3449 (class 0 OID 17261)
+-- Dependencies: 225
+-- Data for Name: book; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.book (id_book, title, author, year_of_publication, language, description, id_publishing, area_of_knowledge, type_of_publication, number_of_instances) FROM stdin;
+1	Собачье Сердце	Михаил Булгаков	1925	русский	\N	1	Художественная литература	Печатная	3
+2	Севастопольские рассказы	Л.Н. Толстой	1855	русский	\N	2	Художественная литература	Печатная	2
+3	Цветы для Элджернона	Дэниел Киз	1959	русский	\N	2	Художественная литература	Печатная	2
+\.
+
+
+--
+-- TOC entry 3439 (class 0 OID 17217)
+-- Dependencies: 215
+-- Data for Name: city; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.city (id_city, city) FROM stdin;
+1	Санкт-Петербург
+2	Москва
+3	Саратов
+\.
+
+
+--
+-- TOC entry 3445 (class 0 OID 17244)
+-- Dependencies: 221
+-- Data for Name: employee; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.employee (id_employee, name, "position") FROM stdin;
+1	Иванов Иван Иванович	менеджер
+2	Иванов Иван Дмитриевич	продавец
+\.
+
+
+--
+-- TOC entry 3456 (class 0 OID 17358)
+-- Dependencies: 232
+-- Data for Name: form; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.form (number_ticket, reader, date_registration, passport_data, address, phone_number, email) FROM stdin;
+1-01	Дмтрий Лидер	2023-03-23	12312323	Санкт-Петербург, дом 1	+7(213)123-21-12	\N
+1-11	Александра Лидер	2023-03-23	12312323	Санкт-Петербург, дом 2	+7(223)123-21-12	\N
+\.
+
+
+--
+-- TOC entry 3454 (class 0 OID 17328)
+-- Dependencies: 230
+-- Data for Name: instance; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.instance (id_instance, id_book, id_location, cost_of_book) FROM stdin;
+1	1	1	200.00
+2	2	1	203.00
+\.
+
+
+--
+-- TOC entry 3457 (class 0 OID 17367)
+-- Dependencies: 233
+-- Data for Name: issuance_books; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.issuance_books (number_ticket, id_instance, id_employee, date_of_issue, date_of_return) FROM stdin;
+1-01	2	2	2023-03-23	2023-03-23
+\.
+
+
+--
+-- TOC entry 3455 (class 0 OID 17345)
+-- Dependencies: 231
+-- Data for Name: list_of_debiting; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.list_of_debiting (id_instance, number_document) FROM stdin;
+1	1
+\.
+
+
+--
+-- TOC entry 3451 (class 0 OID 17298)
+-- Dependencies: 227
+-- Data for Name: list_of_parish; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.list_of_parish (id_book, number_document) FROM stdin;
+1	11
+\.
+
+
+--
+-- TOC entry 3450 (class 0 OID 17276)
+-- Dependencies: 226
+-- Data for Name: parish_document; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.parish_document (number_document, date_document, type_document, id_provider, id_employee, number_books, amount_parish) FROM stdin;
+11	2023-03-23	Акт	1	1	3	3000.00
+\.
+
+
+--
+-- TOC entry 3443 (class 0 OID 17236)
+-- Dependencies: 219
+-- Data for Name: provider; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.provider (id_provider, name, address, phone_number) FROM stdin;
+1	Поставщик	г.Моска, ул. Арбат 1	+7(234)123-21-11
+2	Поставщик2	г.Моска, ул. Арбат 2	+7(234)122-23-61
+\.
+
+
+--
+-- TOC entry 3441 (class 0 OID 17224)
+-- Dependencies: 217
+-- Data for Name: publishing; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.publishing (id_publishing, publishing, id_city) FROM stdin;
+1	Питер	1
+2	Азбука	2
+\.
+
+
+--
+-- TOC entry 3447 (class 0 OID 17251)
+-- Dependencies: 223
+-- Data for Name: storage_location; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.storage_location (id_location, room_number, rack_number, shelf_number) FROM stdin;
+1	1	1	1
+2	2	2	2
+\.
+
+
+--
+-- TOC entry 3470 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: book_id_book_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.book_id_book_seq', 3, true);
+
+
+--
+-- TOC entry 3471 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: city_id_city_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.city_id_city_seq', 3, true);
+
+
+--
+-- TOC entry 3472 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: employee_id_employee_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.employee_id_employee_seq', 2, true);
+
+
+--
+-- TOC entry 3473 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: instance_id_instance_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.instance_id_instance_seq', 2, true);
+
+
+--
+-- TOC entry 3474 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: provider_id_provider_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.provider_id_provider_seq', 2, true);
+
+
+--
+-- TOC entry 3475 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: publishing_id_publishing_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.publishing_id_publishing_seq', 2, true);
+
+
+--
+-- TOC entry 3476 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: storage_location_id_location_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.storage_location_id_location_seq', 2, true);
+
+
+--
+-- TOC entry 3273 (class 2606 OID 17321)
+-- Name: act_of_debiting act_of_debiting_number_act_uniqe; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.act_of_debiting
+    ADD CONSTRAINT act_of_debiting_number_act_uniqe UNIQUE (number_document);
+
+
+--
+-- TOC entry 3275 (class 2606 OID 17319)
+-- Name: act_of_debiting act_of_debiting_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.act_of_debiting
+    ADD CONSTRAINT act_of_debiting_pkey PRIMARY KEY (number_document, type_document);
+
+
+--
+-- TOC entry 3257 (class 2606 OID 17222)
+-- Name: city city_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.city
+    ADD CONSTRAINT city_pkey PRIMARY KEY (id_city);
+
+
+--
+-- TOC entry 3263 (class 2606 OID 17249)
+-- Name: employee employee_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employee
+    ADD CONSTRAINT employee_pkey PRIMARY KEY (id_employee);
+
+
+--
+-- TOC entry 3279 (class 2606 OID 17366)
+-- Name: form form_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.form
+    ADD CONSTRAINT form_pkey PRIMARY KEY (number_ticket);
+
+
+--
+-- TOC entry 3267 (class 2606 OID 17270)
+-- Name: book id_book_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book
+    ADD CONSTRAINT id_book_pk PRIMARY KEY (id_book);
+
+
+--
+-- TOC entry 3277 (class 2606 OID 17334)
+-- Name: instance instance_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.instance
+    ADD CONSTRAINT instance_pkey PRIMARY KEY (id_instance);
+
+
+--
+-- TOC entry 3269 (class 2606 OID 17285)
+-- Name: parish_document parish_document_pk; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parish_document
+    ADD CONSTRAINT parish_document_pk PRIMARY KEY (number_document, type_document);
+
+
+--
+-- TOC entry 3271 (class 2606 OID 17287)
+-- Name: parish_document parish_document_unique; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parish_document
+    ADD CONSTRAINT parish_document_unique UNIQUE (number_document);
+
+
+--
+-- TOC entry 3281 (class 2606 OID 17373)
+-- Name: issuance_books pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.issuance_books
+    ADD CONSTRAINT pkey PRIMARY KEY (number_ticket);
+
+
+--
+-- TOC entry 3261 (class 2606 OID 17242)
+-- Name: provider provider_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.provider
+    ADD CONSTRAINT provider_pkey PRIMARY KEY (id_provider);
+
+
+--
+-- TOC entry 3259 (class 2606 OID 17229)
+-- Name: publishing publishing_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.publishing
+    ADD CONSTRAINT publishing_pkey PRIMARY KEY (id_publishing);
+
+
+--
+-- TOC entry 3265 (class 2606 OID 17259)
+-- Name: storage_location storage_location_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.storage_location
+    ADD CONSTRAINT storage_location_pkey PRIMARY KEY (id_location);
+
+
+--
+-- TOC entry 3282 (class 2606 OID 17230)
+-- Name: publishing code_city; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.publishing
+    ADD CONSTRAINT code_city FOREIGN KEY (id_city) REFERENCES public.city(id_city);
+
+
+--
+-- TOC entry 3293 (class 2606 OID 17374)
+-- Name: issuance_books code_employee; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.issuance_books
+    ADD CONSTRAINT code_employee FOREIGN KEY (id_employee) REFERENCES public.employee(id_employee);
+
+
+--
+-- TOC entry 3288 (class 2606 OID 17322)
+-- Name: act_of_debiting code_employee_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.act_of_debiting
+    ADD CONSTRAINT code_employee_fk FOREIGN KEY (id_employee) REFERENCES public.employee(id_employee);
+
+
+--
+-- TOC entry 3283 (class 2606 OID 17271)
+-- Name: book code_publishing; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.book
+    ADD CONSTRAINT code_publishing FOREIGN KEY (id_publishing) REFERENCES public.publishing(id_publishing);
+
+
+--
+-- TOC entry 3286 (class 2606 OID 17301)
+-- Name: list_of_parish id_book_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.list_of_parish
+    ADD CONSTRAINT id_book_fkey FOREIGN KEY (id_book) REFERENCES public.book(id_book);
+
+
+--
+-- TOC entry 3287 (class 2606 OID 17306)
+-- Name: list_of_parish id_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.list_of_parish
+    ADD CONSTRAINT id_document_fkey FOREIGN KEY (number_document) REFERENCES public.parish_document(number_document);
+
+
+--
+-- TOC entry 3291 (class 2606 OID 17348)
+-- Name: list_of_debiting id_instance_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.list_of_debiting
+    ADD CONSTRAINT id_instance_fkey FOREIGN KEY (id_instance) REFERENCES public.instance(id_instance);
+
+
+--
+-- TOC entry 3289 (class 2606 OID 17335)
+-- Name: instance instance_code_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.instance
+    ADD CONSTRAINT instance_code_location_fkey FOREIGN KEY (id_location) REFERENCES public.storage_location(id_location);
+
+
+--
+-- TOC entry 3290 (class 2606 OID 17340)
+-- Name: instance instance_registration_number_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.instance
+    ADD CONSTRAINT instance_registration_number_fkey FOREIGN KEY (id_book) REFERENCES public.book(id_book);
+
+
+--
+-- TOC entry 3294 (class 2606 OID 17384)
+-- Name: issuance_books inventory_number; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.issuance_books
+    ADD CONSTRAINT inventory_number FOREIGN KEY (id_instance) REFERENCES public.instance(id_instance);
+
+
+--
+-- TOC entry 3292 (class 2606 OID 17353)
+-- Name: list_of_debiting number_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.list_of_debiting
+    ADD CONSTRAINT number_document_fkey FOREIGN KEY (number_document) REFERENCES public.act_of_debiting(number_document);
+
+
+--
+-- TOC entry 3295 (class 2606 OID 17379)
+-- Name: issuance_books number_ticket; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.issuance_books
+    ADD CONSTRAINT number_ticket FOREIGN KEY (number_ticket) REFERENCES public.form(number_ticket);
+
+
+--
+-- TOC entry 3284 (class 2606 OID 17288)
+-- Name: parish_document parish_document_employee_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parish_document
+    ADD CONSTRAINT parish_document_employee_code_fkey FOREIGN KEY (id_employee) REFERENCES public.employee(id_employee);
+
+
+--
+-- TOC entry 3285 (class 2606 OID 17293)
+-- Name: parish_document parish_document_provider_code_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.parish_document
+    ADD CONSTRAINT parish_document_provider_code_fkey FOREIGN KEY (id_provider) REFERENCES public.provider(id_provider);
+
+
+-- Completed on 2023-03-23 23:41:46
+
+--
+-- PostgreSQL database dump complete
+--
+
