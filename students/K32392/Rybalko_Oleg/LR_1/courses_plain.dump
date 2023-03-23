@@ -1,0 +1,711 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
+-- Dumped by pg_dump version 15.2 (Debian 15.2-1.pgdg110+1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: ВидАттестации; Type: TYPE; Schema: public; Owner: oleg
+--
+
+CREATE TYPE public."ВидАттестации" AS ENUM (
+    'зачет',
+    'экзамен',
+    'дифференцируемый зачет'
+);
+
+
+ALTER TYPE public."ВидАттестации" OWNER TO oleg;
+
+--
+-- Name: ВидЗанятия; Type: TYPE; Schema: public; Owner: oleg
+--
+
+CREATE TYPE public."ВидЗанятия" AS ENUM (
+    'лабораторное',
+    'лекционное',
+    'классное'
+);
+
+
+ALTER TYPE public."ВидЗанятия" OWNER TO oleg;
+
+--
+-- Name: ТипАудитории; Type: TYPE; Schema: public; Owner: oleg
+--
+
+CREATE TYPE public."ТипАудитории" AS ENUM (
+    'лекционная',
+    'лаборатория',
+    'класс'
+);
+
+
+ALTER TYPE public."ТипАудитории" OWNER TO oleg;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: Аудитория; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Аудитория" (
+    "Номер" integer NOT NULL,
+    "ИдентификаторПлощадки" integer NOT NULL,
+    "ТИП" public."ТипАудитории"
+);
+
+
+ALTER TABLE public."Аудитория" OWNER TO oleg;
+
+--
+-- Name: Группа; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Группа" (
+    "Номер" integer NOT NULL,
+    "МаксКоличествоЧеловек" integer,
+    "КодНабора" integer NOT NULL
+);
+
+
+ALTER TABLE public."Группа" OWNER TO oleg;
+
+--
+-- Name: Дисциплина; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Дисциплина" (
+    "Идентификатор" integer NOT NULL,
+    "Название" text NOT NULL,
+    "ВидАттестации" public."ВидАттестации",
+    "КоличествоЧасов" integer,
+    "КоличествоЛекций" integer NOT NULL,
+    "КоличествоПрактик" integer NOT NULL,
+    "КоличествоЛаб" integer NOT NULL,
+    CONSTRAINT "Дисциплина_КоличествоЛаб_check" CHECK (("КоличествоЛаб" >= 0)),
+    CONSTRAINT "Дисциплина_КоличествоЛекций_check" CHECK (("КоличествоЛекций" >= 0)),
+    CONSTRAINT "Дисциплина_КоличествоПрактик_check" CHECK (("КоличествоПрактик" >= 0)),
+    CONSTRAINT "Дисциплина_КоличествоЧасов_check" CHECK (("КоличествоЧасов" >= 0))
+);
+
+
+ALTER TABLE public."Дисциплина" OWNER TO oleg;
+
+--
+-- Name: ДисциплинаНаПрограмме; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."ДисциплинаНаПрограмме" (
+    "Идентификатор" integer NOT NULL,
+    "ИдентификаторПрограммы" integer NOT NULL,
+    "ИдентификаторДисциплины" integer NOT NULL
+);
+
+
+ALTER TABLE public."ДисциплинаНаПрограмме" OWNER TO oleg;
+
+--
+-- Name: Занятие; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Занятие" (
+    "Идентификатор" integer NOT NULL,
+    "ИдентификаторДисципНаПрог" integer NOT NULL,
+    "ИдентификаторПреподавателя" integer NOT NULL,
+    "НомерГруппы" integer NOT NULL,
+    "НомерПары" integer NOT NULL,
+    "Вид" public."ВидЗанятия" NOT NULL,
+    "ДатаПроведения" timestamp without time zone,
+    CONSTRAINT "Занятие_НомерПары_check" CHECK (("НомерПары" > 0))
+);
+
+
+ALTER TABLE public."Занятие" OWNER TO oleg;
+
+--
+-- Name: Занятие_Идентификатор_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+--
+
+CREATE SEQUENCE public."Занятие_Идентификатор_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Занятие_Идентификатор_seq" OWNER TO oleg;
+
+--
+-- Name: Занятие_Идентификатор_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
+--
+
+ALTER SEQUENCE public."Занятие_Идентификатор_seq" OWNED BY public."Занятие"."Идентификатор";
+
+
+--
+-- Name: НаборНаПрограмму; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."НаборНаПрограмму" (
+    "Код" integer NOT NULL,
+    "ИдентификаторПрограммы" integer NOT NULL
+);
+
+
+ALTER TABLE public."НаборНаПрограмму" OWNER TO oleg;
+
+--
+-- Name: ОбразовательнаяПрограмма; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."ОбразовательнаяПрограмма" (
+    "Код" integer NOT NULL,
+    "Название" text NOT NULL,
+    "ОбъемЧасов" integer NOT NULL,
+    "Тип" text NOT NULL,
+    "Описание" text
+);
+
+
+ALTER TABLE public."ОбразовательнаяПрограмма" OWNER TO oleg;
+
+--
+-- Name: Обучается; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Обучается" (
+    "Идентификатор" integer NOT NULL,
+    "НомерГруппы" integer NOT NULL,
+    "ДатаНачалаОбучения" date NOT NULL,
+    "ДатаОкончанияОбучения" date NOT NULL,
+    "Статус" text,
+    "ИдентификаторСлушателя" integer NOT NULL
+);
+
+
+ALTER TABLE public."Обучается" OWNER TO oleg;
+
+--
+-- Name: Площадка; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Площадка" (
+    "Идентификатор" integer NOT NULL,
+    "Адрес" text NOT NULL,
+    "Название" text,
+    "КодПодразделения" integer NOT NULL
+);
+
+
+ALTER TABLE public."Площадка" OWNER TO oleg;
+
+--
+-- Name: Подразделение; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Подразделение" (
+    "Код" integer NOT NULL,
+    "Название" text NOT NULL,
+    "КодОбразовательнойПрограммы" integer NOT NULL,
+    "Описание" text
+);
+
+
+ALTER TABLE public."Подразделение" OWNER TO oleg;
+
+--
+-- Name: Преподаватель; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Преподаватель" (
+    "Идентификатор" integer NOT NULL,
+    "Имя" text NOT NULL,
+    "Отчество" text,
+    "Должность" text NOT NULL
+);
+
+
+ALTER TABLE public."Преподаватель" OWNER TO oleg;
+
+--
+-- Name: Преподаватель_Идентификатор_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+--
+
+CREATE SEQUENCE public."Преподаватель_Идентификатор_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public."Преподаватель_Идентификатор_seq" OWNER TO oleg;
+
+--
+-- Name: Преподаватель_Идентификатор_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
+--
+
+ALTER SEQUENCE public."Преподаватель_Идентификатор_seq" OWNED BY public."Преподаватель"."Идентификатор";
+
+
+--
+-- Name: Программа; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Программа" (
+    "Идентификатор" integer NOT NULL,
+    "Цена" numeric NOT NULL,
+    "ДатаНачала" date NOT NULL,
+    "ДатаОкончания" date NOT NULL,
+    "КодПодразделения" integer NOT NULL
+);
+
+
+ALTER TABLE public."Программа" OWNER TO oleg;
+
+--
+-- Name: Слушатель; Type: TABLE; Schema: public; Owner: oleg
+--
+
+CREATE TABLE public."Слушатель" (
+    "НомерПаспорта" integer NOT NULL,
+    "СерияПаспорта" integer NOT NULL,
+    "Имя" text NOT NULL,
+    "Фамилия" text NOT NULL,
+    "НомерТелефона" text,
+    "ЭлектроннаяПочта" text
+);
+
+
+ALTER TABLE public."Слушатель" OWNER TO oleg;
+
+--
+-- Name: Занятие Идентификатор; Type: DEFAULT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Занятие" ALTER COLUMN "Идентификатор" SET DEFAULT nextval('public."Занятие_Идентификатор_seq"'::regclass);
+
+
+--
+-- Name: Преподаватель Идентификатор; Type: DEFAULT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Преподаватель" ALTER COLUMN "Идентификатор" SET DEFAULT nextval('public."Преподаватель_Идентификатор_seq"'::regclass);
+
+
+--
+-- Data for Name: Аудитория; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Аудитория" ("Номер", "ИдентификаторПлощадки", "ТИП") FROM stdin;
+102	1	лекционная
+101	1	лекционная
+103	1	лаборатория
+104	2	лаборатория
+105	2	класс
+\.
+
+
+--
+-- Data for Name: Группа; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Группа" ("Номер", "МаксКоличествоЧеловек", "КодНабора") FROM stdin;
+101	20	1
+102	21	2
+103	22	3
+104	23	4
+105	24	5
+\.
+
+
+--
+-- Data for Name: Дисциплина; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Дисциплина" ("Идентификатор", "Название", "ВидАттестации", "КоличествоЧасов", "КоличествоЛекций", "КоличествоПрактик", "КоличествоЛаб") FROM stdin;
+1	Математика	экзамен	120	30	60	30
+2	Физика	зачет	90	20	40	30
+3	Информатика	дифференцируемый зачет	150	45	60	45
+\.
+
+
+--
+-- Data for Name: ДисциплинаНаПрограмме; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."ДисциплинаНаПрограмме" ("Идентификатор", "ИдентификаторПрограммы", "ИдентификаторДисциплины") FROM stdin;
+1	1	1
+2	1	2
+3	1	3
+4	2	2
+\.
+
+
+--
+-- Data for Name: Занятие; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Занятие" ("Идентификатор", "ИдентификаторДисципНаПрог", "ИдентификаторПреподавателя", "НомерГруппы", "НомерПары", "Вид", "ДатаПроведения") FROM stdin;
+1	1	1	101	1	лабораторное	2023-03-28 10:00:00
+2	2	2	102	2	классное	2023-03-29 12:00:00
+3	3	3	103	1	лекционное	2023-03-30 10:00:00
+4	1	2	104	2	классное	2023-04-01 12:00:00
+5	2	3	105	3	лекционное	2023-04-02 10:00:00
+\.
+
+
+--
+-- Data for Name: НаборНаПрограмму; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."НаборНаПрограмму" ("Код", "ИдентификаторПрограммы") FROM stdin;
+1	3
+2	4
+3	5
+4	1
+5	2
+\.
+
+
+--
+-- Data for Name: ОбразовательнаяПрограмма; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."ОбразовательнаяПрограмма" ("Код", "Название", "ОбъемЧасов", "Тип", "Описание") FROM stdin;
+1	Программирование на Python	120	Базовый	Курс освещает основные концепции и практики программирования на языке Python.
+2	Веб-разработка	180	Продвинутый	Курс охватывает фронтенд- и бэкенд-разработку, а также основные инструменты и технологии для создания современных веб-приложений.
+3	Машинное обучение	240	Продвинутый	Курс предназначен для изучения методов и алгоритмов машинного обучения, а также их применения для решения реальных задач в различных областях.
+4	Английский язык	90	Базовый	Курс охватывает основы грамматики, лексику и разговорную практику английского языка.
+5	Управление проектами	200	Продвинутый	Курс охватывает основы управления проектами, включая планирование, контроль, рисковый анализ и коммуникацию.
+\.
+
+
+--
+-- Data for Name: Обучается; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Обучается" ("Идентификатор", "НомерГруппы", "ДатаНачалаОбучения", "ДатаОкончанияОбучения", "Статус", "ИдентификаторСлушателя") FROM stdin;
+1	101	2022-01-01	2022-02-28	Учится	123456
+2	102	2022-03-01	2022-04-30	Отчислен	234567
+3	103	2022-05-01	2022-06-30	Учится	345678
+4	104	2022-07-01	2022-08-31	Учится	456789
+5	105	2022-09-01	2022-10-31	Учится	567890
+\.
+
+
+--
+-- Data for Name: Площадка; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Площадка" ("Идентификатор", "Адрес", "Название", "КодПодразделения") FROM stdin;
+1	ул. Пушкина, д. 10	Клуб "Ромашка"	1
+2	пр-т Ленина, д. 25	Дворец культуры	2
+3	ул. Гагарина, д. 7	\N	3
+4	ул. Советская, д. 12	Молодежный центр	4
+5	ул. Лермонтова, д. 8	Дом культуры	5
+\.
+
+
+--
+-- Data for Name: Подразделение; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Подразделение" ("Код", "Название", "КодОбразовательнойПрограммы", "Описание") FROM stdin;
+1	Отдел разработки	2	Отдел, занимающийся разработкой веб-приложений.
+2	Отдел машинного обучения	3	Отдел, занимающийся машинным обучением
+3	Отдел разработки ПО	1	Отдел, занимающийся разработкой ПО
+4	Отдел управления проектами	5	Отдел, занимающийся управлением проектами и координацией работы отделов компании.
+5	Отдел иностранных языков	4	Отдел, занимающийся иностранными языками
+\.
+
+
+--
+-- Data for Name: Преподаватель; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Преподаватель" ("Идентификатор", "Имя", "Отчество", "Должность") FROM stdin;
+1	Иван	Иванович	доцент
+2	Петр	Петрович	ассистент
+3	Сидор	Сидорович	профессор
+4	Анна	Андреевна	старший преподаватель
+\.
+
+
+--
+-- Data for Name: Программа; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Программа" ("Идентификатор", "Цена", "ДатаНачала", "ДатаОкончания", "КодПодразделения") FROM stdin;
+1	1000.00	2023-06-01	2023-06-30	2
+2	2000.00	2023-07-01	2023-07-31	3
+3	3000.00	2023-08-01	2023-08-31	1
+4	4000.00	2023-09-01	2023-09-30	4
+5	5000.00	2023-10-01	2023-10-31	5
+\.
+
+
+--
+-- Data for Name: Слушатель; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY public."Слушатель" ("НомерПаспорта", "СерияПаспорта", "Имя", "Фамилия", "НомерТелефона", "ЭлектроннаяПочта") FROM stdin;
+123456	1234	Иван	Иванов	+7(123)456-78-90	ivanov@mail.ru
+234567	2345	Петр	Петров	+7(234)567-89-01	petrov@mail.ru
+345678	3456	Анна	Сидорова	+7(345)678-90-12	sidorova@mail.ru
+456789	4567	Сергей	Кузнецов	+7(456)789-01-23	kuznetsov@mail.ru
+567890	5678	Ольга	Иванова	+7(567)890-12-34	ivanova@mail.ru
+\.
+
+
+--
+-- Name: Занятие_Идентификатор_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
+--
+
+SELECT pg_catalog.setval('public."Занятие_Идентификатор_seq"', 1, false);
+
+
+--
+-- Name: Преподаватель_Идентификатор_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
+--
+
+SELECT pg_catalog.setval('public."Преподаватель_Идентификатор_seq"', 4, true);
+
+
+--
+-- Name: Аудитория pk_НомерАудиторииНаПлощадке; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Аудитория"
+    ADD CONSTRAINT "pk_НомерАудиторииНаПлощадке" PRIMARY KEY ("Номер", "ИдентификаторПлощадки");
+
+
+--
+-- Name: Группа Группа_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Группа"
+    ADD CONSTRAINT "Группа_pkey" PRIMARY KEY ("Номер");
+
+
+--
+-- Name: Дисциплина Дисциплина_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Дисциплина"
+    ADD CONSTRAINT "Дисциплина_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: ДисциплинаНаПрограмме ДисциплинаНаПрограмме_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."ДисциплинаНаПрограмме"
+    ADD CONSTRAINT "ДисциплинаНаПрограмме_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: Занятие Занятие_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Занятие"
+    ADD CONSTRAINT "Занятие_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: НаборНаПрограмму НаборНаПрограмму_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."НаборНаПрограмму"
+    ADD CONSTRAINT "НаборНаПрограмму_pkey" PRIMARY KEY ("Код");
+
+
+--
+-- Name: ОбразовательнаяПрограмма ОбразовательнаяПрограмма_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."ОбразовательнаяПрограмма"
+    ADD CONSTRAINT "ОбразовательнаяПрограмма_pkey" PRIMARY KEY ("Код");
+
+
+--
+-- Name: Обучается Обучается_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Обучается"
+    ADD CONSTRAINT "Обучается_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: Площадка Площадка_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Площадка"
+    ADD CONSTRAINT "Площадка_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: Подразделение Подразделение_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Подразделение"
+    ADD CONSTRAINT "Подразделение_pkey" PRIMARY KEY ("Код");
+
+
+--
+-- Name: Преподаватель Преподаватель_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Преподаватель"
+    ADD CONSTRAINT "Преподаватель_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: Программа Программа_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Программа"
+    ADD CONSTRAINT "Программа_pkey" PRIMARY KEY ("Идентификатор");
+
+
+--
+-- Name: Слушатель Слушатель_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Слушатель"
+    ADD CONSTRAINT "Слушатель_pkey" PRIMARY KEY ("НомерПаспорта");
+
+
+--
+-- Name: fki_а; Type: INDEX; Schema: public; Owner: oleg
+--
+
+CREATE INDEX "fki_а" ON public."Аудитория" USING btree ("ИдентификаторПлощадки");
+
+
+--
+-- Name: Занятие fk_ИдентификаторДисципНаПрог; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Занятие"
+    ADD CONSTRAINT "fk_ИдентификаторДисципНаПрог" FOREIGN KEY ("ИдентификаторДисципНаПрог") REFERENCES public."ДисциплинаНаПрограмме"("Идентификатор");
+
+
+--
+-- Name: ДисциплинаНаПрограмме fk_ИдентификаторДисциплины; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."ДисциплинаНаПрограмме"
+    ADD CONSTRAINT "fk_ИдентификаторДисциплины" FOREIGN KEY ("ИдентификаторДисциплины") REFERENCES public."Дисциплина"("Идентификатор");
+
+
+--
+-- Name: Аудитория fk_ИдентификаторПлощадки; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Аудитория"
+    ADD CONSTRAINT "fk_ИдентификаторПлощадки" FOREIGN KEY ("ИдентификаторПлощадки") REFERENCES public."Площадка"("Идентификатор") NOT VALID;
+
+
+--
+-- Name: Занятие fk_ИдентификаторПреподавателя; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Занятие"
+    ADD CONSTRAINT "fk_ИдентификаторПреподавателя" FOREIGN KEY ("ИдентификаторПреподавателя") REFERENCES public."Преподаватель"("Идентификатор");
+
+
+--
+-- Name: НаборНаПрограмму fk_ИдентификаторПрограммы; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."НаборНаПрограмму"
+    ADD CONSTRAINT "fk_ИдентификаторПрограммы" FOREIGN KEY ("ИдентификаторПрограммы") REFERENCES public."Программа"("Идентификатор");
+
+
+--
+-- Name: ДисциплинаНаПрограмме fk_ИдентификаторПрограммы; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."ДисциплинаНаПрограмме"
+    ADD CONSTRAINT "fk_ИдентификаторПрограммы" FOREIGN KEY ("ИдентификаторПрограммы") REFERENCES public."Программа"("Идентификатор");
+
+
+--
+-- Name: Обучается fk_ИдентификаторСлушателя; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Обучается"
+    ADD CONSTRAINT "fk_ИдентификаторСлушателя" FOREIGN KEY ("ИдентификаторСлушателя") REFERENCES public."Слушатель"("НомерПаспорта");
+
+
+--
+-- Name: Группа fk_КодНабора; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Группа"
+    ADD CONSTRAINT "fk_КодНабора" FOREIGN KEY ("КодНабора") REFERENCES public."НаборНаПрограмму"("Код");
+
+
+--
+-- Name: Подразделение fk_КодОбразовательнойПрограммы; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Подразделение"
+    ADD CONSTRAINT "fk_КодОбразовательнойПрограммы" FOREIGN KEY ("КодОбразовательнойПрограммы") REFERENCES public."ОбразовательнаяПрограмма"("Код");
+
+
+--
+-- Name: Программа fk_КодПодразделения; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Программа"
+    ADD CONSTRAINT "fk_КодПодразделения" FOREIGN KEY ("КодПодразделения") REFERENCES public."Подразделение"("Код");
+
+
+--
+-- Name: Площадка fk_КодПодразделения; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Площадка"
+    ADD CONSTRAINT "fk_КодПодразделения" FOREIGN KEY ("КодПодразделения") REFERENCES public."Подразделение"("Код");
+
+
+--
+-- Name: Обучается fk_НомерГруппы; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Обучается"
+    ADD CONSTRAINT "fk_НомерГруппы" FOREIGN KEY ("НомерГруппы") REFERENCES public."Группа"("Номер");
+
+
+--
+-- Name: Занятие fk_НомерГруппы; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY public."Занятие"
+    ADD CONSTRAINT "fk_НомерГруппы" FOREIGN KEY ("НомерГруппы") REFERENCES public."Группа"("Номер");
+
+
+--
+-- PostgreSQL database dump complete
+--
+
