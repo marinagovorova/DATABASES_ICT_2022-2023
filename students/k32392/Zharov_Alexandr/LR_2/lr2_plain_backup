@@ -1,0 +1,846 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-04-01 11:39:09
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 16866)
+-- Name: LR_2; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA "LR_2";
+
+
+ALTER SCHEMA "LR_2" OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 214 (class 1259 OID 16867)
+-- Name: accidents; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".accidents (
+    id_accident integer NOT NULL,
+    contract_number integer NOT NULL,
+    id_client integer NOT NULL,
+    workers_full_name text NOT NULL,
+    car_number integer NOT NULL,
+    description text NOT NULL,
+    covering_cost integer NOT NULL,
+    address text NOT NULL
+);
+
+
+ALTER TABLE "LR_2".accidents OWNER TO postgres;
+
+--
+-- TOC entry 3424 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: TABLE accidents; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".accidents IS 'Аварии';
+
+
+--
+-- TOC entry 215 (class 1259 OID 16872)
+-- Name: acts_of_transfer; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".acts_of_transfer (
+    id_act integer NOT NULL,
+    workers_full_name text NOT NULL,
+    contract_number integer NOT NULL,
+    id_client integer NOT NULL,
+    car_number integer NOT NULL,
+    type_of_act integer NOT NULL,
+    problems_description text NOT NULL,
+    date date NOT NULL
+);
+
+
+ALTER TABLE "LR_2".acts_of_transfer OWNER TO postgres;
+
+--
+-- TOC entry 3425 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: TABLE acts_of_transfer; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".acts_of_transfer IS 'Акты передачи';
+
+
+--
+-- TOC entry 216 (class 1259 OID 16877)
+-- Name: branch; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".branch (
+    id_branch integer NOT NULL,
+    adress text NOT NULL
+);
+
+
+ALTER TABLE "LR_2".branch OWNER TO postgres;
+
+--
+-- TOC entry 3426 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: TABLE branch; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".branch IS 'Филиал';
+
+
+--
+-- TOC entry 217 (class 1259 OID 16882)
+-- Name: car; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".car (
+    car_number integer NOT NULL,
+    "VIN" integer NOT NULL,
+    yaer_of_issue date NOT NULL,
+    car_model text NOT NULL
+);
+
+
+ALTER TABLE "LR_2".car OWNER TO postgres;
+
+--
+-- TOC entry 3427 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: TABLE car; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".car IS 'Автомобиль';
+
+
+--
+-- TOC entry 218 (class 1259 OID 16887)
+-- Name: clients; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".clients (
+    id_client integer NOT NULL,
+    full_name text NOT NULL,
+    contacts text NOT NULL,
+    pasport integer NOT NULL,
+    license integer NOT NULL
+);
+
+
+ALTER TABLE "LR_2".clients OWNER TO postgres;
+
+--
+-- TOC entry 3428 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: TABLE clients; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".clients IS 'Клиенты';
+
+
+--
+-- TOC entry 219 (class 1259 OID 16892)
+-- Name: contract; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".contract (
+    id_contract integer NOT NULL,
+    id_client integer NOT NULL,
+    workers_full_name text NOT NULL,
+    car_number integer NOT NULL,
+    date_of_signing date,
+    start_of_rental date,
+    end_of_rental date,
+    conformation_status text
+);
+
+
+ALTER TABLE "LR_2".contract OWNER TO postgres;
+
+--
+-- TOC entry 3429 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE contract; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".contract IS 'Договор';
+
+
+--
+-- TOC entry 220 (class 1259 OID 16897)
+-- Name: extension; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".extension (
+    id_extention integer NOT NULL,
+    contract_number integer NOT NULL,
+    workers_full_name text NOT NULL,
+    car_number integer NOT NULL,
+    start_date date,
+    end_date date,
+    date_of_issue date,
+    cost integer NOT NULL
+);
+
+
+ALTER TABLE "LR_2".extension OWNER TO postgres;
+
+--
+-- TOC entry 3430 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE extension; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".extension IS 'Продление';
+
+
+--
+-- TOC entry 221 (class 1259 OID 16902)
+-- Name: fines; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".fines (
+    id_fine integer NOT NULL,
+    contract_number integer NOT NULL,
+    id_client integer NOT NULL,
+    workers_full_name text NOT NULL,
+    car_number integer NOT NULL,
+    covering_expenses text NOT NULL,
+    id_accident integer NOT NULL,
+    address text NOT NULL,
+    date date NOT NULL,
+    id_violation integer NOT NULL
+);
+
+
+ALTER TABLE "LR_2".fines OWNER TO postgres;
+
+--
+-- TOC entry 3431 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: TABLE fines; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".fines IS 'Штрафы';
+
+
+--
+-- TOC entry 222 (class 1259 OID 16907)
+-- Name: insurance; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".insurance (
+    name_of_insurance text NOT NULL,
+    id_contract integer NOT NULL,
+    id_client integer NOT NULL,
+    workers_full_name text NOT NULL,
+    car_number integer NOT NULL,
+    cost integer NOT NULL,
+    type_of_insurance text NOT NULL,
+    description text NOT NULL
+);
+
+
+ALTER TABLE "LR_2".insurance OWNER TO postgres;
+
+--
+-- TOC entry 3432 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE insurance; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".insurance IS 'Страховка';
+
+
+--
+-- TOC entry 223 (class 1259 OID 16912)
+-- Name: model; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".model (
+    car_model text NOT NULL,
+    name text NOT NULL,
+    cost_per_hour integer NOT NULL,
+    cost_per_day integer NOT NULL,
+    characteristics text NOT NULL
+);
+
+
+ALTER TABLE "LR_2".model OWNER TO postgres;
+
+--
+-- TOC entry 3433 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE model; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".model IS 'Модель';
+
+
+--
+-- TOC entry 224 (class 1259 OID 16917)
+-- Name: violations; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".violations (
+    id_violation integer NOT NULL,
+    name text NOT NULL,
+    description text NOT NULL,
+    cost integer NOT NULL
+);
+
+
+ALTER TABLE "LR_2".violations OWNER TO postgres;
+
+--
+-- TOC entry 3434 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: TABLE violations; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".violations IS 'Нарушения';
+
+
+--
+-- TOC entry 225 (class 1259 OID 16922)
+-- Name: worker; Type: TABLE; Schema: LR_2; Owner: postgres
+--
+
+CREATE TABLE "LR_2".worker (
+    full_name text NOT NULL,
+    post text NOT NULL,
+    contacts text NOT NULL,
+    id_branch integer NOT NULL
+);
+
+
+ALTER TABLE "LR_2".worker OWNER TO postgres;
+
+--
+-- TOC entry 3435 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: TABLE worker; Type: COMMENT; Schema: LR_2; Owner: postgres
+--
+
+COMMENT ON TABLE "LR_2".worker IS 'Работник';
+
+
+--
+-- TOC entry 3407 (class 0 OID 16867)
+-- Dependencies: 214
+-- Data for Name: accidents; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".accidents (id_accident, contract_number, id_client, workers_full_name, car_number, description, covering_cost, address) FROM stdin;
+1	2	1	Иван Александрович Петров	123	-	500	Невский пр.
+2	1	2	Иван Александрович Петров	124	-	1000	Невский пр.
+\.
+
+
+--
+-- TOC entry 3408 (class 0 OID 16872)
+-- Dependencies: 215
+-- Data for Name: acts_of_transfer; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".acts_of_transfer (id_act, workers_full_name, contract_number, id_client, car_number, type_of_act, problems_description, date) FROM stdin;
+1	Иван Иванович Иванов	1	1	123	1	-	2022-11-20
+2	Иван Иванович Иванов	1	1	123	2	-	2022-11-27
+3	Иван Иванович Иванов	2	3	124	1	Царапина водительской двери	2022-11-22
+4	Иван Иванович Иванов	2	3	124	2	Царапина водительской двери	2022-11-27
+\.
+
+
+--
+-- TOC entry 3409 (class 0 OID 16877)
+-- Dependencies: 216
+-- Data for Name: branch; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".branch (id_branch, adress) FROM stdin;
+1	Малая Пушкинская ул. дом 22
+2	ул. Марата дом 6
+3	пр. Стачек дом 21
+4	Лиговский пр. дом 293
+\.
+
+
+--
+-- TOC entry 3410 (class 0 OID 16882)
+-- Dependencies: 217
+-- Data for Name: car; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".car (car_number, "VIN", yaer_of_issue, car_model) FROM stdin;
+123	65734523	2018-07-29	Polo
+124	123123123	2021-03-13	XC90
+125	332432432	2018-12-01	Polo
+\.
+
+
+--
+-- TOC entry 3411 (class 0 OID 16887)
+-- Dependencies: 218
+-- Data for Name: clients; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".clients (id_client, full_name, contacts, pasport, license) FROM stdin;
+1	Сергей Иванович Иванов	+793455345436	1234567	123523
+2	Андрей Сергеевич Иванов	+793433345464	1234559	134435
+3	Антон Антонович Петров	+793433345496	5423412	1332545
+\.
+
+
+--
+-- TOC entry 3412 (class 0 OID 16892)
+-- Dependencies: 219
+-- Data for Name: contract; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".contract (id_contract, id_client, workers_full_name, car_number, date_of_signing, start_of_rental, end_of_rental, conformation_status) FROM stdin;
+1	1	Иван Иванович Иванов	123	2022-10-12	2022-10-20	2022-10-25	Обрабатывается
+2	1	Иван Иванович Иванов	123	2022-10-12	2022-10-20	2022-10-25	Принято
+3	2	Иван Иванович Иванов	124	2022-10-12	2022-10-20	2022-10-25	Обрабатывается
+\.
+
+
+--
+-- TOC entry 3413 (class 0 OID 16897)
+-- Dependencies: 220
+-- Data for Name: extension; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".extension (id_extention, contract_number, workers_full_name, car_number, start_date, end_date, date_of_issue, cost) FROM stdin;
+3	3	Иван Александрович Петров	124	2022-06-12	2022-06-20	2022-06-11	5000
+2	2	Иван Александрович Петров	123	2022-06-12	2022-06-20	2022-06-12	5000
+1	1	Иван Александрович Петров	123	2022-06-12	2022-06-20	2022-06-12	1000
+\.
+
+
+--
+-- TOC entry 3414 (class 0 OID 16902)
+-- Dependencies: 221
+-- Data for Name: fines; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".fines (id_fine, contract_number, id_client, workers_full_name, car_number, covering_expenses, id_accident, address, date, id_violation) FROM stdin;
+1	1	1	Иван Александрович Петров	124	500	1	Невский пр.	2022-12-10	1
+2	2	1	Иван Александрович Петров	123	1000	2	Невский пр.	2022-12-10	2
+3	1	1	Иван Александрович Петров	124	500	1	Невский пр.	2022-12-10	1
+\.
+
+
+--
+-- TOC entry 3415 (class 0 OID 16907)
+-- Dependencies: 222
+-- Data for Name: insurance; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".insurance (name_of_insurance, id_contract, id_client, workers_full_name, car_number, cost, type_of_insurance, description) FROM stdin;
+1	1	1	Иван Александрович Петров	123	1200	От несчастных случаев	-
+2	2	1	Иван Александрович Петров	124	1400	От несчастных случаев	-
+3	3	2	Иван Александрович Петров	124	1200	От несчастных случаев	-
+\.
+
+
+--
+-- TOC entry 3416 (class 0 OID 16912)
+-- Dependencies: 223
+-- Data for Name: model; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".model (car_model, name, cost_per_hour, cost_per_day, characteristics) FROM stdin;
+Lada	ВАЗ	300	1000	80 л.с
+Ford	Focus 2	1000	5000	115 л.с
+Volvo	XC90	1300	7000	235 л.c
+Volkswagen	Polo	800	4000	110 л.с
+\.
+
+
+--
+-- TOC entry 3417 (class 0 OID 16917)
+-- Dependencies: 224
+-- Data for Name: violations; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".violations (id_violation, name, description, cost) FROM stdin;
+1	Превышение скорости	-	500
+2	Проезд на красный	-	4000
+3	Пересечение сплошной	-	10000
+\.
+
+
+--
+-- TOC entry 3418 (class 0 OID 16922)
+-- Dependencies: 225
+-- Data for Name: worker; Type: TABLE DATA; Schema: LR_2; Owner: postgres
+--
+
+COPY "LR_2".worker (full_name, post, contacts, id_branch) FROM stdin;
+Александр Александрович Иванов	Директор отдела	+798434519345	1
+Иван Иванович Иванов	Сотрудник	+7984343243245	2
+Иван Александрович Петров	Сотрудник	+7984343243286	3
+Александр Павлович Иванов	Сотрудник	+79843452349	2
+\.
+
+
+--
+-- TOC entry 3217 (class 2606 OID 16928)
+-- Name: accidents accidents_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".accidents
+    ADD CONSTRAINT accidents_pkey PRIMARY KEY (id_accident);
+
+
+--
+-- TOC entry 3219 (class 2606 OID 16930)
+-- Name: acts_of_transfer acts_of_transfer_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".acts_of_transfer
+    ADD CONSTRAINT acts_of_transfer_pkey PRIMARY KEY (id_act);
+
+
+--
+-- TOC entry 3221 (class 2606 OID 16932)
+-- Name: branch branch_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".branch
+    ADD CONSTRAINT branch_pkey PRIMARY KEY (id_branch);
+
+
+--
+-- TOC entry 3223 (class 2606 OID 16934)
+-- Name: car car_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".car
+    ADD CONSTRAINT car_pkey PRIMARY KEY (car_number);
+
+
+--
+-- TOC entry 3225 (class 2606 OID 16936)
+-- Name: clients clients_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".clients
+    ADD CONSTRAINT clients_pkey PRIMARY KEY (id_client);
+
+
+--
+-- TOC entry 3227 (class 2606 OID 16938)
+-- Name: contract contract_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".contract
+    ADD CONSTRAINT contract_pkey PRIMARY KEY (id_contract);
+
+
+--
+-- TOC entry 3229 (class 2606 OID 16940)
+-- Name: extension extension_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".extension
+    ADD CONSTRAINT extension_pkey PRIMARY KEY (id_extention);
+
+
+--
+-- TOC entry 3231 (class 2606 OID 16942)
+-- Name: fines fines_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT fines_pkey PRIMARY KEY (id_fine);
+
+
+--
+-- TOC entry 3233 (class 2606 OID 16944)
+-- Name: insurance insurance_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".insurance
+    ADD CONSTRAINT insurance_pkey PRIMARY KEY (name_of_insurance);
+
+
+--
+-- TOC entry 3235 (class 2606 OID 16946)
+-- Name: model pk_key; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".model
+    ADD CONSTRAINT pk_key PRIMARY KEY (car_model) INCLUDE (car_model);
+
+
+--
+-- TOC entry 3237 (class 2606 OID 16948)
+-- Name: violations violations_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".violations
+    ADD CONSTRAINT violations_pkey PRIMARY KEY (id_violation);
+
+
+--
+-- TOC entry 3239 (class 2606 OID 16950)
+-- Name: worker worker_pkey; Type: CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".worker
+    ADD CONSTRAINT worker_pkey PRIMARY KEY (full_name);
+
+
+--
+-- TOC entry 3249 (class 2606 OID 16951)
+-- Name: contract car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".contract
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3252 (class 2606 OID 16956)
+-- Name: extension car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".extension
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3260 (class 2606 OID 16961)
+-- Name: insurance car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".insurance
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3244 (class 2606 OID 16966)
+-- Name: acts_of_transfer car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".acts_of_transfer
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3255 (class 2606 OID 16971)
+-- Name: fines car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3240 (class 2606 OID 16976)
+-- Name: accidents car_number; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".accidents
+    ADD CONSTRAINT car_number FOREIGN KEY (car_number) REFERENCES "LR_2".car(car_number) NOT VALID;
+
+
+--
+-- TOC entry 3253 (class 2606 OID 16981)
+-- Name: extension contract_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".extension
+    ADD CONSTRAINT contract_name FOREIGN KEY (contract_number) REFERENCES "LR_2".contract(id_contract) NOT VALID;
+
+
+--
+-- TOC entry 3264 (class 2606 OID 16986)
+-- Name: worker id_branch; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".worker
+    ADD CONSTRAINT id_branch FOREIGN KEY (id_branch) REFERENCES "LR_2".branch(id_branch);
+
+
+--
+-- TOC entry 3250 (class 2606 OID 16991)
+-- Name: contract id_client; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".contract
+    ADD CONSTRAINT id_client FOREIGN KEY (id_client) REFERENCES "LR_2".clients(id_client) NOT VALID;
+
+
+--
+-- TOC entry 3261 (class 2606 OID 16996)
+-- Name: insurance id_client; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".insurance
+    ADD CONSTRAINT id_client FOREIGN KEY (id_client) REFERENCES "LR_2".clients(id_client) NOT VALID;
+
+
+--
+-- TOC entry 3245 (class 2606 OID 17001)
+-- Name: acts_of_transfer id_client; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".acts_of_transfer
+    ADD CONSTRAINT id_client FOREIGN KEY (id_client) REFERENCES "LR_2".clients(id_client) NOT VALID;
+
+
+--
+-- TOC entry 3256 (class 2606 OID 17006)
+-- Name: fines id_client; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT id_client FOREIGN KEY (id_client) REFERENCES "LR_2".clients(id_client) NOT VALID;
+
+
+--
+-- TOC entry 3241 (class 2606 OID 17011)
+-- Name: accidents id_client; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".accidents
+    ADD CONSTRAINT id_client FOREIGN KEY (id_client) REFERENCES "LR_2".clients(id_client) NOT VALID;
+
+
+--
+-- TOC entry 3262 (class 2606 OID 17016)
+-- Name: insurance id_contract; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".insurance
+    ADD CONSTRAINT id_contract FOREIGN KEY (id_contract) REFERENCES "LR_2".contract(id_contract) NOT VALID;
+
+
+--
+-- TOC entry 3246 (class 2606 OID 17021)
+-- Name: acts_of_transfer id_contract; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".acts_of_transfer
+    ADD CONSTRAINT id_contract FOREIGN KEY (contract_number) REFERENCES "LR_2".contract(id_contract) NOT VALID;
+
+
+--
+-- TOC entry 3257 (class 2606 OID 17026)
+-- Name: fines id_contract; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT id_contract FOREIGN KEY (contract_number) REFERENCES "LR_2".contract(id_contract) NOT VALID;
+
+
+--
+-- TOC entry 3242 (class 2606 OID 17031)
+-- Name: accidents id_contract; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".accidents
+    ADD CONSTRAINT id_contract FOREIGN KEY (contract_number) REFERENCES "LR_2".contract(id_contract) NOT VALID;
+
+
+--
+-- TOC entry 3258 (class 2606 OID 17036)
+-- Name: fines id_violation; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT id_violation FOREIGN KEY (id_violation) REFERENCES "LR_2".violations(id_violation) NOT VALID;
+
+
+--
+-- TOC entry 3248 (class 2606 OID 17071)
+-- Name: car model; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".car
+    ADD CONSTRAINT model FOREIGN KEY (car_model) REFERENCES "LR_2".model(car_model) NOT VALID;
+
+
+--
+-- TOC entry 3263 (class 2606 OID 17041)
+-- Name: insurance workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".insurance
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+--
+-- TOC entry 3259 (class 2606 OID 17046)
+-- Name: fines workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".fines
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+--
+-- TOC entry 3254 (class 2606 OID 17051)
+-- Name: extension workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".extension
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+--
+-- TOC entry 3251 (class 2606 OID 17056)
+-- Name: contract workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".contract
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+--
+-- TOC entry 3247 (class 2606 OID 17061)
+-- Name: acts_of_transfer workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".acts_of_transfer
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+--
+-- TOC entry 3243 (class 2606 OID 17066)
+-- Name: accidents workers_full_name; Type: FK CONSTRAINT; Schema: LR_2; Owner: postgres
+--
+
+ALTER TABLE ONLY "LR_2".accidents
+    ADD CONSTRAINT workers_full_name FOREIGN KEY (workers_full_name) REFERENCES "LR_2".worker(full_name) NOT VALID;
+
+
+-- Completed on 2023-04-01 11:39:09
+
+--
+-- PostgreSQL database dump complete
+--
+
