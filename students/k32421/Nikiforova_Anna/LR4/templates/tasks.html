@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+ <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Instructors</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/static/main.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/static/main.js"></script>
+
+    </head>
+    <body>
+        <div class="header" id="myHeader" style="clear: both">
+            <h3 style="display: inline-block"><a href="{{ url_for('instructors') }}" style="text-decoration: none;">Преподаватели</a></h3>
+            <h3 style="display: inline-block"><a href="{{ url_for('subjects') }}" style="text-decoration: none;">Предметы</a></h3>
+            <h3 style="display: inline-block"><a href="{{ url_for('tasks') }}" style="text-decoration: none;">Задания</a></h3>
+        </div>
+        <h1>Задания</h1>
+        <table class="table table-bordered">
+            <tr>
+                <th>№</th>
+                <th>Предмет</th>
+                <th>Название</th>
+                <th>Дедлайн</th>
+                <th>Статус</th>
+            </tr>
+            {% for task in tasks_list %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="{{ url_for('subjects') }}/{{ subjects_list[loop.index - 1].id }}">
+                        {{ subjects_list[loop.index - 1].name }}</a></td>
+                    <td><a href="tasks/{{ task.id }}">{{ task.name }}</a></td>
+                    <td>{{ task.deadline }}</td>
+                    <td>{{ task.status }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+        <form
+                action="{{ url_for('add_task') }}">
+                <input type="submit" value="Добавить">
+        </form>
+
+    </body>
+</html>

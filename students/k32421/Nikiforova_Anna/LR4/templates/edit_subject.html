@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+ <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Instructors</title>
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/static/main.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="/static/main.js"></script>
+
+    </head>
+    <body>
+        <div class="header" id="myHeader" style="clear: both">
+            <h3 style="display: inline-block"><a href="{{ url_for('instructors') }}" style="text-decoration: none;">Преподаватели</a></h3>
+            <h3 style="display: inline-block"><a href="{{ url_for('subjects') }}" style="text-decoration: none;">Предметы</a></h3>
+            <h3 style="display: inline-block"><a href="{{ url_for('tasks') }}" style="text-decoration: none;">Задания</a></h3>
+        </div>
+      <form method="post">
+        <label for="name">Название:</label>
+        <input type="text" name="name" id="name" value="{{ subject.name or '-'}}">
+        <br>
+
+          <label for="instructor_id">Преподаватель:</label>
+            <select name="instructor_id" id="instructor_id">
+            {% for instructor in instructors_list %}
+                <option value="{{ instructor.id }}" {% if instructor.id == subject.instructor_id %}selected{% endif %}>{{ instructor.name }}</option>
+            {% endfor %}
+            </select>
+          <br>
+
+        <label for="assessment_table">Таблица с баллами:</label>
+        <input type="text" name="assessment_table" id="assessment_table" value="{{ subject.assessment_table or '-'}}">
+        <br>
+        <input type="submit" value="Сохранить">
+    </form>
+  </body>
+</html>
