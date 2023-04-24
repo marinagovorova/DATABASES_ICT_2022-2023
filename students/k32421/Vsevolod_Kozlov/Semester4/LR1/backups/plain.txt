@@ -1,0 +1,2354 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.7
+-- Dumped by pg_dump version 14.7
+
+-- Started on 2023-03-08 15:59:14
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 918 (class 1247 OID 16668)
+-- Name: certification_data_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.certification_data_type AS ENUM (
+    'зачет',
+    'дифзачет',
+    'экзамен'
+);
+
+
+ALTER TYPE public.certification_data_type OWNER TO postgres;
+
+--
+-- TOC entry 864 (class 1247 OID 16525)
+-- Name: payment_status_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.payment_status_type AS ENUM (
+    'выплачено',
+    'не выплачено',
+    'в обработке'
+);
+
+
+ALTER TYPE public.payment_status_type OWNER TO postgres;
+
+--
+-- TOC entry 909 (class 1247 OID 16594)
+-- Name: room_type_datatype; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.room_type_datatype AS ENUM (
+    'лекционная',
+    'практическая',
+    'лаборатория'
+);
+
+
+ALTER TYPE public.room_type_datatype OWNER TO postgres;
+
+--
+-- TOC entry 858 (class 1247 OID 16494)
+-- Name: scholarship_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.scholarship_type AS ENUM (
+    'социальная',
+    'академическая',
+    'именная'
+);
+
+
+ALTER TYPE public.scholarship_type OWNER TO postgres;
+
+--
+-- TOC entry 855 (class 1247 OID 16421)
+-- Name: subdivision_type; Type: TYPE; Schema: public; Owner: postgres
+--
+
+CREATE TYPE public.subdivision_type AS ENUM (
+    'основной',
+    'филиал'
+);
+
+
+ALTER TYPE public.subdivision_type OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 222 (class 1259 OID 16509)
+-- Name: awarded_scholarships; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.awarded_scholarships (
+    id_awarded_scholarship integer NOT NULL,
+    id_record_book integer NOT NULL,
+    id_scholarship integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    CONSTRAINT end_after_start CHECK ((end_date > start_date))
+);
+
+
+ALTER TABLE public.awarded_scholarships OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16508)
+-- Name: awarded_scholarships_id_awarded_scholarship_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.awarded_scholarships_id_awarded_scholarship_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.awarded_scholarships_id_awarded_scholarship_seq OWNER TO postgres;
+
+--
+-- TOC entry 3524 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: awarded_scholarships_id_awarded_scholarship_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.awarded_scholarships_id_awarded_scholarship_seq OWNED BY public.awarded_scholarships.id_awarded_scholarship;
+
+
+--
+-- TOC entry 240 (class 1259 OID 16602)
+-- Name: campuses; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.campuses (
+    id_campus integer NOT NULL,
+    address text NOT NULL,
+    name text NOT NULL
+);
+
+
+ALTER TABLE public.campuses OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 16601)
+-- Name: campuses_id_campus_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.campuses_id_campus_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.campuses_id_campus_seq OWNER TO postgres;
+
+--
+-- TOC entry 3525 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: campuses_id_campus_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.campuses_id_campus_seq OWNED BY public.campuses.id_campus;
+
+
+--
+-- TOC entry 214 (class 1259 OID 16446)
+-- Name: disciplines; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.disciplines (
+    id_discipline integer NOT NULL,
+    name text NOT NULL,
+    selfstudy_hours smallint NOT NULL,
+    practice_hours smallint NOT NULL,
+    lecture_hours smallint NOT NULL,
+    CONSTRAINT pos_practice CHECK ((practice_hours > 0))
+);
+
+
+ALTER TABLE public.disciplines OWNER TO postgres;
+
+--
+-- TOC entry 213 (class 1259 OID 16445)
+-- Name: discipline_id_discipline_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.discipline_id_discipline_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.discipline_id_discipline_seq OWNER TO postgres;
+
+--
+-- TOC entry 3526 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: discipline_id_discipline_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.discipline_id_discipline_seq OWNED BY public.disciplines.id_discipline;
+
+
+--
+-- TOC entry 212 (class 1259 OID 16431)
+-- Name: edu_tracks; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.edu_tracks (
+    id_edu_track integer NOT NULL,
+    code_edu_track character varying(10) NOT NULL,
+    name text NOT NULL
+);
+
+
+ALTER TABLE public.edu_tracks OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 16430)
+-- Name: edu_track_id_edu_track_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.edu_track_id_edu_track_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.edu_track_id_edu_track_seq OWNER TO postgres;
+
+--
+-- TOC entry 3527 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: edu_track_id_edu_track_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.edu_track_id_edu_track_seq OWNED BY public.edu_tracks.id_edu_track;
+
+
+--
+-- TOC entry 234 (class 1259 OID 16572)
+-- Name: employment_contracts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.employment_contracts (
+    id_contract integer NOT NULL,
+    id_teacher integer NOT NULL,
+    share_rate real NOT NULL,
+    id_subdivision integer NOT NULL
+);
+
+
+ALTER TABLE public.employment_contracts OWNER TO postgres;
+
+--
+-- TOC entry 233 (class 1259 OID 16571)
+-- Name: employment_contracts_id_contract_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.employment_contracts_id_contract_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.employment_contracts_id_contract_seq OWNER TO postgres;
+
+--
+-- TOC entry 3528 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: employment_contracts_id_contract_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.employment_contracts_id_contract_seq OWNED BY public.employment_contracts.id_contract;
+
+
+--
+-- TOC entry 218 (class 1259 OID 16476)
+-- Name: groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.groups (
+    id_group integer NOT NULL,
+    id_study_plan integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL,
+    group_name character varying(10) NOT NULL,
+    course integer NOT NULL,
+    CONSTRAINT end_after_start CHECK ((end_date > start_date))
+);
+
+
+ALTER TABLE public.groups OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16475)
+-- Name: group_id_group_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.group_id_group_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.group_id_group_seq OWNER TO postgres;
+
+--
+-- TOC entry 3529 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: group_id_group_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.group_id_group_seq OWNED BY public.groups.id_group;
+
+
+--
+-- TOC entry 230 (class 1259 OID 16549)
+-- Name: record_book; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.record_book (
+    id_row_record_book integer NOT NULL,
+    id_group_row integer NOT NULL,
+    id_teacher integer NOT NULL,
+    id_study_course integer NOT NULL,
+    mark smallint NOT NULL,
+    try_number smallint NOT NULL,
+    CONSTRAINT mark_check CHECK (((mark >= 2) AND (mark <= 5))),
+    CONSTRAINT try_number_check CHECK (((try_number >= 1) AND (try_number <= 3)))
+);
+
+
+ALTER TABLE public.record_book OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 16548)
+-- Name: record_book_id_row_record_book_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.record_book_id_row_record_book_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.record_book_id_row_record_book_seq OWNER TO postgres;
+
+--
+-- TOC entry 3530 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: record_book_id_row_record_book_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.record_book_id_row_record_book_seq OWNED BY public.record_book.id_row_record_book;
+
+
+--
+-- TOC entry 238 (class 1259 OID 16587)
+-- Name: rooms; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.rooms (
+    id_room integer NOT NULL,
+    id_campus integer NOT NULL,
+    room_number character varying(10) NOT NULL,
+    room_type public.room_type_datatype NOT NULL
+);
+
+
+ALTER TABLE public.rooms OWNER TO postgres;
+
+--
+-- TOC entry 237 (class 1259 OID 16586)
+-- Name: rooms_id_room_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.rooms_id_room_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rooms_id_room_seq OWNER TO postgres;
+
+--
+-- TOC entry 3531 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: rooms_id_room_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.rooms_id_room_seq OWNED BY public.rooms.id_room;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16485)
+-- Name: scholarships; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.scholarships (
+    id_scholarship integer NOT NULL,
+    name text NOT NULL,
+    money_amount numeric(8,2) NOT NULL,
+    type_of_scholarship public.scholarship_type NOT NULL
+);
+
+
+ALTER TABLE public.scholarships OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16484)
+-- Name: scholarship_id_scholarship_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.scholarship_id_scholarship_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.scholarship_id_scholarship_seq OWNER TO postgres;
+
+--
+-- TOC entry 3532 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: scholarship_id_scholarship_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.scholarship_id_scholarship_seq OWNED BY public.scholarships.id_scholarship;
+
+
+--
+-- TOC entry 224 (class 1259 OID 16518)
+-- Name: scholarship_payments; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.scholarship_payments (
+    id_scholarship_pay integer NOT NULL,
+    id_awarded_scholarship integer NOT NULL,
+    pay_date date NOT NULL,
+    status public.payment_status_type NOT NULL
+);
+
+
+ALTER TABLE public.scholarship_payments OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16517)
+-- Name: scholarship_payment_history_id_scholarship_pay_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.scholarship_payment_history_id_scholarship_pay_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.scholarship_payment_history_id_scholarship_pay_seq OWNER TO postgres;
+
+--
+-- TOC entry 3533 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: scholarship_payment_history_id_scholarship_pay_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.scholarship_payment_history_id_scholarship_pay_seq OWNED BY public.scholarship_payments.id_scholarship_pay;
+
+
+--
+-- TOC entry 236 (class 1259 OID 16580)
+-- Name: session_schedule; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.session_schedule (
+    id_schedule integer NOT NULL,
+    id_group integer NOT NULL,
+    id_teacher integer NOT NULL,
+    id_room integer NOT NULL,
+    id_study_course integer NOT NULL,
+    date_time timestamp(0) without time zone NOT NULL
+);
+
+
+ALTER TABLE public.session_schedule OWNER TO postgres;
+
+--
+-- TOC entry 235 (class 1259 OID 16579)
+-- Name: session_schedule_id_schedule_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.session_schedule_id_schedule_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.session_schedule_id_schedule_seq OWNER TO postgres;
+
+--
+-- TOC entry 3534 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: session_schedule_id_schedule_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.session_schedule_id_schedule_seq OWNED BY public.session_schedule.id_schedule;
+
+
+--
+-- TOC entry 228 (class 1259 OID 16542)
+-- Name: student_groups; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.student_groups (
+    id_group_row integer NOT NULL,
+    id_record_book integer NOT NULL,
+    id_group integer NOT NULL
+);
+
+
+ALTER TABLE public.student_groups OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16541)
+-- Name: student_groups_id_group_row_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.student_groups_id_group_row_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.student_groups_id_group_row_seq OWNER TO postgres;
+
+--
+-- TOC entry 3535 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: student_groups_id_group_row_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.student_groups_id_group_row_seq OWNED BY public.student_groups.id_group_row;
+
+
+--
+-- TOC entry 225 (class 1259 OID 16531)
+-- Name: students; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.students (
+    id_record_book integer NOT NULL,
+    name character varying(40) NOT NULL,
+    surname character varying(40) NOT NULL,
+    patronimic character varying(40) NOT NULL
+);
+
+
+ALTER TABLE public.students OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 16534)
+-- Name: students_id_record_book_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.students_id_record_book_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.students_id_record_book_seq OWNER TO postgres;
+
+--
+-- TOC entry 3536 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: students_id_record_book_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.students_id_record_book_seq OWNED BY public.students.id_record_book;
+
+
+--
+-- TOC entry 242 (class 1259 OID 16651)
+-- Name: study_courses; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.study_courses (
+    id_study_course integer NOT NULL,
+    id_study_plan integer NOT NULL,
+    id_discipline integer NOT NULL,
+    semester smallint NOT NULL,
+    certification public.certification_data_type NOT NULL
+);
+
+
+ALTER TABLE public.study_courses OWNER TO postgres;
+
+--
+-- TOC entry 241 (class 1259 OID 16650)
+-- Name: study_courses_id_study_course_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.study_courses_id_study_course_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.study_courses_id_study_course_seq OWNER TO postgres;
+
+--
+-- TOC entry 3537 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: study_courses_id_study_course_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.study_courses_id_study_course_seq OWNED BY public.study_courses.id_study_course;
+
+
+--
+-- TOC entry 216 (class 1259 OID 16458)
+-- Name: study_plans; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.study_plans (
+    id_study_plan integer NOT NULL,
+    id_subdivision integer NOT NULL,
+    year smallint NOT NULL,
+    id_edu_track integer
+);
+
+
+ALTER TABLE public.study_plans OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16457)
+-- Name: study_plan_id_study_plan_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.study_plan_id_study_plan_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.study_plan_id_study_plan_seq OWNER TO postgres;
+
+--
+-- TOC entry 3538 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: study_plan_id_study_plan_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.study_plan_id_study_plan_seq OWNED BY public.study_plans.id_study_plan;
+
+
+--
+-- TOC entry 210 (class 1259 OID 16403)
+-- Name: subdivisions; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.subdivisions (
+    id_subdivision integer NOT NULL,
+    name text NOT NULL,
+    headquarter_address text NOT NULL,
+    type public.subdivision_type NOT NULL
+);
+
+
+ALTER TABLE public.subdivisions OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 16402)
+-- Name: subdivision_id_subdivision_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.subdivision_id_subdivision_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.subdivision_id_subdivision_seq OWNER TO postgres;
+
+--
+-- TOC entry 3539 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: subdivision_id_subdivision_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.subdivision_id_subdivision_seq OWNED BY public.subdivisions.id_subdivision;
+
+
+--
+-- TOC entry 232 (class 1259 OID 16565)
+-- Name: teachers; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.teachers (
+    id_teacher integer NOT NULL,
+    name character varying(40) NOT NULL,
+    surname character varying(40) NOT NULL,
+    patronymic character varying(40)
+);
+
+
+ALTER TABLE public.teachers OWNER TO postgres;
+
+--
+-- TOC entry 231 (class 1259 OID 16564)
+-- Name: teachers_id_teacher_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.teachers_id_teacher_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.teachers_id_teacher_seq OWNER TO postgres;
+
+--
+-- TOC entry 3540 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: teachers_id_teacher_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.teachers_id_teacher_seq OWNED BY public.teachers.id_teacher;
+
+
+--
+-- TOC entry 3272 (class 2604 OID 17431)
+-- Name: awarded_scholarships id_awarded_scholarship; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.awarded_scholarships ALTER COLUMN id_awarded_scholarship SET DEFAULT nextval('public.awarded_scholarships_id_awarded_scholarship_seq'::regclass);
+
+
+--
+-- TOC entry 3285 (class 2604 OID 17432)
+-- Name: campuses id_campus; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.campuses ALTER COLUMN id_campus SET DEFAULT nextval('public.campuses_id_campus_seq'::regclass);
+
+
+--
+-- TOC entry 3261 (class 2604 OID 17433)
+-- Name: disciplines id_discipline; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.disciplines ALTER COLUMN id_discipline SET DEFAULT nextval('public.discipline_id_discipline_seq'::regclass);
+
+
+--
+-- TOC entry 3260 (class 2604 OID 17434)
+-- Name: edu_tracks id_edu_track; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edu_tracks ALTER COLUMN id_edu_track SET DEFAULT nextval('public.edu_track_id_edu_track_seq'::regclass);
+
+
+--
+-- TOC entry 3281 (class 2604 OID 17435)
+-- Name: employment_contracts id_contract; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employment_contracts ALTER COLUMN id_contract SET DEFAULT nextval('public.employment_contracts_id_contract_seq'::regclass);
+
+
+--
+-- TOC entry 3267 (class 2604 OID 17436)
+-- Name: groups id_group; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.groups ALTER COLUMN id_group SET DEFAULT nextval('public.group_id_group_seq'::regclass);
+
+
+--
+-- TOC entry 3277 (class 2604 OID 17437)
+-- Name: record_book id_row_record_book; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.record_book ALTER COLUMN id_row_record_book SET DEFAULT nextval('public.record_book_id_row_record_book_seq'::regclass);
+
+
+--
+-- TOC entry 3284 (class 2604 OID 17438)
+-- Name: rooms id_room; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rooms ALTER COLUMN id_room SET DEFAULT nextval('public.rooms_id_room_seq'::regclass);
+
+
+--
+-- TOC entry 3274 (class 2604 OID 17439)
+-- Name: scholarship_payments id_scholarship_pay; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scholarship_payments ALTER COLUMN id_scholarship_pay SET DEFAULT nextval('public.scholarship_payment_history_id_scholarship_pay_seq'::regclass);
+
+
+--
+-- TOC entry 3270 (class 2604 OID 17440)
+-- Name: scholarships id_scholarship; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scholarships ALTER COLUMN id_scholarship SET DEFAULT nextval('public.scholarship_id_scholarship_seq'::regclass);
+
+
+--
+-- TOC entry 3283 (class 2604 OID 17441)
+-- Name: session_schedule id_schedule; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule ALTER COLUMN id_schedule SET DEFAULT nextval('public.session_schedule_id_schedule_seq'::regclass);
+
+
+--
+-- TOC entry 3276 (class 2604 OID 17442)
+-- Name: student_groups id_group_row; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.student_groups ALTER COLUMN id_group_row SET DEFAULT nextval('public.student_groups_id_group_row_seq'::regclass);
+
+
+--
+-- TOC entry 3275 (class 2604 OID 17443)
+-- Name: students id_record_book; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.students ALTER COLUMN id_record_book SET DEFAULT nextval('public.students_id_record_book_seq'::regclass);
+
+
+--
+-- TOC entry 3286 (class 2604 OID 17444)
+-- Name: study_courses id_study_course; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_courses ALTER COLUMN id_study_course SET DEFAULT nextval('public.study_courses_id_study_course_seq'::regclass);
+
+
+--
+-- TOC entry 3265 (class 2604 OID 17445)
+-- Name: study_plans id_study_plan; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_plans ALTER COLUMN id_study_plan SET DEFAULT nextval('public.study_plan_id_study_plan_seq'::regclass);
+
+
+--
+-- TOC entry 3259 (class 2604 OID 17446)
+-- Name: subdivisions id_subdivision; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.subdivisions ALTER COLUMN id_subdivision SET DEFAULT nextval('public.subdivision_id_subdivision_seq'::regclass);
+
+
+--
+-- TOC entry 3280 (class 2604 OID 17447)
+-- Name: teachers id_teacher; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.teachers ALTER COLUMN id_teacher SET DEFAULT nextval('public.teachers_id_teacher_seq'::regclass);
+
+
+--
+-- TOC entry 3498 (class 0 OID 16509)
+-- Dependencies: 222
+-- Data for Name: awarded_scholarships; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.awarded_scholarships (id_awarded_scholarship, id_record_book, id_scholarship, start_date, end_date) VALUES (0, 12, 1, '2013-01-23', '2013-04-23');
+INSERT INTO public.awarded_scholarships (id_awarded_scholarship, id_record_book, id_scholarship, start_date, end_date) VALUES (1, 13, 0, '2013-01-12', '2013-04-12');
+INSERT INTO public.awarded_scholarships (id_awarded_scholarship, id_record_book, id_scholarship, start_date, end_date) VALUES (2, 13, 1, '2013-01-10', '2013-04-10');
+INSERT INTO public.awarded_scholarships (id_awarded_scholarship, id_record_book, id_scholarship, start_date, end_date) VALUES (3, 14, 0, '2013-01-09', '2013-04-09');
+INSERT INTO public.awarded_scholarships (id_awarded_scholarship, id_record_book, id_scholarship, start_date, end_date) VALUES (4, 15, 2, '2013-01-08', '2013-04-08');
+
+
+--
+-- TOC entry 3516 (class 0 OID 16602)
+-- Dependencies: 240
+-- Data for Name: campuses; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.campuses (id_campus, address, name) VALUES (0, 'campus_addrress0', 'campus_name0');
+INSERT INTO public.campuses (id_campus, address, name) VALUES (1, 'campus_addrress1', 'campus_name1');
+INSERT INTO public.campuses (id_campus, address, name) VALUES (2, 'campus_addrress2', 'campus_name2');
+
+
+--
+-- TOC entry 3490 (class 0 OID 16446)
+-- Dependencies: 214
+-- Data for Name: disciplines; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (0, 'name0', 5, 5, 5);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (1, 'name1', 15, 15, 15);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (2, 'name2', 25, 25, 25);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (3, 'name3', 35, 35, 35);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (4, 'name4', 45, 45, 45);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (5, 'name5', 55, 55, 55);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (6, 'name6', 65, 65, 65);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (7, 'name7', 75, 75, 75);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (8, 'name8', 85, 85, 85);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (9, 'name9', 95, 95, 95);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (10, 'name10', 105, 105, 105);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (11, 'name11', 115, 115, 115);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (12, 'name12', 125, 125, 125);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (13, 'name13', 135, 135, 135);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (14, 'name14', 145, 145, 145);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (15, 'name15', 155, 155, 155);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (16, 'name16', 165, 165, 165);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (17, 'name17', 175, 175, 175);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (18, 'name18', 185, 185, 185);
+INSERT INTO public.disciplines (id_discipline, name, selfstudy_hours, practice_hours, lecture_hours) VALUES (19, 'name19', 195, 195, 195);
+
+
+--
+-- TOC entry 3488 (class 0 OID 16431)
+-- Dependencies: 212
+-- Data for Name: edu_tracks; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (0, '45.00', 'eduname 0');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (1, '45.01', 'eduname 1');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (2, '45.02', 'eduname 2');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (3, '45.03', 'eduname 3');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (4, '45.04', 'eduname 4');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (5, '45.05', 'eduname 5');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (6, '45.06', 'eduname 6');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (7, '45.07', 'eduname 7');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (8, '45.08', 'eduname 8');
+INSERT INTO public.edu_tracks (id_edu_track, code_edu_track, name) VALUES (9, '45.09', 'eduname 9');
+
+
+--
+-- TOC entry 3510 (class 0 OID 16572)
+-- Dependencies: 234
+-- Data for Name: employment_contracts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (0, 0, 0.25, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (1, 1, 0.25, 1);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (2, 2, 0.25, 0);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (3, 3, 1, 3);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (4, 4, 0.25, 0);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (5, 5, 0.5, 0);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (6, 6, 0.5, 6);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (7, 7, 0.25, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (8, 8, 0.25, 1);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (9, 9, 0.25, 4);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (10, 10, 0.25, 5);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (11, 11, 0.25, 1);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (12, 12, 1, 9);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (13, 13, 0.5, 6);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (14, 14, 0.25, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (15, 15, 1, 6);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (16, 16, 0.25, 6);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (17, 17, 0.25, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (18, 18, 0.25, 9);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (19, 19, 0.5, 8);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (20, 20, 0.25, 1);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (21, 21, 0.25, 6);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (22, 22, 1, 8);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (23, 23, 0.25, 7);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (24, 24, 0.5, 5);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (25, 25, 0.5, 5);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (26, 26, 1, 0);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (27, 27, 0.5, 3);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (28, 28, 0.25, 4);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (29, 29, 0.5, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (30, 30, 0.5, 5);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (31, 31, 0.5, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (32, 32, 1, 3);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (33, 33, 1, 4);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (34, 34, 0.25, 9);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (35, 35, 0.5, 2);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (36, 36, 0.5, 4);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (37, 37, 0.5, 8);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (38, 38, 0.25, 9);
+INSERT INTO public.employment_contracts (id_contract, id_teacher, share_rate, id_subdivision) VALUES (39, 39, 0.25, 4);
+
+
+--
+-- TOC entry 3494 (class 0 OID 16476)
+-- Dependencies: 218
+-- Data for Name: groups; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.groups (id_group, id_study_plan, start_date, end_date, group_name, course) VALUES (0, 0, '2012-09-01', '2013-07-01', 'K10', 1);
+INSERT INTO public.groups (id_group, id_study_plan, start_date, end_date, group_name, course) VALUES (1, 1, '2012-09-01', '2013-07-01', 'K11', 1);
+INSERT INTO public.groups (id_group, id_study_plan, start_date, end_date, group_name, course) VALUES (2, 0, '2013-09-01', '2014-07-01', 'K20', 2);
+INSERT INTO public.groups (id_group, id_study_plan, start_date, end_date, group_name, course) VALUES (3, 1, '2013-09-01', '2014-07-01', 'K21', 2);
+
+
+--
+-- TOC entry 3506 (class 0 OID 16549)
+-- Dependencies: 230
+-- Data for Name: record_book; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (0, 0, 0, 0, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (1, 0, 1, 1, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (2, 0, 2, 2, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (3, 0, 3, 3, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (4, 0, 4, 4, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (5, 0, 5, 5, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (6, 0, 6, 6, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (7, 0, 7, 7, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (8, 0, 8, 8, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (9, 0, 9, 9, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (10, 1, 10, 10, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (11, 1, 11, 11, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (12, 1, 12, 12, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (13, 1, 13, 13, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (14, 1, 14, 14, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (15, 1, 15, 15, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (16, 1, 16, 16, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (17, 1, 17, 17, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (18, 1, 18, 18, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (19, 1, 19, 19, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (20, 2, 0, 0, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (21, 2, 1, 1, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (22, 2, 2, 2, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (23, 2, 3, 3, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (24, 2, 4, 4, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (25, 2, 5, 5, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (26, 2, 6, 6, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (27, 2, 7, 7, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (28, 2, 8, 8, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (29, 2, 9, 9, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (30, 3, 10, 10, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (31, 3, 11, 11, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (32, 3, 12, 12, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (33, 3, 13, 13, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (34, 3, 14, 14, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (35, 3, 15, 15, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (36, 3, 16, 16, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (37, 3, 17, 17, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (38, 3, 18, 18, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (39, 3, 19, 19, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (40, 4, 0, 0, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (41, 4, 1, 1, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (42, 4, 2, 2, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (43, 4, 3, 3, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (44, 4, 4, 4, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (45, 4, 5, 5, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (46, 4, 6, 6, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (47, 4, 7, 7, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (48, 4, 8, 8, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (49, 4, 9, 9, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (50, 5, 10, 10, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (51, 5, 11, 11, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (52, 5, 12, 12, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (53, 5, 13, 13, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (54, 5, 14, 14, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (55, 5, 15, 15, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (56, 5, 16, 16, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (57, 5, 17, 17, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (58, 5, 18, 18, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (59, 5, 19, 19, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (60, 6, 0, 0, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (61, 6, 1, 1, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (62, 6, 2, 2, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (63, 6, 3, 3, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (64, 6, 4, 4, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (65, 6, 5, 5, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (66, 6, 6, 6, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (67, 6, 7, 7, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (68, 6, 8, 8, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (69, 6, 9, 9, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (70, 7, 10, 10, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (71, 7, 11, 11, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (72, 7, 12, 12, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (73, 7, 13, 13, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (74, 7, 14, 14, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (75, 7, 15, 15, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (76, 7, 16, 16, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (77, 7, 17, 17, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (78, 7, 18, 18, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (79, 7, 19, 19, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (80, 8, 0, 0, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (81, 8, 1, 1, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (82, 8, 2, 2, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (83, 8, 3, 3, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (84, 8, 4, 4, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (85, 8, 5, 5, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (86, 8, 6, 6, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (87, 8, 7, 7, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (88, 8, 8, 8, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (89, 8, 9, 9, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (90, 9, 10, 10, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (91, 9, 11, 11, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (92, 9, 12, 12, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (93, 9, 13, 13, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (94, 9, 14, 14, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (95, 9, 15, 15, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (96, 9, 16, 16, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (97, 9, 17, 17, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (98, 9, 18, 18, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (99, 9, 19, 19, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (100, 10, 0, 0, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (101, 10, 1, 1, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (102, 10, 2, 2, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (103, 10, 3, 3, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (104, 10, 4, 4, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (105, 10, 5, 5, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (106, 10, 6, 6, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (107, 10, 7, 7, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (108, 10, 8, 8, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (109, 10, 9, 9, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (110, 11, 10, 10, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (111, 11, 11, 11, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (112, 11, 12, 12, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (113, 11, 13, 13, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (114, 11, 14, 14, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (115, 11, 15, 15, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (116, 11, 16, 16, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (117, 11, 17, 17, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (118, 11, 18, 18, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (119, 11, 19, 19, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (120, 12, 0, 0, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (121, 12, 1, 1, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (122, 12, 2, 2, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (123, 12, 3, 3, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (124, 12, 4, 4, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (125, 12, 5, 5, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (126, 12, 6, 6, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (127, 12, 7, 7, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (128, 12, 8, 8, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (129, 12, 9, 9, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (130, 13, 10, 10, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (131, 13, 11, 11, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (132, 13, 12, 12, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (133, 13, 13, 13, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (134, 13, 14, 14, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (135, 13, 15, 15, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (136, 13, 16, 16, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (137, 13, 17, 17, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (138, 13, 18, 18, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (139, 13, 19, 19, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (140, 14, 0, 0, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (141, 14, 1, 1, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (142, 14, 2, 2, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (143, 14, 3, 3, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (144, 14, 4, 4, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (145, 14, 5, 5, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (146, 14, 6, 6, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (147, 14, 7, 7, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (148, 14, 8, 8, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (149, 14, 9, 9, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (150, 15, 10, 10, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (151, 15, 11, 11, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (152, 15, 12, 12, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (153, 15, 13, 13, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (154, 15, 14, 14, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (155, 15, 15, 15, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (156, 15, 16, 16, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (157, 15, 17, 17, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (158, 15, 18, 18, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (159, 15, 19, 19, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (160, 16, 0, 0, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (161, 16, 1, 1, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (162, 16, 2, 2, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (163, 16, 3, 3, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (164, 16, 4, 4, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (165, 16, 5, 5, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (166, 16, 6, 6, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (167, 16, 7, 7, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (168, 16, 8, 8, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (169, 16, 9, 9, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (170, 17, 10, 10, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (171, 17, 11, 11, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (172, 17, 12, 12, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (173, 17, 13, 13, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (174, 17, 14, 14, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (175, 17, 15, 15, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (176, 17, 16, 16, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (177, 17, 17, 17, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (178, 17, 18, 18, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (179, 17, 19, 19, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (180, 18, 0, 0, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (181, 18, 1, 1, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (182, 18, 2, 2, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (183, 18, 3, 3, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (184, 18, 4, 4, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (185, 18, 5, 5, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (186, 18, 6, 6, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (187, 18, 7, 7, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (188, 18, 8, 8, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (189, 18, 9, 9, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (190, 19, 10, 10, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (191, 19, 11, 11, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (192, 19, 12, 12, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (193, 19, 13, 13, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (194, 19, 14, 14, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (195, 19, 15, 15, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (196, 19, 16, 16, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (197, 19, 17, 17, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (198, 19, 18, 18, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (199, 19, 19, 19, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (200, 20, 20, 20, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (201, 20, 21, 21, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (202, 20, 22, 22, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (203, 20, 23, 23, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (204, 20, 24, 24, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (205, 20, 25, 25, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (206, 20, 26, 26, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (207, 20, 27, 27, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (208, 20, 28, 28, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (209, 20, 29, 29, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (210, 21, 30, 30, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (211, 21, 31, 31, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (212, 21, 32, 32, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (213, 21, 33, 33, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (214, 21, 34, 34, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (215, 21, 35, 35, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (216, 21, 36, 36, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (217, 21, 37, 37, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (218, 21, 38, 38, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (219, 21, 39, 39, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (220, 22, 20, 20, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (221, 22, 21, 21, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (222, 22, 22, 22, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (223, 22, 23, 23, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (224, 22, 24, 24, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (225, 22, 25, 25, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (226, 22, 26, 26, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (227, 22, 27, 27, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (228, 22, 28, 28, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (229, 22, 29, 29, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (230, 23, 30, 30, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (231, 23, 31, 31, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (232, 23, 32, 32, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (233, 23, 33, 33, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (234, 23, 34, 34, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (235, 23, 35, 35, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (236, 23, 36, 36, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (237, 23, 37, 37, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (238, 23, 38, 38, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (239, 23, 39, 39, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (240, 24, 20, 20, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (241, 24, 21, 21, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (242, 24, 22, 22, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (243, 24, 23, 23, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (244, 24, 24, 24, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (245, 24, 25, 25, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (246, 24, 26, 26, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (247, 24, 27, 27, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (248, 24, 28, 28, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (249, 24, 29, 29, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (250, 25, 30, 30, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (251, 25, 31, 31, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (252, 25, 32, 32, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (253, 25, 33, 33, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (254, 25, 34, 34, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (255, 25, 35, 35, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (256, 25, 36, 36, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (257, 25, 37, 37, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (258, 25, 38, 38, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (259, 25, 39, 39, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (260, 26, 20, 20, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (261, 26, 21, 21, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (262, 26, 22, 22, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (263, 26, 23, 23, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (264, 26, 24, 24, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (265, 26, 25, 25, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (266, 26, 26, 26, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (267, 26, 27, 27, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (268, 26, 28, 28, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (269, 26, 29, 29, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (270, 27, 30, 30, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (271, 27, 31, 31, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (272, 27, 32, 32, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (273, 27, 33, 33, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (274, 27, 34, 34, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (275, 27, 35, 35, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (276, 27, 36, 36, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (277, 27, 37, 37, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (278, 27, 38, 38, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (279, 27, 39, 39, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (280, 28, 20, 20, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (281, 28, 21, 21, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (282, 28, 22, 22, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (283, 28, 23, 23, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (284, 28, 24, 24, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (285, 28, 25, 25, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (286, 28, 26, 26, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (287, 28, 27, 27, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (288, 28, 28, 28, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (289, 28, 29, 29, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (290, 29, 30, 30, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (291, 29, 31, 31, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (292, 29, 32, 32, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (293, 29, 33, 33, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (294, 29, 34, 34, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (295, 29, 35, 35, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (296, 29, 36, 36, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (297, 29, 37, 37, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (298, 29, 38, 38, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (299, 29, 39, 39, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (300, 30, 20, 20, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (301, 30, 21, 21, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (302, 30, 22, 22, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (303, 30, 23, 23, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (304, 30, 24, 24, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (305, 30, 25, 25, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (306, 30, 26, 26, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (307, 30, 27, 27, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (308, 30, 28, 28, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (309, 30, 29, 29, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (310, 31, 30, 30, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (311, 31, 31, 31, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (312, 31, 32, 32, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (313, 31, 33, 33, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (314, 31, 34, 34, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (315, 31, 35, 35, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (316, 31, 36, 36, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (317, 31, 37, 37, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (318, 31, 38, 38, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (319, 31, 39, 39, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (320, 32, 20, 20, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (321, 32, 21, 21, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (322, 32, 22, 22, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (323, 32, 23, 23, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (324, 32, 24, 24, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (325, 32, 25, 25, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (326, 32, 26, 26, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (327, 32, 27, 27, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (328, 32, 28, 28, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (329, 32, 29, 29, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (330, 33, 30, 30, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (331, 33, 31, 31, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (332, 33, 32, 32, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (333, 33, 33, 33, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (334, 33, 34, 34, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (335, 33, 35, 35, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (336, 33, 36, 36, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (337, 33, 37, 37, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (338, 33, 38, 38, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (339, 33, 39, 39, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (340, 34, 20, 20, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (341, 34, 21, 21, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (342, 34, 22, 22, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (343, 34, 23, 23, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (344, 34, 24, 24, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (345, 34, 25, 25, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (346, 34, 26, 26, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (347, 34, 27, 27, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (348, 34, 28, 28, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (349, 34, 29, 29, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (350, 35, 30, 30, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (351, 35, 31, 31, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (352, 35, 32, 32, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (353, 35, 33, 33, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (354, 35, 34, 34, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (355, 35, 35, 35, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (356, 35, 36, 36, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (357, 35, 37, 37, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (358, 35, 38, 38, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (359, 35, 39, 39, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (360, 36, 20, 20, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (361, 36, 21, 21, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (362, 36, 22, 22, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (363, 36, 23, 23, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (364, 36, 24, 24, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (365, 36, 25, 25, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (366, 36, 26, 26, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (367, 36, 27, 27, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (368, 36, 28, 28, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (369, 36, 29, 29, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (370, 37, 30, 30, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (371, 37, 31, 31, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (372, 37, 32, 32, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (373, 37, 33, 33, 3, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (374, 37, 34, 34, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (375, 37, 35, 35, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (376, 37, 36, 36, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (377, 37, 37, 37, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (378, 37, 38, 38, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (379, 37, 39, 39, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (380, 38, 20, 20, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (381, 38, 21, 21, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (382, 38, 22, 22, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (383, 38, 23, 23, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (384, 38, 24, 24, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (385, 38, 25, 25, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (386, 38, 26, 26, 5, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (387, 38, 27, 27, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (388, 38, 28, 28, 3, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (389, 38, 29, 29, 4, 1);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (390, 39, 30, 30, 5, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (391, 39, 31, 31, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (392, 39, 32, 32, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (393, 39, 33, 33, 3, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (394, 39, 34, 34, 4, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (395, 39, 35, 35, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (396, 39, 36, 36, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (397, 39, 37, 37, 5, 3);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (398, 39, 38, 38, 4, 2);
+INSERT INTO public.record_book (id_row_record_book, id_group_row, id_teacher, id_study_course, mark, try_number) VALUES (399, 39, 39, 39, 3, 2);
+
+
+--
+-- TOC entry 3514 (class 0 OID 16587)
+-- Dependencies: 238
+-- Data for Name: rooms; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (0, 1, '0', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (1, 0, '1', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (2, 2, '2', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (3, 2, '3', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (4, 1, '4', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (5, 0, '5', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (6, 2, '6', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (7, 2, '7', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (8, 0, '8', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (9, 0, '9', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (10, 2, '10', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (11, 0, '11', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (12, 1, '12', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (13, 1, '13', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (14, 1, '14', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (15, 1, '15', 'практическая');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (16, 2, '16', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (17, 1, '17', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (18, 0, '18', 'лекционная');
+INSERT INTO public.rooms (id_room, id_campus, room_number, room_type) VALUES (19, 1, '19', 'практическая');
+
+
+--
+-- TOC entry 3500 (class 0 OID 16518)
+-- Dependencies: 224
+-- Data for Name: scholarship_payments; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (0, 0, '2013-01-23', 'не выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (1, 0, '2013-02-23', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (2, 0, '2013-03-23', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (3, 0, '2013-04-23', 'не выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (4, 1, '2013-01-12', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (5, 1, '2013-02-12', 'не выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (6, 1, '2013-03-12', 'не выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (7, 1, '2013-04-12', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (8, 2, '2013-01-10', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (9, 2, '2013-02-10', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (10, 2, '2013-03-10', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (11, 2, '2013-04-10', 'не выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (12, 3, '2013-01-09', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (13, 3, '2013-02-09', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (14, 3, '2013-03-09', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (15, 3, '2013-04-09', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (16, 4, '2013-01-08', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (17, 4, '2013-02-08', 'в обработке');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (18, 4, '2013-03-08', 'выплачено');
+INSERT INTO public.scholarship_payments (id_scholarship_pay, id_awarded_scholarship, pay_date, status) VALUES (19, 4, '2013-04-08', 'выплачено');
+
+
+--
+-- TOC entry 3496 (class 0 OID 16485)
+-- Dependencies: 220
+-- Data for Name: scholarships; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.scholarships (id_scholarship, name, money_amount, type_of_scholarship) VALUES (0, 'социальная имя', 30000.00, 'социальная');
+INSERT INTO public.scholarships (id_scholarship, name, money_amount, type_of_scholarship) VALUES (1, 'академическая имя', 2000.00, 'академическая');
+INSERT INTO public.scholarships (id_scholarship, name, money_amount, type_of_scholarship) VALUES (2, 'именная имя', 100000.90, 'именная');
+
+
+--
+-- TOC entry 3512 (class 0 OID 16580)
+-- Dependencies: 236
+-- Data for Name: session_schedule; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (0, 0, 0, 10, 0, '2012-01-11 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (1, 0, 1, 12, 1, '2012-01-11 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (2, 0, 2, 18, 2, '2012-01-04 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (3, 0, 3, 18, 3, '2012-01-28 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (4, 0, 4, 15, 4, '2012-01-23 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (5, 0, 5, 15, 5, '2012-09-25 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (6, 0, 6, 4, 6, '2012-09-15 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (7, 0, 7, 16, 7, '2012-09-13 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (8, 0, 8, 13, 8, '2012-09-15 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (9, 0, 9, 7, 9, '2012-09-01 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (10, 1, 20, 18, 20, '2012-01-26 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (11, 1, 21, 16, 21, '2012-01-22 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (12, 1, 22, 12, 22, '2012-01-09 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (13, 1, 23, 8, 23, '2012-01-11 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (14, 1, 24, 19, 24, '2012-01-09 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (15, 1, 25, 15, 25, '2012-09-12 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (16, 1, 26, 16, 26, '2012-09-08 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (17, 1, 27, 14, 27, '2012-09-27 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (18, 1, 28, 17, 28, '2012-09-11 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (19, 1, 29, 10, 29, '2012-09-07 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (20, 2, 10, 6, 10, '2013-01-01 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (21, 2, 11, 12, 11, '2013-01-13 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (22, 2, 12, 19, 12, '2013-01-27 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (23, 2, 13, 14, 13, '2013-01-23 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (24, 2, 14, 15, 14, '2013-01-11 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (25, 2, 15, 1, 15, '2013-09-02 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (26, 2, 16, 17, 16, '2013-09-25 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (27, 2, 17, 10, 17, '2013-09-20 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (28, 2, 18, 10, 18, '2013-09-12 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (29, 2, 19, 2, 19, '2013-09-15 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (30, 3, 30, 11, 30, '2013-01-14 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (31, 3, 31, 9, 31, '2013-01-26 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (32, 3, 32, 13, 32, '2013-01-02 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (33, 3, 33, 5, 33, '2013-01-26 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (34, 3, 34, 12, 34, '2013-01-20 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (35, 3, 35, 16, 35, '2013-09-20 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (36, 3, 36, 16, 36, '2013-09-21 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (37, 3, 37, 19, 37, '2013-09-07 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (38, 3, 38, 18, 38, '2013-09-17 10:00:00');
+INSERT INTO public.session_schedule (id_schedule, id_group, id_teacher, id_room, id_study_course, date_time) VALUES (39, 3, 39, 9, 39, '2013-09-21 10:00:00');
+
+
+--
+-- TOC entry 3504 (class 0 OID 16542)
+-- Dependencies: 228
+-- Data for Name: student_groups; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (0, 0, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (1, 0, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (2, 1, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (3, 1, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (4, 2, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (5, 2, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (6, 3, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (7, 3, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (8, 4, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (9, 4, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (10, 5, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (11, 5, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (12, 6, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (13, 6, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (14, 7, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (15, 7, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (16, 8, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (17, 8, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (18, 9, 0);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (19, 9, 2);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (20, 10, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (21, 10, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (22, 11, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (23, 11, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (24, 12, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (25, 12, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (26, 13, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (27, 13, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (28, 14, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (29, 14, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (30, 15, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (31, 15, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (32, 16, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (33, 16, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (34, 17, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (35, 17, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (36, 18, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (37, 18, 3);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (38, 19, 1);
+INSERT INTO public.student_groups (id_group_row, id_record_book, id_group) VALUES (39, 19, 3);
+
+
+--
+-- TOC entry 3501 (class 0 OID 16531)
+-- Dependencies: 225
+-- Data for Name: students; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (0, 'student_name0', 'student_surname0', 'student_patronimic0');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (1, 'student_name1', 'student_surname1', 'student_patronimic1');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (2, 'student_name2', 'student_surname2', 'student_patronimic2');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (3, 'student_name3', 'student_surname3', 'student_patronimic3');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (4, 'student_name4', 'student_surname4', 'student_patronimic4');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (5, 'student_name5', 'student_surname5', 'student_patronimic5');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (6, 'student_name6', 'student_surname6', 'student_patronimic6');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (7, 'student_name7', 'student_surname7', 'student_patronimic7');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (8, 'student_name8', 'student_surname8', 'student_patronimic8');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (9, 'student_name9', 'student_surname9', 'student_patronimic9');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (10, 'student_name10', 'student_surname10', 'student_patronimic10');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (11, 'student_name11', 'student_surname11', 'student_patronimic11');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (12, 'student_name12', 'student_surname12', 'student_patronimic12');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (13, 'student_name13', 'student_surname13', 'student_patronimic13');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (14, 'student_name14', 'student_surname14', 'student_patronimic14');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (15, 'student_name15', 'student_surname15', 'student_patronimic15');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (16, 'student_name16', 'student_surname16', 'student_patronimic16');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (17, 'student_name17', 'student_surname17', 'student_patronimic17');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (18, 'student_name18', 'student_surname18', 'student_patronimic18');
+INSERT INTO public.students (id_record_book, name, surname, patronimic) VALUES (19, 'student_name19', 'student_surname19', 'student_patronimic19');
+
+
+--
+-- TOC entry 3518 (class 0 OID 16651)
+-- Dependencies: 242
+-- Data for Name: study_courses; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (0, 0, 0, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (1, 0, 1, 1, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (2, 0, 2, 1, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (3, 0, 3, 1, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (4, 0, 4, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (5, 0, 0, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (6, 0, 1, 2, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (7, 0, 2, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (8, 0, 3, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (9, 0, 4, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (10, 0, 5, 3, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (11, 0, 6, 3, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (12, 0, 7, 3, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (13, 0, 8, 3, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (14, 0, 9, 3, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (15, 0, 5, 4, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (16, 0, 6, 4, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (17, 0, 7, 4, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (18, 0, 8, 4, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (19, 0, 9, 4, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (20, 1, 10, 1, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (21, 1, 11, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (22, 1, 12, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (23, 1, 13, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (24, 1, 14, 1, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (25, 1, 10, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (26, 1, 11, 2, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (27, 1, 12, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (28, 1, 13, 2, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (29, 1, 14, 2, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (30, 1, 15, 3, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (31, 1, 16, 3, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (32, 1, 17, 3, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (33, 1, 18, 3, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (34, 1, 19, 3, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (35, 1, 15, 4, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (36, 1, 16, 4, 'дифзачет');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (37, 1, 17, 4, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (38, 1, 18, 4, 'экзамен');
+INSERT INTO public.study_courses (id_study_course, id_study_plan, id_discipline, semester, certification) VALUES (39, 1, 19, 4, 'дифзачет');
+
+
+--
+-- TOC entry 3492 (class 0 OID 16458)
+-- Dependencies: 216
+-- Data for Name: study_plans; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (0, 0, 2010, 0);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (1, 0, 2010, 0);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (2, 0, 2011, 0);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (3, 0, 2011, 1);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (4, 0, 2012, 1);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (5, 1, 2012, 1);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (6, 1, 2013, 2);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (7, 1, 2013, 2);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (8, 1, 2014, 2);
+INSERT INTO public.study_plans (id_study_plan, id_subdivision, year, id_edu_track) VALUES (9, 1, 2014, 3);
+
+
+--
+-- TOC entry 3486 (class 0 OID 16403)
+-- Dependencies: 210
+-- Data for Name: subdivisions; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (0, 'name 0', 'address 0', 'основной');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (1, 'name 1', 'address 1', 'основной');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (2, 'name 2', 'address 2', 'основной');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (3, 'name 3', 'address 3', 'основной');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (4, 'name 4', 'address 4', 'основной');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (5, 'name 5', 'address 5', 'филиал');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (6, 'name 6', 'address 6', 'филиал');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (7, 'name 7', 'address 7', 'филиал');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (8, 'name 8', 'address 8', 'филиал');
+INSERT INTO public.subdivisions (id_subdivision, name, headquarter_address, type) VALUES (9, 'name 9', 'address 9', 'филиал');
+
+
+--
+-- TOC entry 3508 (class 0 OID 16565)
+-- Dependencies: 232
+-- Data for Name: teachers; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (0, 'student_name0', 'student_surname0', 'student_patronimic0');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (1, 'student_name1', 'student_surname1', 'student_patronimic1');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (2, 'student_name2', 'student_surname2', 'student_patronimic2');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (3, 'student_name3', 'student_surname3', 'student_patronimic3');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (4, 'student_name4', 'student_surname4', 'student_patronimic4');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (5, 'student_name5', 'student_surname5', 'student_patronimic5');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (6, 'student_name6', 'student_surname6', 'student_patronimic6');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (7, 'student_name7', 'student_surname7', 'student_patronimic7');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (8, 'student_name8', 'student_surname8', 'student_patronimic8');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (9, 'student_name9', 'student_surname9', 'student_patronimic9');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (10, 'student_name10', 'student_surname10', 'student_patronimic10');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (11, 'student_name11', 'student_surname11', 'student_patronimic11');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (12, 'student_name12', 'student_surname12', 'student_patronimic12');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (13, 'student_name13', 'student_surname13', 'student_patronimic13');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (14, 'student_name14', 'student_surname14', 'student_patronimic14');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (15, 'student_name15', 'student_surname15', 'student_patronimic15');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (16, 'student_name16', 'student_surname16', 'student_patronimic16');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (17, 'student_name17', 'student_surname17', 'student_patronimic17');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (18, 'student_name18', 'student_surname18', 'student_patronimic18');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (19, 'student_name19', 'student_surname19', 'student_patronimic19');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (20, 'student_name20', 'student_surname20', 'student_patronimic20');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (21, 'student_name21', 'student_surname21', 'student_patronimic21');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (22, 'student_name22', 'student_surname22', 'student_patronimic22');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (23, 'student_name23', 'student_surname23', 'student_patronimic23');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (24, 'student_name24', 'student_surname24', 'student_patronimic24');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (25, 'student_name25', 'student_surname25', 'student_patronimic25');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (26, 'student_name26', 'student_surname26', 'student_patronimic26');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (27, 'student_name27', 'student_surname27', 'student_patronimic27');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (28, 'student_name28', 'student_surname28', 'student_patronimic28');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (29, 'student_name29', 'student_surname29', 'student_patronimic29');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (30, 'student_name30', 'student_surname30', 'student_patronimic30');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (31, 'student_name31', 'student_surname31', 'student_patronimic31');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (32, 'student_name32', 'student_surname32', 'student_patronimic32');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (33, 'student_name33', 'student_surname33', 'student_patronimic33');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (34, 'student_name34', 'student_surname34', 'student_patronimic34');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (35, 'student_name35', 'student_surname35', 'student_patronimic35');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (36, 'student_name36', 'student_surname36', 'student_patronimic36');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (37, 'student_name37', 'student_surname37', 'student_patronimic37');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (38, 'student_name38', 'student_surname38', 'student_patronimic38');
+INSERT INTO public.teachers (id_teacher, name, surname, patronymic) VALUES (39, 'student_name39', 'student_surname39', 'student_patronimic39');
+
+
+--
+-- TOC entry 3541 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: awarded_scholarships_id_awarded_scholarship_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.awarded_scholarships_id_awarded_scholarship_seq', 1, false);
+
+
+--
+-- TOC entry 3542 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: campuses_id_campus_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.campuses_id_campus_seq', 1, false);
+
+
+--
+-- TOC entry 3543 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: discipline_id_discipline_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.discipline_id_discipline_seq', 1, true);
+
+
+--
+-- TOC entry 3544 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: edu_track_id_edu_track_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.edu_track_id_edu_track_seq', 1, false);
+
+
+--
+-- TOC entry 3545 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: employment_contracts_id_contract_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.employment_contracts_id_contract_seq', 1, false);
+
+
+--
+-- TOC entry 3546 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: group_id_group_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.group_id_group_seq', 1, false);
+
+
+--
+-- TOC entry 3547 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: record_book_id_row_record_book_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.record_book_id_row_record_book_seq', 41, true);
+
+
+--
+-- TOC entry 3548 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: rooms_id_room_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.rooms_id_room_seq', 1, false);
+
+
+--
+-- TOC entry 3549 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: scholarship_id_scholarship_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.scholarship_id_scholarship_seq', 1, false);
+
+
+--
+-- TOC entry 3550 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: scholarship_payment_history_id_scholarship_pay_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.scholarship_payment_history_id_scholarship_pay_seq', 1, false);
+
+
+--
+-- TOC entry 3551 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: session_schedule_id_schedule_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.session_schedule_id_schedule_seq', 1, false);
+
+
+--
+-- TOC entry 3552 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: student_groups_id_group_row_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.student_groups_id_group_row_seq', 1, false);
+
+
+--
+-- TOC entry 3553 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: students_id_record_book_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.students_id_record_book_seq', 1, false);
+
+
+--
+-- TOC entry 3554 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: study_courses_id_study_course_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.study_courses_id_study_course_seq', 1, false);
+
+
+--
+-- TOC entry 3555 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: study_plan_id_study_plan_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.study_plan_id_study_plan_seq', 1, false);
+
+
+--
+-- TOC entry 3556 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: subdivision_id_subdivision_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.subdivision_id_subdivision_seq', 1, false);
+
+
+--
+-- TOC entry 3557 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: teachers_id_teacher_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.teachers_id_teacher_seq', 1, false);
+
+
+--
+-- TOC entry 3266 (class 2606 OID 16474)
+-- Name: study_plans 1800<year; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.study_plans
+    ADD CONSTRAINT "1800<year" CHECK ((year > 1800)) NOT VALID;
+
+
+--
+-- TOC entry 3305 (class 2606 OID 16515)
+-- Name: awarded_scholarships awarded_scholarships_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.awarded_scholarships
+    ADD CONSTRAINT awarded_scholarships_pkey PRIMARY KEY (id_awarded_scholarship);
+
+
+--
+-- TOC entry 3323 (class 2606 OID 16609)
+-- Name: campuses campuses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.campuses
+    ADD CONSTRAINT campuses_pkey PRIMARY KEY (id_campus);
+
+
+--
+-- TOC entry 3293 (class 2606 OID 16440)
+-- Name: edu_tracks cone_edu_track; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edu_tracks
+    ADD CONSTRAINT cone_edu_track UNIQUE (code_edu_track);
+
+
+--
+-- TOC entry 3297 (class 2606 OID 16454)
+-- Name: disciplines discipline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.disciplines
+    ADD CONSTRAINT discipline_pkey PRIMARY KEY (id_discipline);
+
+
+--
+-- TOC entry 3295 (class 2606 OID 16438)
+-- Name: edu_tracks edu_track_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.edu_tracks
+    ADD CONSTRAINT edu_track_pkey PRIMARY KEY (id_edu_track);
+
+
+--
+-- TOC entry 3317 (class 2606 OID 16578)
+-- Name: employment_contracts employment_contracts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employment_contracts
+    ADD CONSTRAINT employment_contracts_pkey PRIMARY KEY (id_contract);
+
+
+--
+-- TOC entry 3269 (class 2606 OID 16483)
+-- Name: groups group_constraint; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.groups
+    ADD CONSTRAINT group_constraint CHECK (((course >= 1) AND (course <= 4))) NOT VALID;
+
+
+--
+-- TOC entry 3301 (class 2606 OID 16482)
+-- Name: groups group_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT group_pkey PRIMARY KEY (id_group);
+
+
+--
+-- TOC entry 3271 (class 2606 OID 16557)
+-- Name: scholarships money_is_positive; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.scholarships
+    ADD CONSTRAINT money_is_positive CHECK ((money_amount > (0)::numeric)) NOT VALID;
+
+
+--
+-- TOC entry 3262 (class 2606 OID 16455)
+-- Name: disciplines pos_lecture; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.disciplines
+    ADD CONSTRAINT pos_lecture CHECK ((lecture_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3264 (class 2606 OID 16456)
+-- Name: disciplines pos_selfstudy; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.disciplines
+    ADD CONSTRAINT pos_selfstudy CHECK ((selfstudy_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3313 (class 2606 OID 16556)
+-- Name: record_book record_book_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.record_book
+    ADD CONSTRAINT record_book_pkey PRIMARY KEY (id_row_record_book);
+
+
+--
+-- TOC entry 3321 (class 2606 OID 16592)
+-- Name: rooms rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT rooms_pkey PRIMARY KEY (id_room);
+
+
+--
+-- TOC entry 3307 (class 2606 OID 16523)
+-- Name: scholarship_payments scholarship_payment_history_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scholarship_payments
+    ADD CONSTRAINT scholarship_payment_history_pkey PRIMARY KEY (id_scholarship_pay);
+
+
+--
+-- TOC entry 3303 (class 2606 OID 16492)
+-- Name: scholarships scholarship_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scholarships
+    ADD CONSTRAINT scholarship_pkey PRIMARY KEY (id_scholarship);
+
+
+--
+-- TOC entry 3287 (class 2606 OID 16675)
+-- Name: study_courses semester_check; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.study_courses
+    ADD CONSTRAINT semester_check CHECK (((semester >= 1) AND (semester <= 8))) NOT VALID;
+
+
+--
+-- TOC entry 3319 (class 2606 OID 16585)
+-- Name: session_schedule session_schedule_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule
+    ADD CONSTRAINT session_schedule_pkey PRIMARY KEY (id_schedule);
+
+
+--
+-- TOC entry 3282 (class 2606 OID 17130)
+-- Name: employment_contracts share_rate; Type: CHECK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE public.employment_contracts
+    ADD CONSTRAINT share_rate CHECK (((share_rate > (0)::double precision) AND (share_rate <= (1)::double precision))) NOT VALID;
+
+
+--
+-- TOC entry 3311 (class 2606 OID 16547)
+-- Name: student_groups student_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.student_groups
+    ADD CONSTRAINT student_groups_pkey PRIMARY KEY (id_group_row);
+
+
+--
+-- TOC entry 3309 (class 2606 OID 16540)
+-- Name: students students_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.students
+    ADD CONSTRAINT students_pkey PRIMARY KEY (id_record_book);
+
+
+--
+-- TOC entry 3325 (class 2606 OID 16656)
+-- Name: study_courses study_courses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_courses
+    ADD CONSTRAINT study_courses_pkey PRIMARY KEY (id_study_course);
+
+
+--
+-- TOC entry 3299 (class 2606 OID 16463)
+-- Name: study_plans study_plan_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_plans
+    ADD CONSTRAINT study_plan_pkey PRIMARY KEY (id_study_plan);
+
+
+--
+-- TOC entry 3289 (class 2606 OID 16410)
+-- Name: subdivisions subdivision_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.subdivisions
+    ADD CONSTRAINT subdivision_pkey PRIMARY KEY (id_subdivision);
+
+
+--
+-- TOC entry 3315 (class 2606 OID 16570)
+-- Name: teachers teachers_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.teachers
+    ADD CONSTRAINT teachers_pkey PRIMARY KEY (id_teacher);
+
+
+--
+-- TOC entry 3291 (class 2606 OID 16442)
+-- Name: subdivisions unique_name; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.subdivisions
+    ADD CONSTRAINT unique_name UNIQUE (name);
+
+
+--
+-- TOC entry 3331 (class 2606 OID 16625)
+-- Name: scholarship_payments awarder_scholarship_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scholarship_payments
+    ADD CONSTRAINT "awarder_scholarship_FK" FOREIGN KEY (id_awarded_scholarship) REFERENCES public.awarded_scholarships(id_awarded_scholarship) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3343 (class 2606 OID 16721)
+-- Name: rooms campus_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT "campus_FK" FOREIGN KEY (id_campus) REFERENCES public.campuses(id_campus) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3345 (class 2606 OID 16662)
+-- Name: study_courses discipline_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_courses
+    ADD CONSTRAINT "discipline_FK" FOREIGN KEY (id_discipline) REFERENCES public.disciplines(id_discipline) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3339 (class 2606 OID 16701)
+-- Name: session_schedule group_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule
+    ADD CONSTRAINT "group_FK" FOREIGN KEY (id_group) REFERENCES public.groups(id_group) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3334 (class 2606 OID 16676)
+-- Name: record_book group_history_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.record_book
+    ADD CONSTRAINT "group_history_FK" FOREIGN KEY (id_group_row) REFERENCES public.student_groups(id_group_row) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+
+
+--
+-- TOC entry 3333 (class 2606 OID 16645)
+-- Name: student_groups groups_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.student_groups
+    ADD CONSTRAINT "groups_FK" FOREIGN KEY (id_group) REFERENCES public.groups(id_group) ON UPDATE CASCADE DEFERRABLE NOT VALID;
+
+
+--
+-- TOC entry 3327 (class 2606 OID 16469)
+-- Name: study_plans id_edu_track_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_plans
+    ADD CONSTRAINT "id_edu_track_FK" FOREIGN KEY (id_edu_track) REFERENCES public.edu_tracks(id_edu_track) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3326 (class 2606 OID 16464)
+-- Name: study_plans id_subdivision_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_plans
+    ADD CONSTRAINT "id_subdivision_FK" FOREIGN KEY (id_subdivision) REFERENCES public.subdivisions(id_subdivision) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3330 (class 2606 OID 16635)
+-- Name: awarded_scholarships record_book_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.awarded_scholarships
+    ADD CONSTRAINT "record_book_FK" FOREIGN KEY (id_record_book) REFERENCES public.students(id_record_book) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3341 (class 2606 OID 16711)
+-- Name: session_schedule room_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule
+    ADD CONSTRAINT "room_FK" FOREIGN KEY (id_room) REFERENCES public.rooms(id_room) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3329 (class 2606 OID 16630)
+-- Name: awarded_scholarships scholarship_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.awarded_scholarships
+    ADD CONSTRAINT "scholarship_FK" FOREIGN KEY (id_scholarship) REFERENCES public.scholarships(id_scholarship) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3332 (class 2606 OID 16640)
+-- Name: student_groups students_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.student_groups
+    ADD CONSTRAINT "students_FK" FOREIGN KEY (id_record_book) REFERENCES public.students(id_record_book) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+
+
+--
+-- TOC entry 3336 (class 2606 OID 16686)
+-- Name: record_book study_course_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.record_book
+    ADD CONSTRAINT "study_course_FK" FOREIGN KEY (id_study_course) REFERENCES public.study_courses(id_study_course) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3342 (class 2606 OID 16716)
+-- Name: session_schedule study_course_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule
+    ADD CONSTRAINT "study_course_FK" FOREIGN KEY (id_study_course) REFERENCES public.study_courses(id_study_course) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3328 (class 2606 OID 16610)
+-- Name: groups study_plan_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.groups
+    ADD CONSTRAINT "study_plan_FK" FOREIGN KEY (id_study_plan) REFERENCES public.study_plans(id_study_plan) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3344 (class 2606 OID 16657)
+-- Name: study_courses study_plan_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.study_courses
+    ADD CONSTRAINT "study_plan_FK" FOREIGN KEY (id_study_plan) REFERENCES public.study_plans(id_study_plan) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 3337 (class 2606 OID 16691)
+-- Name: employment_contracts subdivision_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employment_contracts
+    ADD CONSTRAINT "subdivision_FK" FOREIGN KEY (id_subdivision) REFERENCES public.subdivisions(id_subdivision) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3335 (class 2606 OID 16681)
+-- Name: record_book teacher_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.record_book
+    ADD CONSTRAINT "teacher_FK" FOREIGN KEY (id_teacher) REFERENCES public.teachers(id_teacher) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3338 (class 2606 OID 16696)
+-- Name: employment_contracts teacher_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.employment_contracts
+    ADD CONSTRAINT "teacher_FK" FOREIGN KEY (id_teacher) REFERENCES public.teachers(id_teacher) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3340 (class 2606 OID 16706)
+-- Name: session_schedule teacher_FK; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.session_schedule
+    ADD CONSTRAINT "teacher_FK" FOREIGN KEY (id_teacher) REFERENCES public.teachers(id_teacher) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+-- Completed on 2023-03-08 15:59:14
+
+--
+-- PostgreSQL database dump complete
+--
+
