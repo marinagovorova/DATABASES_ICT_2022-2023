@@ -1,0 +1,758 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-05-03 23:58:39 MSK
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 16399)
+-- Name: publishing_office_scheme; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA publishing_office_scheme;
+
+
+ALTER SCHEMA publishing_office_scheme OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 216 (class 1259 OID 16407)
+-- Name: author; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.author (
+    author_id integer NOT NULL,
+    email character varying(40) NOT NULL,
+    first_name character varying(20) NOT NULL,
+    last_name character varying(20) NOT NULL,
+    patronymic_name character varying(20)
+);
+
+
+ALTER TABLE publishing_office_scheme.author OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16609)
+-- Name: author_author_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.author ALTER COLUMN author_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.author_author_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 215 (class 1259 OID 16400)
+-- Name: book; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.book (
+    book_id integer NOT NULL,
+    pages_count integer NOT NULL,
+    category_id integer NOT NULL,
+    publication_year date NOT NULL,
+    name character varying(20) NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme.book OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16510)
+-- Name: book_author; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.book_author (
+    book_id integer NOT NULL,
+    author_id integer NOT NULL,
+    email character varying(40) NOT NULL,
+    author_index integer NOT NULL,
+    id integer NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme.book_author OWNER TO postgres;
+
+--
+-- TOC entry 230 (class 1259 OID 16616)
+-- Name: book_author_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.book_author ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.book_author_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 224 (class 1259 OID 16610)
+-- Name: book_book_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.book ALTER COLUMN book_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.book_book_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 16421)
+-- Name: book_category; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.book_category (
+    category_id integer NOT NULL,
+    name character varying(20) NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme.book_category OWNER TO postgres;
+
+--
+-- TOC entry 225 (class 1259 OID 16611)
+-- Name: book_category_category_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.book_category ALTER COLUMN category_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.book_category_category_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 16522)
+-- Name: circulation; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.circulation (
+    circulation_id integer NOT NULL,
+    task_id integer NOT NULL,
+    book_id integer NOT NULL,
+    "ISBN" character varying(17) NOT NULL,
+    price integer,
+    type character varying(20) NOT NULL,
+    date date NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme.circulation OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 16612)
+-- Name: circulation_circulation_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.circulation ALTER COLUMN circulation_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.circulation_circulation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 16414)
+-- Name: customer; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.customer (
+    customer_id integer NOT NULL,
+    phone_number character varying(14) NOT NULL,
+    address character varying(40) NOT NULL,
+    first_name character varying(20) NOT NULL,
+    last_name character varying(20) NOT NULL,
+    patronymic_name character varying(20)
+);
+
+
+ALTER TABLE publishing_office_scheme.customer OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 16613)
+-- Name: customer_customer_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.customer ALTER COLUMN customer_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.customer_customer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 221 (class 1259 OID 16515)
+-- Name: order; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme."order" (
+    order_id integer NOT NULL,
+    customer_id integer NOT NULL,
+    phone_number character varying(14) NOT NULL,
+    task_id integer NOT NULL,
+    book_id integer NOT NULL,
+    "ISBN" character varying(17) NOT NULL,
+    job_status character varying(11) DEFAULT 'в обработке'::character varying NOT NULL,
+    payment_status character varying(14) DEFAULT 'ожидает оплаты'::character varying NOT NULL,
+    deadline date,
+    order_date date NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme."order" OWNER TO postgres;
+
+--
+-- TOC entry 228 (class 1259 OID 16614)
+-- Name: order_order_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme."order" ALTER COLUMN order_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.order_order_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 219 (class 1259 OID 16433)
+-- Name: technical_task; Type: TABLE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+CREATE TABLE publishing_office_scheme.technical_task (
+    task_id integer NOT NULL,
+    book_id integer NOT NULL,
+    copies_number integer NOT NULL,
+    is_illustration boolean NOT NULL,
+    "ISBN" character varying(17) NOT NULL,
+    binding_type character varying(20) NOT NULL
+);
+
+
+ALTER TABLE publishing_office_scheme.technical_task OWNER TO postgres;
+
+--
+-- TOC entry 229 (class 1259 OID 16615)
+-- Name: technical_task_task_id_seq; Type: SEQUENCE; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.technical_task ALTER COLUMN task_id ADD GENERATED ALWAYS AS IDENTITY (
+    SEQUENCE NAME publishing_office_scheme.technical_task_task_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- TOC entry 3661 (class 0 OID 16407)
+-- Dependencies: 216
+-- Data for Name: author; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.author (author_id, email, first_name, last_name, patronymic_name) FROM stdin;
+1	johndoe@example.com	John	Doe	Smith
+2	janedoe@example.com	Jane	Doe	Johnson
+3	bobsmith@example.com	Bob	Smith	Williams
+4	alicejohnson@example.com	Alice	Johnson	Brown
+5	robertjones@example.com	Robert	Jones	Taylor
+6	sarahwilliams@example.com	Sarah	Williams	Lee
+7	davidbrown@example.com	David	Brown	Miller
+8	emilyjohnson@example.com	Emily	Johnson	Garcia
+9	jasonmiller@example.com	Jason	Miller	Clark
+\.
+
+
+--
+-- TOC entry 3660 (class 0 OID 16400)
+-- Dependencies: 215
+-- Data for Name: book; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.book (book_id, pages_count, category_id, publication_year, name) FROM stdin;
+11	256	1	2019-01-01	The Great Gatsby
+12	384	2	2021-01-01	The Midnight Library
+13	512	3	2018-01-01	The Outsider
+14	320	4	2017-01-01	Exit West
+15	448	5	2020-01-01	American Dirt
+\.
+
+
+--
+-- TOC entry 3665 (class 0 OID 16510)
+-- Dependencies: 220
+-- Data for Name: book_author; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.book_author (book_id, author_id, email, author_index, id) FROM stdin;
+11	3	bobsmith@example.com	0	8
+12	1	johndoe@example.com	0	9
+13	2	janedoe@example.com	0	10
+14	3	bobsmith@example.com	0	11
+14	8	emilyjohnson@example.com	1	12
+15	4	alicejohnson@example.com	0	13
+\.
+
+
+--
+-- TOC entry 3663 (class 0 OID 16421)
+-- Dependencies: 218
+-- Data for Name: book_category; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.book_category (category_id, name) FROM stdin;
+1	Drama
+2	Science-fiction
+3	Horror
+4	Fantasy
+5	Crime
+\.
+
+
+--
+-- TOC entry 3667 (class 0 OID 16522)
+-- Dependencies: 222
+-- Data for Name: circulation; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.circulation (circulation_id, task_id, book_id, "ISBN", price, type, date) FROM stdin;
+1	2	12	978-3-16-148410-0	1990	книга	2023-05-01
+2	4	14	978-0-06-269601-9	499	книга	2023-06-01
+\.
+
+
+--
+-- TOC entry 3662 (class 0 OID 16414)
+-- Dependencies: 217
+-- Data for Name: customer; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.customer (customer_id, phone_number, address, first_name, last_name, patronymic_name) FROM stdin;
+1	+1123456789	123 Main St, Anytown, USA	John	Doe	Smith
+2	+15559876543	456 High St, Anytown, USA	Jane	Doe	Johnson
+3	+15555551212	789 Elm St, Anytown, USA	Bob	Smith	Williams
+4	+15551112222	321 Oak St, Anytown, USA	Alice	Johnson	Brown
+5	+14155552671	123 Main St, Anytown, USA	Emily	Lee	Kim
+6	+447789123456	456 High St, Anytown, UK	David	Jones	Smith
+7	+61298765432	789 Elm St, Anytown, Australia	Sarah	Nguyen	Tran
+8	+81312345678	321 Oak St, Anytown, Japan	Taro	Tanaka	Sato
+\.
+
+
+--
+-- TOC entry 3666 (class 0 OID 16515)
+-- Dependencies: 221
+-- Data for Name: order; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme."order" (order_id, customer_id, phone_number, task_id, book_id, "ISBN", job_status, payment_status, deadline, order_date) FROM stdin;
+1	1	+1123456789	2	12	978-3-16-148410-0	в обработке	оплачено	2023-06-01	2023-04-01
+2	3	+15555551212	4	14	978-0-06-269601-9	готово	оплачено	2023-05-02	2023-04-01
+\.
+
+
+--
+-- TOC entry 3664 (class 0 OID 16433)
+-- Dependencies: 219
+-- Data for Name: technical_task; Type: TABLE DATA; Schema: publishing_office_scheme; Owner: postgres
+--
+
+COPY publishing_office_scheme.technical_task (task_id, book_id, copies_number, is_illustration, "ISBN", binding_type) FROM stdin;
+1	11	200	t	978-0-14-312656-0	твердый
+2	12	3000	t	978-3-16-148410-0	твердый
+3	13	10000	f	978-1-4088-9086-3	мягкий
+4	14	4000	f	978-0-06-269601-9	скрепление скобой
+5	15	5500	t	978-0-241-29752-8	кбс
+\.
+
+
+--
+-- TOC entry 3681 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: author_author_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.author_author_id_seq', 9, true);
+
+
+--
+-- TOC entry 3682 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: book_author_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.book_author_id_seq', 13, true);
+
+
+--
+-- TOC entry 3683 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: book_book_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.book_book_id_seq', 15, true);
+
+
+--
+-- TOC entry 3684 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: book_category_category_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.book_category_category_id_seq', 5, true);
+
+
+--
+-- TOC entry 3685 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: circulation_circulation_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.circulation_circulation_id_seq', 2, true);
+
+
+--
+-- TOC entry 3686 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: customer_customer_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.customer_customer_id_seq', 8, true);
+
+
+--
+-- TOC entry 3687 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: order_order_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.order_order_id_seq', 2, true);
+
+
+--
+-- TOC entry 3688 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: technical_task_task_id_seq; Type: SEQUENCE SET; Schema: publishing_office_scheme; Owner: postgres
+--
+
+SELECT pg_catalog.setval('publishing_office_scheme.technical_task_task_id_seq', 5, true);
+
+
+--
+-- TOC entry 3496 (class 2606 OID 16570)
+-- Name: technical_task ISBN; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.technical_task
+    ADD CONSTRAINT "ISBN" UNIQUE ("ISBN");
+
+
+--
+-- TOC entry 3479 (class 2606 OID 16606)
+-- Name: book_author author_index; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.book_author
+    ADD CONSTRAINT author_index CHECK ((author_index >= 0)) NOT VALID;
+
+
+--
+-- TOC entry 3486 (class 2606 OID 16413)
+-- Name: author author_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.author
+    ADD CONSTRAINT author_pkey PRIMARY KEY (author_id);
+
+
+--
+-- TOC entry 3477 (class 2606 OID 16603)
+-- Name: technical_task binding_type; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.technical_task
+    ADD CONSTRAINT binding_type CHECK (((binding_type)::text = ANY ((ARRAY['твердый'::character varying, 'мягкий'::character varying, 'скрепление скобой'::character varying, 'кбс'::character varying])::text[]))) NOT VALID;
+
+
+--
+-- TOC entry 3500 (class 2606 OID 16514)
+-- Name: book_author book_author_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book_author
+    ADD CONSTRAINT book_author_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3494 (class 2606 OID 16427)
+-- Name: book_category book_category_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book_category
+    ADD CONSTRAINT book_category_pkey PRIMARY KEY (category_id);
+
+
+--
+-- TOC entry 3484 (class 2606 OID 16406)
+-- Name: book book_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book
+    ADD CONSTRAINT book_pkey PRIMARY KEY (book_id);
+
+
+--
+-- TOC entry 3504 (class 2606 OID 16526)
+-- Name: circulation circulation_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.circulation
+    ADD CONSTRAINT circulation_pkey PRIMARY KEY (circulation_id);
+
+
+--
+-- TOC entry 3478 (class 2606 OID 16608)
+-- Name: technical_task copies_number; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme.technical_task
+    ADD CONSTRAINT copies_number CHECK ((copies_number >= 0)) NOT VALID;
+
+
+--
+-- TOC entry 3490 (class 2606 OID 16420)
+-- Name: customer customer_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.customer
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (customer_id);
+
+
+--
+-- TOC entry 3480 (class 2606 OID 16607)
+-- Name: order deadline > order_date; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme."order"
+    ADD CONSTRAINT "deadline > order_date" CHECK ((deadline > order_date)) NOT VALID;
+
+
+--
+-- TOC entry 3488 (class 2606 OID 16538)
+-- Name: author email; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.author
+    ADD CONSTRAINT email UNIQUE (email);
+
+
+--
+-- TOC entry 3481 (class 2606 OID 16605)
+-- Name: order job_status; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme."order"
+    ADD CONSTRAINT job_status CHECK (((job_status)::text = ANY ((ARRAY['в обработке'::character varying, 'готово'::character varying])::text[]))) NOT VALID;
+
+
+--
+-- TOC entry 3502 (class 2606 OID 16521)
+-- Name: order order_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT order_pkey PRIMARY KEY (order_id);
+
+
+--
+-- TOC entry 3482 (class 2606 OID 16604)
+-- Name: order payment_status; Type: CHECK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE publishing_office_scheme."order"
+    ADD CONSTRAINT payment_status CHECK (((payment_status)::text = ANY ((ARRAY['ожидает оплаты'::character varying, 'оплачено'::character varying])::text[]))) NOT VALID;
+
+
+--
+-- TOC entry 3492 (class 2606 OID 16597)
+-- Name: customer phone_number; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.customer
+    ADD CONSTRAINT phone_number UNIQUE (phone_number);
+
+
+--
+-- TOC entry 3498 (class 2606 OID 16439)
+-- Name: technical_task technical_task_pkey; Type: CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.technical_task
+    ADD CONSTRAINT technical_task_pkey PRIMARY KEY (task_id);
+
+
+--
+-- TOC entry 3515 (class 2606 OID 16571)
+-- Name: circulation ISBN; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.circulation
+    ADD CONSTRAINT "ISBN" FOREIGN KEY ("ISBN") REFERENCES publishing_office_scheme.technical_task("ISBN") NOT VALID;
+
+
+--
+-- TOC entry 3510 (class 2606 OID 16591)
+-- Name: order ISBN; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT "ISBN" FOREIGN KEY ("ISBN") REFERENCES publishing_office_scheme.technical_task("ISBN") NOT VALID;
+
+
+--
+-- TOC entry 3507 (class 2606 OID 16539)
+-- Name: book_author author_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book_author
+    ADD CONSTRAINT author_id FOREIGN KEY (author_id) REFERENCES publishing_office_scheme.author(author_id) NOT VALID;
+
+
+--
+-- TOC entry 3506 (class 2606 OID 16440)
+-- Name: technical_task book_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.technical_task
+    ADD CONSTRAINT book_id FOREIGN KEY (book_id) REFERENCES publishing_office_scheme.book(book_id);
+
+
+--
+-- TOC entry 3508 (class 2606 OID 16527)
+-- Name: book_author book_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book_author
+    ADD CONSTRAINT book_id FOREIGN KEY (book_id) REFERENCES publishing_office_scheme.book(book_id) NOT VALID;
+
+
+--
+-- TOC entry 3516 (class 2606 OID 16564)
+-- Name: circulation book_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.circulation
+    ADD CONSTRAINT book_id FOREIGN KEY (book_id) REFERENCES publishing_office_scheme.book(book_id) NOT VALID;
+
+
+--
+-- TOC entry 3511 (class 2606 OID 16586)
+-- Name: order book_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT book_id FOREIGN KEY (book_id) REFERENCES publishing_office_scheme.book(book_id) NOT VALID;
+
+
+--
+-- TOC entry 3505 (class 2606 OID 16428)
+-- Name: book category_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book
+    ADD CONSTRAINT category_id FOREIGN KEY (category_id) REFERENCES publishing_office_scheme.book_category(category_id) NOT VALID;
+
+
+--
+-- TOC entry 3512 (class 2606 OID 16576)
+-- Name: order customer_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT customer_id FOREIGN KEY (customer_id) REFERENCES publishing_office_scheme.customer(customer_id) NOT VALID;
+
+
+--
+-- TOC entry 3509 (class 2606 OID 16544)
+-- Name: book_author email; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.book_author
+    ADD CONSTRAINT email FOREIGN KEY (email) REFERENCES publishing_office_scheme.author(email) NOT VALID;
+
+
+--
+-- TOC entry 3513 (class 2606 OID 16598)
+-- Name: order phone_number; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT phone_number FOREIGN KEY (phone_number) REFERENCES publishing_office_scheme.customer(phone_number) NOT VALID;
+
+
+--
+-- TOC entry 3517 (class 2606 OID 16559)
+-- Name: circulation task_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme.circulation
+    ADD CONSTRAINT task_id FOREIGN KEY (task_id) REFERENCES publishing_office_scheme.technical_task(task_id) NOT VALID;
+
+
+--
+-- TOC entry 3514 (class 2606 OID 16581)
+-- Name: order task_id; Type: FK CONSTRAINT; Schema: publishing_office_scheme; Owner: postgres
+--
+
+ALTER TABLE ONLY publishing_office_scheme."order"
+    ADD CONSTRAINT task_id FOREIGN KEY (task_id) REFERENCES publishing_office_scheme.technical_task(task_id) NOT VALID;
+
+
+-- Completed on 2023-05-03 23:58:39 MSK
+
+--
+-- PostgreSQL database dump complete
+--
+
