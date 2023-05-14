@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register page</title>
+</head>
+<body>
+    <form method="Post">
+        <div>
+            {{ form.name.label }} {{ form.name() }}
+        </div>
+        <div>
+            {{ form.surname.label }} {{ form.surname() }}
+        </div>
+        <div>
+            {{ form.about.label }} {{ form.about() }}
+        </div>
+        <div>
+            {{ form.education.label }} {{ form.education() }}
+        </div>
+        <div>
+            {{ form.job.label }} {{ form.job() }}
+        </div>
+
+        {{ form.submit() }}
+    </form>
+</body>
+</html>

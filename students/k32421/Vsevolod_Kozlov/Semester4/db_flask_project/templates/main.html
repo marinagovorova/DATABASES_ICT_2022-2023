@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>main page</title>
+</head>
+<body>
+<!--
+    1. Перебрать всех работников
+    Отобразить в header
+    образование жирным шрифтом
+    numbered list
+-->
+    {% for person_dict in persons_info %}
+        {% set full_name=(person_dict['name']+' '+person_dict['surname']).capitalize() %}
+        <h2>{{full_name}}</h2>
+
+        <h3>О себе</h3>
+        <div>{{ person_dict['about'] }}</div>
+
+        <h3>Образование:</h3>
+        {% if  person_dict['education'] %}
+            <ol>
+                {%  for education in person_dict['education'] %}
+                    <li>
+                        <div>Название: {{ education['name'] }}</div>
+                        <div>Описание: {{ education['description'] }}</div>
+                        <div>Закончил?: {{ 'Да' if education['is_finished'] else 'Нет' }}</div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {%  else %}
+            <div>Нет данных об образовании</div>
+        {% endif %}
+
+        <h3>Опыт работы:</h3>
+        {% if  person_dict['job'] %}
+            <ol>
+                {%  for job in person_dict['job'] %}
+                    <li>
+                        <div>Название: {{ job['name'] }}</div>
+                        <div>Описание: {{ job['description'] }}</div>
+                        <div>Должность: {{ job['position'] }}</div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {%  else %}
+            <div>Нет данных об опыте работы</div>
+        {% endif %}
+
+    {% endfor %}
+</body>
+</html>
