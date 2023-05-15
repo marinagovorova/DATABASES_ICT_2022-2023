@@ -1,0 +1,583 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.7
+-- Dumped by pg_dump version 14.7
+
+-- Started on 2023-05-15 14:18:44
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 213 (class 1259 OID 24794)
+-- Name: coach; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.coach (
+    coach_id character varying(10) NOT NULL,
+    train_id character varying(10) NOT NULL,
+    num_of_seats integer NOT NULL,
+    type character varying(20) NOT NULL,
+    coach_num character varying(10) NOT NULL,
+    CONSTRAINT num_of_seats_check CHECK ((num_of_seats >= 0)),
+    CONSTRAINT type_check CHECK ((((type)::text = '1st class'::text) OR ((type)::text = '2nd class'::text) OR ((type)::text = 'Economy'::text) OR ((type)::text = 'Restaurant'::text) OR ((type)::text = 'Sleeper'::text)))
+);
+
+
+ALTER TABLE public.coach OWNER TO postgres;
+
+--
+-- TOC entry 209 (class 1259 OID 24769)
+-- Name: destination_point; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.destination_point (
+    settlement_id character varying(10) NOT NULL,
+    area character varying(30) NOT NULL,
+    region character varying(30) NOT NULL,
+    type character varying(20) NOT NULL
+);
+
+
+ALTER TABLE public.destination_point OWNER TO postgres;
+
+--
+-- TOC entry 210 (class 1259 OID 24774)
+-- Name: passenger; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.passenger (
+    passport_num character varying(15) NOT NULL,
+    surname character varying(20) NOT NULL,
+    name character varying(15) NOT NULL,
+    fathers_name character varying(20)
+);
+
+
+ALTER TABLE public.passenger OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 24804)
+-- Name: seat; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.seat (
+    seat_id character varying(10) NOT NULL,
+    coach_id character varying(10) NOT NULL,
+    occupation character varying(10) NOT NULL,
+    type character varying(15) NOT NULL
+);
+
+
+ALTER TABLE public.seat OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 24814)
+-- Name: stop; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.stop (
+    stop_id integer NOT NULL,
+    train_num integer NOT NULL,
+    settlement_id character varying(10) NOT NULL,
+    arrival date NOT NULL,
+    departure date NOT NULL,
+    CONSTRAINT stop_id_check CHECK ((stop_id >= 0)),
+    CONSTRAINT train_num_check CHECK ((train_num >= 0))
+);
+
+
+ALTER TABLE public.stop OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 24834)
+-- Name: ticket; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticket (
+    ticket_num integer NOT NULL,
+    ticket_office_num integer NOT NULL,
+    seat_id character varying(10) NOT NULL,
+    passport_num character varying(15) NOT NULL,
+    stop_id integer NOT NULL,
+    arrival_point character varying(30) NOT NULL,
+    departure_point character varying(30) NOT NULL,
+    date_time date NOT NULL,
+    type_of_purchase character varying(7) NOT NULL,
+    date_of_purchase date NOT NULL,
+    price integer NOT NULL,
+    CONSTRAINT price_check CHECK ((price >= 0)),
+    CONSTRAINT ticket_num_check CHECK ((ticket_num >= 0)),
+    CONSTRAINT ticket_office_num_check CHECK ((ticket_office_num >= 0))
+);
+
+
+ALTER TABLE public.ticket OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 24829)
+-- Name: ticket_office; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.ticket_office (
+    ticket_office_num integer NOT NULL,
+    to_status character varying(30) NOT NULL,
+    adress character varying(30) NOT NULL,
+    settlement character varying(30) NOT NULL,
+    CONSTRAINT ticket_office_num_check CHECK ((ticket_office_num >= 0))
+);
+
+
+ALTER TABLE public.ticket_office OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 24779)
+-- Name: timetable; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.timetable (
+    train_num integer NOT NULL,
+    arrival_point character varying(30) NOT NULL,
+    departure_point character varying(30) NOT NULL,
+    travel_time interval NOT NULL,
+    arrival_time time without time zone NOT NULL,
+    departure_time time without time zone NOT NULL,
+    status character varying(20) NOT NULL,
+    CONSTRAINT train_num_check CHECK ((train_num >= 0))
+);
+
+
+ALTER TABLE public.timetable OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1259 OID 24784)
+-- Name: train; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.train (
+    train_id character varying(10) NOT NULL,
+    status character varying(10) NOT NULL,
+    fact_arrival_time time without time zone NOT NULL,
+    fact_departure_time time without time zone NOT NULL,
+    train_num integer NOT NULL,
+    CONSTRAINT train_num_check CHECK ((train_num >= 1))
+);
+
+
+ALTER TABLE public.train OWNER TO postgres;
+
+--
+-- TOC entry 3389 (class 0 OID 24794)
+-- Dependencies: 213
+-- Data for Name: coach; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.coach (coach_id, train_id, num_of_seats, type, coach_num) FROM stdin;
+010	HS1	55	Economy	E1
+0220	INT1	65	1st class	F1
+03330	IC1	50	2nd class	S1
+011	HS1	55	2nd class	S1
+\.
+
+
+--
+-- TOC entry 3385 (class 0 OID 24769)
+-- Dependencies: 209
+-- Data for Name: destination_point; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.destination_point (settlement_id, area, region, type) FROM stdin;
+RAH	Rahachow	Gomelskaya Oblast	Town
+MSC	Moscow	Moscow Oblast	City
+SPB	Saint-Petersburg	Leningradsakaya Oblast	City
+\.
+
+
+--
+-- TOC entry 3386 (class 0 OID 24774)
+-- Dependencies: 210
+-- Data for Name: passenger; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.passenger (passport_num, surname, name, fathers_name) FROM stdin;
+4016 510509	Cannon	Nicholas	Scott
+4014 404014	Hart	Kevin	Darnell
+4018 920202	Smith	Sam	Frederick 
+\.
+
+
+--
+-- TOC entry 3390 (class 0 OID 24804)
+-- Dependencies: 214
+-- Data for Name: seat; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.seat (seat_id, coach_id, occupation, type) FROM stdin;
+18	010	Booked	First Class
+9	03330	Sold	Second Class
+45	0220	Free	Sleeper Class
+27	011	Sold	Second Class
+\.
+
+
+--
+-- TOC entry 3391 (class 0 OID 24814)
+-- Dependencies: 215
+-- Data for Name: stop; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.stop (stop_id, train_num, settlement_id, arrival, departure) FROM stdin;
+1	101	MSC	2023-04-04	2023-04-04
+22	201	RAH	2023-04-04	2023-04-05
+333	301	SPB	2023-04-04	2023-04-04
+\.
+
+
+--
+-- TOC entry 3393 (class 0 OID 24834)
+-- Dependencies: 217
+-- Data for Name: ticket; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ticket (ticket_num, ticket_office_num, seat_id, passport_num, stop_id, arrival_point, departure_point, date_time, type_of_purchase, date_of_purchase, price) FROM stdin;
+545	33	9	4018 920202	333	SPB	MSC	2023-04-04	offline	2023-03-28	1500
+717	11	18	4016 510509	1	MSC	SPB	2023-04-04	online	2023-03-21	2500
+828	11	27	4014 404014	1	MSC	SPB	2023-04-04	online	2023-04-01	2000
+\.
+
+
+--
+-- TOC entry 3392 (class 0 OID 24829)
+-- Dependencies: 216
+-- Data for Name: ticket_office; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.ticket_office (ticket_office_num, to_status, adress, settlement) FROM stdin;
+11	opened	Komsomolskaya Square	Moscow
+22	closed	Zagorodnyy Prospekt	Saint-Petersburg
+33	opened	Ulitsa Belinskogo	Rahachow
+\.
+
+
+--
+-- TOC entry 3387 (class 0 OID 24779)
+-- Dependencies: 211
+-- Data for Name: timetable; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.timetable (train_num, arrival_point, departure_point, travel_time, arrival_time, departure_time, status) FROM stdin;
+101	MSC	SPB	05:00:00	11:30:00	06:30:00	on the way
+201	SPB	RAH	16:00:00	20:30:00	12:30:00	on the way
+301	SPB	MSC	08:00:00	00:30:00	08:30:00	on the way
+\.
+
+
+--
+-- TOC entry 3388 (class 0 OID 24784)
+-- Dependencies: 212
+-- Data for Name: train; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.train (train_id, status, fact_arrival_time, fact_departure_time, train_num) FROM stdin;
+HS1	on the way	11:36:00	06:32:00	101
+IC1	on the way	00:39:00	08:40:00	301
+INT1	on the way	12:33:00	20:37:00	201
+\.
+
+
+--
+-- TOC entry 3217 (class 2606 OID 24798)
+-- Name: coach coach_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coach
+    ADD CONSTRAINT coach_pkey PRIMARY KEY (coach_id);
+
+
+--
+-- TOC entry 3206 (class 2606 OID 24773)
+-- Name: destination_point destination_point_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.destination_point
+    ADD CONSTRAINT destination_point_pkey PRIMARY KEY (settlement_id);
+
+
+--
+-- TOC entry 3208 (class 2606 OID 24778)
+-- Name: passenger passanger_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.passenger
+    ADD CONSTRAINT passanger_pkey PRIMARY KEY (passport_num);
+
+
+--
+-- TOC entry 3222 (class 2606 OID 24808)
+-- Name: seat seat_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seat
+    ADD CONSTRAINT seat_pkey PRIMARY KEY (seat_id);
+
+
+--
+-- TOC entry 3226 (class 2606 OID 24818)
+-- Name: stop stop_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stop
+    ADD CONSTRAINT stop_pkey PRIMARY KEY (stop_id);
+
+
+--
+-- TOC entry 3229 (class 2606 OID 24833)
+-- Name: ticket_office ticket_office_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket_office
+    ADD CONSTRAINT ticket_office_pkey PRIMARY KEY (ticket_office_num);
+
+
+--
+-- TOC entry 3234 (class 2606 OID 24838)
+-- Name: ticket ticket_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket
+    ADD CONSTRAINT ticket_pkey PRIMARY KEY (ticket_num);
+
+
+--
+-- TOC entry 3212 (class 2606 OID 24783)
+-- Name: timetable timetable_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.timetable
+    ADD CONSTRAINT timetable_pkey PRIMARY KEY (train_num);
+
+
+--
+-- TOC entry 3215 (class 2606 OID 24788)
+-- Name: train train_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.train
+    ADD CONSTRAINT train_pkey PRIMARY KEY (train_id);
+
+
+--
+-- TOC entry 3209 (class 1259 OID 24956)
+-- Name: arrival_point_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX arrival_point_pk ON public.timetable USING btree (departure_point);
+
+
+--
+-- TOC entry 3210 (class 1259 OID 24950)
+-- Name: departure_point_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX departure_point_pk ON public.timetable USING btree (departure_point);
+
+
+--
+-- TOC entry 3218 (class 1259 OID 24895)
+-- Name: fk_coach_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fk_coach_pk ON public.coach USING btree (train_id);
+
+
+--
+-- TOC entry 3219 (class 1259 OID 24975)
+-- Name: fki_fk_coach; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX fki_fk_coach ON public.coach USING btree (train_id);
+
+
+--
+-- TOC entry 3223 (class 1259 OID 24981)
+-- Name: fki_ыф; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "fki_ыф" ON public.stop USING btree (stop_id);
+
+
+--
+-- TOC entry 3220 (class 1259 OID 24903)
+-- Name: seat_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX seat_pk ON public.seat USING btree (coach_id);
+
+
+--
+-- TOC entry 3224 (class 1259 OID 24909)
+-- Name: settlement_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX settlement_pk ON public.stop USING btree (settlement_id);
+
+
+--
+-- TOC entry 3230 (class 1259 OID 24923)
+-- Name: ticket_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ticket_pk ON public.ticket USING btree (ticket_office_num);
+
+
+--
+-- TOC entry 3231 (class 1259 OID 24934)
+-- Name: ticket_pk3; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ticket_pk3 ON public.ticket USING btree (passport_num);
+
+
+--
+-- TOC entry 3232 (class 1259 OID 24940)
+-- Name: ticket_pk4; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX ticket_pk4 ON public.ticket USING btree (stop_id);
+
+
+--
+-- TOC entry 3227 (class 1259 OID 24915)
+-- Name: train_num_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX train_num_pk ON public.stop USING btree (train_num);
+
+
+--
+-- TOC entry 3213 (class 1259 OID 24968)
+-- Name: train_pk; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX train_pk ON public.train USING btree (train_num);
+
+
+--
+-- TOC entry 3235 (class 2606 OID 25039)
+-- Name: timetable arrival_point_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.timetable
+    ADD CONSTRAINT arrival_point_fk FOREIGN KEY (arrival_point) REFERENCES public.destination_point(settlement_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3236 (class 2606 OID 25027)
+-- Name: timetable departure_point_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.timetable
+    ADD CONSTRAINT departure_point_fk FOREIGN KEY (departure_point) REFERENCES public.destination_point(settlement_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3238 (class 2606 OID 24997)
+-- Name: coach fk_coach; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.coach
+    ADD CONSTRAINT fk_coach FOREIGN KEY (train_id) REFERENCES public.train(train_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3239 (class 2606 OID 24992)
+-- Name: seat fk_seat; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.seat
+    ADD CONSTRAINT fk_seat FOREIGN KEY (coach_id) REFERENCES public.coach(coach_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3240 (class 2606 OID 24982)
+-- Name: stop fk_settlement; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stop
+    ADD CONSTRAINT fk_settlement FOREIGN KEY (settlement_id) REFERENCES public.destination_point(settlement_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3237 (class 2606 OID 25032)
+-- Name: train fk_train; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.train
+    ADD CONSTRAINT fk_train FOREIGN KEY (train_num) REFERENCES public.timetable(train_num) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3241 (class 2606 OID 24987)
+-- Name: stop fk_train_num; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.stop
+    ADD CONSTRAINT fk_train_num FOREIGN KEY (train_num) REFERENCES public.timetable(train_num) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3244 (class 2606 OID 25012)
+-- Name: ticket passport_num_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket
+    ADD CONSTRAINT passport_num_fk FOREIGN KEY (passport_num) REFERENCES public.passenger(passport_num) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3243 (class 2606 OID 25007)
+-- Name: ticket seat_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket
+    ADD CONSTRAINT seat_id_fk FOREIGN KEY (seat_id) REFERENCES public.seat(seat_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3245 (class 2606 OID 25017)
+-- Name: ticket stop_id_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket
+    ADD CONSTRAINT stop_id_fk FOREIGN KEY (stop_id) REFERENCES public.stop(stop_id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 3242 (class 2606 OID 25002)
+-- Name: ticket ticket_office_fk; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.ticket
+    ADD CONSTRAINT ticket_office_fk FOREIGN KEY (ticket_office_num) REFERENCES public.ticket_office(ticket_office_num) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+-- Completed on 2023-05-15 14:18:44
+
+--
+-- PostgreSQL database dump complete
+--
+
