@@ -1,0 +1,2 @@
+В качестве результата лабораторной работы предоставляю личный проект сайта-персонального блога на Python (Django + SQLite). Исходный код доступен по ссылке:
+https://github.com/nesterenkojul/personal-django-blog
