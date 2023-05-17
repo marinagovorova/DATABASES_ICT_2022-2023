@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Форма добавления данных в таблицу</title>
+</head>
+<body>
+    <h2>Форма добавления данных в таблицу</h2>
+    <form action="index.php" method="POST">
+        <label for="brand">Бренд:</label>
+        <input type="text" name="brand" id="brand" required><br><br>
+
+        <label for="model">Модель:</label>
+        <input type="text" name="model" id="model" required><br><br>
+
+        <label for="year">Год:</label>
+        <input type="number" name="year" id="year" required><br><br>
+
+        <label for="price">Цена:</label>
+        <input type="number" name="price" id="price" step="0.01" required><br><br>
+
+        <input type="submit" value="Добавить">
+    </form>
+</body>
+</html>
