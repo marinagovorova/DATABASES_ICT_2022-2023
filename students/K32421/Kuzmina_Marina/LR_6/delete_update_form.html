@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Форма редактирования и удаления данных</title>
+</head>
+<body>
+    <h2>Форма редактирования и удаления данных</h2>
+    <form action="delete_update.php" method="POST">
+        <label for="id">ID:</label>
+        <input type="number" name="id" id="id" required><br><br>
+
+        <label for="brand">Бренд:</label>
+        <input type="text" name="brand" id="brand" required><br><br>
+
+        <label for="model">Модель:</label>
+        <input type="text" name="model" id="model" required><br><br>
+
+        <label for="year">Год:</label>
+        <input type="number" name="year" id="year" required><br><br>
+
+        <label for="price">Цена:</label>
+        <input type="number" name="price" id="price" step="0.01" required><br><br>
+
+        <input type="submit" name="edit" value="Редактировать">
+        <input type="submit" name="delete" value="Удалить">
+    </form>
+</body>
+</html>
