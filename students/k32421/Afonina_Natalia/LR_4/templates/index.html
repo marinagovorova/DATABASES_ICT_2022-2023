@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Jobs {% endblock %}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align: center; border-right: 1px solid #ddd;">ID</th>
+                <th style="text-align: center; border-right: 1px solid #ddd;">Name</th>
+                <th style="text-align: center; border-right: 1px solid #ddd;">Salary</th>
+                <th style="text-align: center;">Responsibilities</th>
+                 <th style="text-align: center;">Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+                <tr>
+                    <td style="text-align: center; border-right: 1px solid #ddd;">{{ job[0] }}</td>
+                    <td style="text-align: center; border-right: 1px solid #ddd;">{{ job[1] }}</td>
+                    <td style="text-align: center; border-right: 1px solid #ddd;">{{ job[2] }}</td>
+                    <td style="text-align: center;">{{ job[3] }}</td>
+                    <td style="text-align: center;">
+                        <form action="{{ url_for('delete') }}" method="post">
+                            <input type="hidden" name="id" value="{{ job[0] }}">
+                            <input type="submit" value="Delete">
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
