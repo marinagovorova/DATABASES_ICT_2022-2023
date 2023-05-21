@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta chatset="UTF-8">
+    <title>Airport Passenger List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 24px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        label {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 50px auto 0;
+            background-color: #fff;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .spinner:before {
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            margin-left: -10px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            animation: spinner 0.6s linear infinite;
+        }
+
+        @keyframes spinner {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f9f9f9;
+            font-size: 16px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+<h1>Airport Passenger List</h1>
+<form method="POST" action="/create">
+    <label for="passports_pass">Passport Number:</label>
+    <input type="text" id="passports_pass" name="passports_pass" required><br><br>
+    <label for="full_name_pass">Full Name:</label>
+    <input type="text" id="full_name_pass" name="full_name_pass" required><br><br>
+    <input type="submit" value="Add Passenger">
+</form>
+<br>
+<form method="POST" action="/update">
+    <label for="passports_pass">Current Passport Number:</label>
+    <input type="text" id="passports_pass" name="passports_pass" required><br><br>
+    <label for="new_full_name_pass">New Full Name:</label>
+    <input type="text" id="new_full_name_pass" name="new_full_name_pass" required><br><br>
+    <input type="submit" value="Update Passenger">
+</form>
+<br>
+<form method="POST" action="/delete">
+    <label for="passports_pass">Passport Number:</label>
+    <input type="text" id="passports_pass" name="name" required><br><br>
+    <input type="submit" value="Delete Passenger">
+</form>
+<br>
+<table>
+    <thead>
+    <tr>
+        <th>Passport Number</th>
+        <th>Full Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for passenger in passenger %}
+    <tr>
+        <td>{{ passenger[0] }}</td>
+        <td>{{ passenger[1] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
