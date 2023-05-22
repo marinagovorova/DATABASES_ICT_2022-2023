@@ -1,1 +1,14 @@
 Лабораторная работа №4 в рамках предмета "Проектирование и реализация баз данных"
+
+
+1. how to run:
+
+```
+streamlit run app.py 
+```
+
+2. how to check database locally:
+
+```
+sqlite3 matching_app.db
+```
