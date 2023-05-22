@@ -1,0 +1,58 @@
+html {
+    background-color: black;
+    color: white;
+}
+
+a {
+    color:white;
+    text-decoration:none
+}
+
+a:active {
+    color:white;
+    text-decoration:none
+}
+
+a:visited {
+    color:white;
+    text-decoration:none
+}
+
+a:hover {
+    color:white;
+    text-decoration: underline
+}
+
+.table {
+    display: table;
+    width: auto;
+    border: 1px solid white;
+    border-spacing: 5px; /* cellspacing:poor IE support for  this */
+}
+
+.table_row {
+    display: table-row;
+    width: auto;
+    height: auto;
+    outline: 1px solid #666;
+}
+.table_cell {
+    float: left;
+    display: table-cell;
+    width: 150px;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table_cell.descr {
+    width: 250px;
+}
+
+.table_cell.id {
+    width: 100px;
+}
+
+.table_cell.act {
+    width: 100px;
+    height: var();
+}
