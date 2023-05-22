@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>Bank Job Management</h1>
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">All Jobs</a></li>
+                <li><a href="{{ url_for('create') }}">Create Job</a></li>
+                <li><a href="{{ url_for('update') }}">Update Job</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flash-messages">
+                    {% for message in messages %}
+                        <li class="flash-message">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; Natasha's Bank</p>
+    </footer>
+</body>
+</html>

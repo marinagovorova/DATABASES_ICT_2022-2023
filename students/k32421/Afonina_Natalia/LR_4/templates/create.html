@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Add New Job Title {% endblock %}</h1>
+    <form method="post">
+        <p>
+            <label for="id">ID</label>
+            <input type="int" name="id"
+                   placeholder="Job's ID">
+            </input>
+        </p>
+
+        <p>
+            <label for="name">Job Title</label>
+            <input type="text" name="name"
+                   placeholder="Job's Title">
+            </input>
+        </p>
+
+        <p>
+            <label for="salary">Salary</label>
+            <input type="text" name="salary"
+                   placeholder="Annual Salary">
+            </input>
+        </p>
+
+        <p>
+            <label for="responsibilities">Responsibilities</label>
+            <input type="text" name="responsibilities"
+                   placeholder="Worker's responsibilities">
+            </input>
+        </p>
+
+        <p>
+            <button type="submit">Submit</button>
+        </p>
+    </form>
+{% endblock %}

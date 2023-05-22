@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Job{% endblock %}
+
+{% block content %}
+    <h1>Update Job</h1>
+    <form method="post">
+        <p>
+            <label for="job_id">ID</label>
+            <input type="number" name="job_id" placeholder="Job's ID">
+        </p>
+        <p>
+            <button type="submit">Check Job</button>
+        </p>
+    </form>
+{% endblock %}

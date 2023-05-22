@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Job{% endblock %}
+
+{% block content %}
+    <h1>Update Job</h1>
+    <form method="post" action="{{ url_for('updatejobinfo', job_id=job_id) }}">
+        <p>
+            <label for="name">Job Title</label>
+            <input type="text" name="name" value="{{ job['name_job'] }}" placeholder="Job Title">
+        </p>
+        <p>
+            <label for="salary">Salary</label>
+            <input type="number" name="salary" value="{{ job['salary'] }}" placeholder="Annual Salary">
+        </p>
+        <p>
+            <label for="responsibilities">Responsibilities</label>
+            <input type="text" name="responsibilities" value="{{ job['responsibilities'] }}" placeholder="Worker's Responsibilities">
+        </p>
+
+        <p>
+            <button type="submit">Update</button>
+        </p>
+    </form>
+{% endblock %}
