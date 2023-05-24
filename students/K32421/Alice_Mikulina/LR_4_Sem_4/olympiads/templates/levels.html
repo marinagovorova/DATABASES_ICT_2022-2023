@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1><span style="color: #33cccc;">Olympic levels</h1>
+<p></p>
+
+<h3><a href = '/base/create/level'>Create new level</a></h3>
+
+<p></p>
+{% for level in levels %}
+<p> <h2>{{ level.level }}</h2> <a href = '/base/delete/level/{{ level.id }}'>Delete</a> &nbsp <a href = '/base/update/level/{{ level.id }}'>Update</a> </p>
+<p> &nbsp </p>
+{% endfor %}
+
+{%endblock%}

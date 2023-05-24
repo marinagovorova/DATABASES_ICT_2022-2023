@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1><span style="color: #33cccc;">Olympiads</h1>
+<p></p>
+
+<h3><a href = '/base/create/olympiad'>Create new olympiad</a></h3>
+
+<p></p>
+{% for olympiad in olympiads %}
+<p> <h2>{{ olympiad.name }} - {{ olympiad.level }}</h2> <a href = '/base/delete/olympiad/{{ olympiad.id }}'>Delete</a> &nbsp <a href = '/base/update/olympiad/{{ olympiad.id }}'>Update</a> </p>
+<p> &nbsp </p>
+{% endfor %}
+
+{%endblock%}
