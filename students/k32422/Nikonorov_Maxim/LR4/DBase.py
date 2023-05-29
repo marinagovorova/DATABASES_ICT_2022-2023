@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import timedelta, time, date, datetime
 from sqlalchemy import CheckConstraint
 
-db_string = "postgresql://postgres:M1m1m1m1@127.0.0.1:5432/Calendar"
+db_string = "postgresql://postgres:<password>@127.0.0.1:5432/Calendar"
 
 Base = declarative_base()
 engine = create_engine(db_string)
