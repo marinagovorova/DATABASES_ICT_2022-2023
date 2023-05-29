@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <h1><span>Pets </span></h1>
+<p></p>
+
+<h3><a href = '/pets/add_pets'>Add new pets</a></h3>
+
+<p></p>
+{% for pet in pets %}
+    <div style="border: whitesmoke solid medium; ">
+        <p> <h2>{{ pet.name }}</h2> <a href = '/pets/pets/delete_pets/{{ pet.id }}'>Delete</a> &nbsp <a href = '/pets/pets/update_pets/{{ pet.id }}'>Update</a> </p>
+        <p> &nbsp </p>
+    </div>
+{% endfor %}
+
+{%endblock%}

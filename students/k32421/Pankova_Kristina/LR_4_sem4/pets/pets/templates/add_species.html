@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+
+<form action="" method="post">
+{% csrf_token %}
+{% for field in form %}
+<p></p>
+{{ field.label }}
+<div>{{ field }}</div>
+{% endfor %}
+<p></p>
+<input type='submit' value="OK"> 
+</form>
+
+{%endblock%}
