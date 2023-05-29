@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register page</title>
+</head>
+<body>
+    <table>
+        <tr>
+            {% for col in person_data[0] %}
+                <th> {{ col }} </th>
+            {%  endfor %}
+        </tr>
+        {% for row in person_data[1] %}
+            <tr>
+                {% for value in row %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+            </tr>
+        {%  endfor %}
+    </table>
+
+    <form method="Post">
+        <div>
+            {{ form.delete_ids.label }} <br>
+            {{ form.delete_ids() }}
+        </div>
+        {{ form.submit() }}
+    </form>
+</body>
+</html>
