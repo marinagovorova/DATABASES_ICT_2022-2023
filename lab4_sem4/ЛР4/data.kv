@@ -1,0 +1,346 @@
+#:import utils kivy.utils
+#:import MDSwapTransition kivymd.uix.transition.transition.MDSwapTransition
+
+<MainLayout>:
+	MDScreenManager:
+		id: scr_manager
+		transition: MDSwapTransition()
+		MDScreen:
+			name: 'login'
+			RelativeLayout:
+				MDBoxLayout:
+					adaptive_height: True
+					orientation: 'vertical'
+					padding: dp(18)
+					spacing: dp(18)
+					pos_hint: {'center_x': .5, 'center_y': .5}
+					canvas.before:
+						Color:
+							rgb: utils.get_color_from_hex('#B7B5E4')
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: login
+							text: 'Логин'
+							on_text_validate: app.Verify(login.text, password.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: password
+							text: 'Пароль'
+							on_text_validate: app.Verify(login.text, password.text)
+					MDLabel:
+						id: error_log
+						text: ''
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+		MDScreen:
+			name: 'insert'
+			id: insert
+			RelativeLayout:
+				MDBoxLayout:
+					id: insert_scroll
+					adaptive_height: True
+					orientation: 'vertical'
+					padding: dp(18)
+					spacing: dp(18)
+					pos_hint: {'center_x': .5, 'y': 1 - self.height / root.height}
+					canvas.before:
+						Color:
+							rgb: utils.get_color_from_hex('#B7B5E4')
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					MDLabel:
+						text: 'Create'
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: trauma_type
+							text: 'Тип травмы'
+							on_text_validate: app.AddRow(trauma_type.text, severity.text, code.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: severity
+							text: 'Тяжесть'
+							on_text_validate: app.AddRow(trauma_type.text, severity.text, code.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: code
+							text: 'Код МКБ'
+							on_text_validate: app.AddRow(trauma_type.text, severity.text, code.text)
+					GridLayout:
+						size_hint: 0.7, None
+						height: dp(36)
+						spacing: dp(18)
+						cols: 4
+						col_default_width:  0.175 * self.parent.width - dp(18)
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'Внести изменения'
+							on_press: app.connection.commit(); insert_log.text = "Успех"
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Read'
+							on_press: scr_manager.current = 'read'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Update'
+							on_press: scr_manager.current = 'update'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Delete'
+							on_press: scr_manager.current = 'delete'
+					MDLabel:
+						id: insert_log
+						text: ''
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+
+		MDScreen:
+			name: 'read'
+			id: read
+			RelativeLayout:
+				MDBoxLayout:
+					id: read_scroll
+					adaptive_height: True
+					orientation: 'vertical'
+					padding: dp(18)
+					spacing: dp(18)
+					pos_hint: {'center_x': .5, 'y': 1 - self.height / root.height}
+					canvas.before:
+						Color:
+							rgb: utils.get_color_from_hex('#B7B5E4')
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					MDLabel:
+						text: 'Read'
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: trauma_type_r
+							text: 'Тип травмы'
+							on_text_validate: app.Search(trauma_type_r.text, 'trauma_type')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: severity_r
+							text: 'Тяжесть'
+							on_text_validate: app.Search(severity_r.text, 'severity')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: code_r
+							text: 'Код МКБ'
+							on_text_validate: app.Search(code_r.text, 'description')
+					GridLayout:
+						size_hint: 0.7, None
+						height: dp(36)
+						spacing: dp(18)
+						cols: 6
+						col_default_width:  0.14 * self.parent.width - dp(18)
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'Внести изменения'
+							on_press: app.connection.commit()
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'Откатиться'
+							on_press: app.connection.rollback(); app.data_tables.update_row_data(app.data_tables.row_data, app.FetchTable());
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Insert'
+							on_press: scr_manager.current = 'insert'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Update'
+							on_press: scr_manager.current = 'update'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Delete'
+							on_press: scr_manager.current = 'delete'
+						FilledButton:
+							icon: 'restart'
+							on_press: app.data_tables.update_row_data(app.data_tables.row_data, app.FetchTable());
+
+
+		MDScreen:
+			name: 'update'
+			id: update
+			RelativeLayout:
+				MDBoxLayout:
+					id: update_scroll
+					adaptive_height: True
+					orientation: 'vertical'
+					padding: dp(18)
+					spacing: dp(18)
+					pos_hint: {'center_x': .5, 'y': 1 - self.height / root.height}
+					canvas.before:
+						Color:
+							rgb: utils.get_color_from_hex('#B7B5E4')
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					MDLabel:
+						text: 'Update'
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: trauma_id_u
+							text: 'Идентификатор'
+							on_text_validate: app.Update(trauma_id_u.text, trauma_type_u.text, severity_u.text, code_u.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: trauma_type_u
+							text: 'Тип травмы'
+							on_text_validate: app.Update(trauma_id_u.text, trauma_type_u.text, severity_u.text, code_u.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: severity_u
+							text: 'Тяжесть'
+							on_text_validate: app.Update(trauma_id_u.text, trauma_type_u.text, severity_u.text, code_u.text)
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: code_u
+							text: 'Код МКБ'
+							on_text_validate: app.Update(trauma_id_u.text, trauma_type_u.text, severity_u.text, code_u.text)
+					GridLayout:
+						size_hint: 0.7, None
+						height: dp(36)
+						spacing: dp(18)
+						cols: 4
+						col_default_width:  0.175 * self.parent.width - dp(18)
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'Внести изменения'
+							on_press: app.connection.commit(); update_log.text = 'Успех';
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Read'
+							on_press: scr_manager.current = 'read'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Insert'
+							on_press: scr_manager.current = 'insert'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Delete'
+							on_press: scr_manager.current = 'delete'
+					MDLabel:
+						id: update_log
+						text: ''
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+
+		MDScreen:
+			name: 'delete'
+			id: delete
+			RelativeLayout:
+				MDBoxLayout:
+					id: delete_scroll
+					adaptive_height: True
+					orientation: 'vertical'
+					padding: dp(18)
+					spacing: dp(18)
+					pos_hint: {'center_x': .5, 'y': 1 - self.height / root.height}
+					canvas.before:
+						Color:
+							rgb: utils.get_color_from_hex('#B7B5E4')
+						Rectangle:
+							size: self.size
+							pos: self.pos
+					MDLabel:
+						text: 'Delete'
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+					TextBoxLogin:
+						radius: '18dp'
+						TxtInput:
+							id: trauma_id_d
+							text: 'Идентификатор'
+							on_text_validate: app.DeleteRow(trauma_id_d.text)
+					GridLayout:
+						size_hint: 0.7, None
+						height: dp(36)
+						spacing: dp(18)
+						cols: 4
+						col_default_width:  0.175 * self.parent.width - dp(18)
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'Внести изменения'
+							on_press: app.connection.commit()
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Read'
+							on_press: scr_manager.current = 'read'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Update'
+							on_press: scr_manager.current = 'update'
+						MDFillRoundFlatButton:
+							md_bg_color: utils.get_color_from_hex('#E5E5E5')
+							text_color: utils.get_color_from_hex('#575757')
+							text: 'К Insert'
+							on_press: scr_manager.current = 'insert'
+					MDLabel:
+						id: delete_log
+						text: ''
+						height: self.texture_size[1]
+						color: utils.get_color_from_hex('#575757')
+
+
+<FilledButton@MDFloatingActionButton>:
+    md_bg_color: 'A685BA'
+    size_hint: None, 1
+    width: self.height
+
+<TxtInput@TextInput>:
+    pos_hint: {'center_y': 0.5}
+    font_size: '18dp'
+    size_hint_y: None
+    height: self.minimum_height
+    line_color_normal: 0, 0, 0, 0
+    line_color_focus: 0, 0, 0, 0
+    color_mode: "custom"
+    background_color: 1, 0, 0, 0
+    multiline: False
+    foreground_color: utils.get_color_from_hex('#575757')
+    hint_text_color: 1, 1, 1, 1
+
+<TextBoxLogin@MDCard>:
+    md_bg_color: utils.get_color_from_hex('#E5E5E5')
+    padding: ['9dp', 0, '9dp', 0]
+    size_hint: 0.7, None
+    height: '40dp'
+
