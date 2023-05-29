@@ -1,0 +1,12 @@
+-- Обновить статус и дату окончания обучения если студент не прошел ППА2
+
+UPDATE STUDENT
+SET STATUS = 'Dismissed',
+	STUDY_END =
+SELECT CURRENT_DATE
+WHERE STUDENT.ID in
+		(SELECT STUDENT.ID
+			FROM SCORE
+			JOIN STUDENT ON STUDENT.ID = SCORE.STUDENT_ID
+			WHERE SCORE.ATTEMPT = 3
+				AND SCORE.SCORE = 2;)
