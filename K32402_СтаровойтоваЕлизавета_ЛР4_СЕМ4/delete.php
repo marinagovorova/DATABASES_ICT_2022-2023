@@ -10,28 +10,38 @@ if (isset($_POST['enter'])) {
     $firstName = $_POST['first_name'];
     $lastName = $_POST['last_name'];
 
-    // Получение студента до удаления
-    $selectQuery = "SELECT student_id, first_name, last_name FROM students.students WHERE student_id = :student_id";
+    // Check if the student exists
+    $selectQuery = "SELECT COUNT(*) FROM students.students WHERE student_id = :student_id";
     $stmt = $pdo->prepare($selectQuery);
     $stmt->bindValue(':student_id', $studentID);
     $stmt->execute();
-    $student = $stmt->fetch(PDO::FETCH_ASSOC);
+    $count = $stmt->fetchColumn();
 
-    echo "
-        student_id: {$student['student_id']}
-        <br>
-        first_name: {$student['first_name']}
-        <br>
-        last_name: {$student['last_name']}
-        <br>
-        <br>
-    ";
+    if ($count > 0) {
+        $selectQuery = "SELECT student_id, first_name, last_name FROM students.students WHERE student_id = :student_id";
+        $stmt = $pdo->prepare($selectQuery);
+        $stmt->bindValue(':student_id', $studentID);
+        $stmt->execute();
+        $student = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $deleteQuery = "DELETE FROM students.students WHERE student_id = :student_id";
-    $stmt = $pdo->prepare($deleteQuery);
-    $stmt->bindValue(':student_id', $studentID);
-    $stmt->execute();
+        echo "
+            student_id: {$student['student_id']}
+            <br>
+            first_name: {$student['first_name']}
+            <br>
+            last_name: {$student['last_name']}
+            <br>
+            <br>
+        ";
 
-    echo "<b>Student {$student['first_name']} {$student['last_name']} was deleted!</b><br>";
+        $deleteQuery = "DELETE FROM students.students WHERE student_id = :student_id";
+        $stmt = $pdo->prepare($deleteQuery);
+        $stmt->bindValue(':student_id', $studentID);
+        $stmt->execute();
+
+        echo "<b>Student {$student['first_name']} {$student['last_name']} was deleted!</b><br>";
+    } else {
+        echo "<b>Error:</b> Student with ID $studentID does not exist.";
+    }
 }
 ?>

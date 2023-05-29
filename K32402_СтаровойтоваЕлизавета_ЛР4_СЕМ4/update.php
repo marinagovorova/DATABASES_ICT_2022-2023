@@ -9,30 +9,43 @@ if (isset($_POST['enter'])) {
     $studentID = $_POST['student_id'];
     $newGroupNumber = $_POST['group_number'];
 
-    // Получение старого значения group_number
-    $selectQuery = "SELECT group_number FROM students.students WHERE student_id = :student_id";
+    // Check if the student with the given student_id and group_number exists
+    $selectQuery = "SELECT COUNT(*) FROM students.students WHERE student_id = :student_id";
     $stmt = $pdo->prepare($selectQuery);
     $stmt->bindValue(':student_id', $studentID);
     $stmt->execute();
-    $oldGroupNumber = $stmt->fetchColumn();
+    $count = $stmt->fetchColumn();
 
-    echo "
-        student_id: $studentID
-        <br>
-        group_number (old): $oldGroupNumber
-        <br>
-        group_number (new): $newGroupNumber
-        <br>
-        <br>
-    ";
+    if ($count > 0) {
 
-    // Обновление значения group_number
-    $updateQuery = "UPDATE students.students SET group_number = :new_group_number WHERE student_id = :student_id";
-    $stmt = $pdo->prepare($updateQuery);
-    $stmt->bindValue(':new_group_number', $newGroupNumber);
-    $stmt->bindValue(':student_id', $studentID);
-    $stmt->execute();
+        $selectQuery = "SELECT group_number FROM students.students WHERE student_id = :student_id";
+        $stmt = $pdo->prepare($selectQuery);
+        $stmt->bindValue(':student_id', $studentID);
+        $stmt->execute();
+        $oldGroupNumber = $stmt->fetchColumn();
 
-    echo "<b>Student group was updated!</b><br>";
+        echo "
+            student_id: $studentID
+            <br>
+            group_number (old): $oldGroupNumber
+            <br>
+            group_number (new): $newGroupNumber
+            <br>
+            <br>
+        ";
+
+        // Update the group_number
+        $updateQuery = "UPDATE students.students SET group_number = :new_group_number WHERE student_id = :student_id";
+        $stmt = $pdo->prepare($updateQuery);
+        $stmt->bindValue(':new_group_number', $newGroupNumber);
+        $stmt->bindValue(':student_id', $studentID);
+        $stmt->execute();
+
+        echo "<b>Student group was updated!</b><br>";
+    } else {
+        echo "<b>Error:</b> Student with ID $studentID and group number $newGroupNumber does not exist.";
+    }
+
 }
+
 ?>
