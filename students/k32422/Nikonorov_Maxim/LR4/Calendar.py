@@ -44,22 +44,24 @@ def save_event():
     end_time = request.forms.get("end_time")
     description = request.forms.get("description")
 
+    date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
     errors = []
     if not title:
-        errors.append("Title is required.")
+        errors.append("Введи название, чел")
     if not date_str:
-        errors.append("Date is required.")
+        errors.append("Введи дату, чел")
     if not begin_time:
-        errors.append("Begin Time is required.")
+        errors.append("Когда начинаем?")
     if not end_time:
-        errors.append("End Time is required.")
+        errors.append("Когда заканчиваем?")
     if begin_time >= end_time:
-        errors.append("Begin Time must be before End Time.")
+        errors.append("Время должно быть корректным.")
+    if date.year > 2024 or date.year < 2000:
+        errors.append("Мы живем в настоящем.")
 
     if errors:
         return template("C:/Users/HP/Calendar/template/CreateEvent.html", errors=errors)
-
-    date = datetime.strptime(date_str, "%Y-%m-%d").date()
 
     new_event = Event(title=title, date=date, begin_time=begin_time, end_time=end_time, description=description)
     s.add(new_event)
@@ -83,22 +85,25 @@ def save_updated_event(event_id):
     end_time = request.forms.get("end_time")
     description = request.forms.get("description")
 
+    date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
     errors = []
     if not title:
-        errors.append("Title is required.")
+        errors.append("Введи название, чел")
     if not date_str:
-        errors.append("Date is required.")
+        errors.append("Введи дату, чел")
     if not begin_time:
-        errors.append("Begin Time is required.")
+        errors.append("Когда начинаем?")
     if not end_time:
-        errors.append("End Time is required.")
+        errors.append("Когда заканчиваем?")
     if begin_time >= end_time:
-        errors.append("Begin Time must be before End Time.")
+        errors.append("Время должно быть корректным.")
+    if date.year > 2024 or date.year < 2000:
+        errors.append("Мы живем в настоящем.")
 
     if errors:
         return template("C:/Users/HP/Calendar/template/UpdateEvent.html", event=event, errors=errors)
 
-    date = datetime.strptime(date_str, "%Y-%m-%d").date()
     event = s.query(Event).filter_by(id = event_id).update(dict(title = title, date = date, begin_time=begin_time,
                                                            end_time = end_time, description = description))
 
