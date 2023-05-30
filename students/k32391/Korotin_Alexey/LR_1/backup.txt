@@ -1,0 +1,1231 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.1 (Debian 15.1-1.pgdg110+1)
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-03-15 18:44:57 UTC
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3445 (class 1262 OID 16384)
+-- Name: taxi; Type: DATABASE; Schema: -; Owner: root
+--
+
+CREATE DATABASE taxi WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
+
+
+ALTER DATABASE taxi OWNER TO root;
+
+\connect taxi
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 231 (class 1259 OID 16486)
+-- Name: bank_details; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.bank_details (
+    id integer NOT NULL,
+    card_number character(16) NOT NULL,
+    usr_id integer NOT NULL,
+    duration character(5) NOT NULL,
+    cvv character(3) NOT NULL,
+    cardholder_name character varying(50) NOT NULL,
+    CONSTRAINT ck_bank_details_duration CHECK ((duration ~~ '__/__'::text))
+);
+
+
+ALTER TABLE public.bank_details OWNER TO root;
+
+--
+-- TOC entry 230 (class 1259 OID 16485)
+-- Name: bank_details_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.bank_details_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.bank_details_id_seq OWNER TO root;
+
+--
+-- TOC entry 3446 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: bank_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.bank_details_id_seq OWNED BY public.bank_details.id;
+
+
+--
+-- TOC entry 225 (class 1259 OID 16441)
+-- Name: car; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.car (
+    id integer NOT NULL,
+    government_number character(9) NOT NULL,
+    market_price integer NOT NULL,
+    mileage integer NOT NULL,
+    owner character varying(30) NOT NULL,
+    maintenance_date date NOT NULL,
+    type_id integer NOT NULL,
+    CONSTRAINT ck_car_market_price CHECK ((market_price > 0)),
+    CONSTRAINT ck_car_mileage CHECK ((mileage >= 0))
+);
+
+
+ALTER TABLE public.car OWNER TO root;
+
+--
+-- TOC entry 224 (class 1259 OID 16440)
+-- Name: car_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.car_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.car_id_seq OWNER TO root;
+
+--
+-- TOC entry 3447 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: car_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.car_id_seq OWNED BY public.car.id;
+
+
+--
+-- TOC entry 223 (class 1259 OID 16428)
+-- Name: car_type; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.car_type (
+    id integer NOT NULL,
+    model character varying(50) NOT NULL,
+    brand character varying(50) NOT NULL,
+    construction_date date NOT NULL,
+    manufacturer_country character varying(30) NOT NULL,
+    body character varying(20) NOT NULL,
+    displacement double precision NOT NULL,
+    rate_id integer NOT NULL,
+    CONSTRAINT ck_car_type_displacement CHECK ((displacement > (0)::double precision))
+);
+
+
+ALTER TABLE public.car_type OWNER TO root;
+
+--
+-- TOC entry 222 (class 1259 OID 16427)
+-- Name: car_type_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.car_type_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.car_type_id_seq OWNER TO root;
+
+--
+-- TOC entry 3448 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: car_type_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.car_type_id_seq OWNED BY public.car_type.id;
+
+
+--
+-- TOC entry 233 (class 1259 OID 16499)
+-- Name: ordr; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.ordr (
+    id integer NOT NULL,
+    usr_id integer NOT NULL,
+    worker_id integer NOT NULL,
+    car_id integer NOT NULL,
+    time_start_plan timestamp without time zone NOT NULL,
+    address_from character varying(200) NOT NULL,
+    address_to character varying(200) NOT NULL,
+    payment_format character varying(10) NOT NULL,
+    distance_km double precision NOT NULL,
+    driver_rate integer,
+    usr_rate integer,
+    time_start_fact timestamp without time zone NOT NULL,
+    time_end timestamp without time zone NOT NULL,
+    CONSTRAINT ck_ordr_distance CHECK ((distance_km > (0)::double precision)),
+    CONSTRAINT ck_ordr_enf CHECK ((time_end > time_start_fact))
+);
+
+
+ALTER TABLE public.ordr OWNER TO root;
+
+--
+-- TOC entry 232 (class 1259 OID 16498)
+-- Name: ordr_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.ordr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ordr_id_seq OWNER TO root;
+
+--
+-- TOC entry 3449 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: ordr_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.ordr_id_seq OWNED BY public.ordr.id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 16418)
+-- Name: rate; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.rate (
+    id integer NOT NULL,
+    name character varying(20) NOT NULL,
+    price_per_km double precision NOT NULL,
+    CONSTRAINT ck_rate_price_per_km CHECK ((price_per_km > (0)::double precision))
+);
+
+
+ALTER TABLE public.rate OWNER TO root;
+
+--
+-- TOC entry 220 (class 1259 OID 16417)
+-- Name: rate_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.rate_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.rate_id_seq OWNER TO root;
+
+--
+-- TOC entry 3450 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: rate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.rate_id_seq OWNED BY public.rate.id;
+
+
+--
+-- TOC entry 219 (class 1259 OID 16410)
+-- Name: shift; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.shift (
+    id integer NOT NULL,
+    time_from timestamp without time zone NOT NULL,
+    time_to timestamp without time zone NOT NULL,
+    CONSTRAINT ck_shift_duration CHECK ((time_to > time_from))
+);
+
+
+ALTER TABLE public.shift OWNER TO root;
+
+--
+-- TOC entry 218 (class 1259 OID 16409)
+-- Name: shift_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.shift_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.shift_id_seq OWNER TO root;
+
+--
+-- TOC entry 3451 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: shift_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.shift_id_seq OWNED BY public.shift.id;
+
+
+--
+-- TOC entry 229 (class 1259 OID 16479)
+-- Name: usr; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.usr (
+    id integer NOT NULL,
+    first_name character varying(50) NOT NULL,
+    last_name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public.usr OWNER TO root;
+
+--
+-- TOC entry 228 (class 1259 OID 16478)
+-- Name: usr_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.usr_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.usr_id_seq OWNER TO root;
+
+--
+-- TOC entry 3452 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: usr_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.usr_id_seq OWNED BY public.usr.id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 16394)
+-- Name: worker; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.worker (
+    id integer NOT NULL,
+    last_name character varying(50) NOT NULL,
+    first_name character varying(50) NOT NULL,
+    middle_name character varying(50),
+    phone_number character(12) NOT NULL,
+    passport_number character(10) NOT NULL,
+    rating integer DEFAULT 50,
+    position_id integer NOT NULL,
+    CONSTRAINT ck_worker_rating_range CHECK (((rating >= 1) AND (rating <= 100)))
+);
+
+
+ALTER TABLE public.worker OWNER TO root;
+
+--
+-- TOC entry 216 (class 1259 OID 16393)
+-- Name: worker_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.worker_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.worker_id_seq OWNER TO root;
+
+--
+-- TOC entry 3453 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: worker_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.worker_id_seq OWNED BY public.worker.id;
+
+
+--
+-- TOC entry 215 (class 1259 OID 16386)
+-- Name: worker_position; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.worker_position (
+    id integer NOT NULL,
+    category character varying(50) NOT NULL,
+    salary integer NOT NULL,
+    CONSTRAINT ck_worker_position_salary CHECK ((salary > 0))
+);
+
+
+ALTER TABLE public.worker_position OWNER TO root;
+
+--
+-- TOC entry 214 (class 1259 OID 16385)
+-- Name: worker_position_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.worker_position_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.worker_position_id_seq OWNER TO root;
+
+--
+-- TOC entry 3454 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: worker_position_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.worker_position_id_seq OWNED BY public.worker_position.id;
+
+
+--
+-- TOC entry 227 (class 1259 OID 16457)
+-- Name: worker_shift; Type: TABLE; Schema: public; Owner: root
+--
+
+CREATE TABLE public.worker_shift (
+    id integer NOT NULL,
+    worker_id integer NOT NULL,
+    shift_id integer NOT NULL,
+    car_id integer NOT NULL,
+    start_time timestamp without time zone NOT NULL,
+    status character varying(9) NOT NULL
+);
+
+
+ALTER TABLE public.worker_shift OWNER TO root;
+
+--
+-- TOC entry 226 (class 1259 OID 16456)
+-- Name: worker_shift_id_seq; Type: SEQUENCE; Schema: public; Owner: root
+--
+
+CREATE SEQUENCE public.worker_shift_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.worker_shift_id_seq OWNER TO root;
+
+--
+-- TOC entry 3455 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: worker_shift_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: root
+--
+
+ALTER SEQUENCE public.worker_shift_id_seq OWNED BY public.worker_shift.id;
+
+
+--
+-- TOC entry 3230 (class 2604 OID 16522)
+-- Name: bank_details id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.bank_details ALTER COLUMN id SET DEFAULT nextval('public.bank_details_id_seq'::regclass);
+
+
+--
+-- TOC entry 3227 (class 2604 OID 16523)
+-- Name: car id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car ALTER COLUMN id SET DEFAULT nextval('public.car_id_seq'::regclass);
+
+
+--
+-- TOC entry 3226 (class 2604 OID 16524)
+-- Name: car_type id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car_type ALTER COLUMN id SET DEFAULT nextval('public.car_type_id_seq'::regclass);
+
+
+--
+-- TOC entry 3231 (class 2604 OID 16525)
+-- Name: ordr id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.ordr ALTER COLUMN id SET DEFAULT nextval('public.ordr_id_seq'::regclass);
+
+
+--
+-- TOC entry 3225 (class 2604 OID 16526)
+-- Name: rate id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.rate ALTER COLUMN id SET DEFAULT nextval('public.rate_id_seq'::regclass);
+
+
+--
+-- TOC entry 3224 (class 2604 OID 16527)
+-- Name: shift id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.shift ALTER COLUMN id SET DEFAULT nextval('public.shift_id_seq'::regclass);
+
+
+--
+-- TOC entry 3229 (class 2604 OID 16528)
+-- Name: usr id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.usr ALTER COLUMN id SET DEFAULT nextval('public.usr_id_seq'::regclass);
+
+
+--
+-- TOC entry 3222 (class 2604 OID 16529)
+-- Name: worker id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker ALTER COLUMN id SET DEFAULT nextval('public.worker_id_seq'::regclass);
+
+
+--
+-- TOC entry 3221 (class 2604 OID 16530)
+-- Name: worker_position id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_position ALTER COLUMN id SET DEFAULT nextval('public.worker_position_id_seq'::regclass);
+
+
+--
+-- TOC entry 3228 (class 2604 OID 16531)
+-- Name: worker_shift id; Type: DEFAULT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_shift ALTER COLUMN id SET DEFAULT nextval('public.worker_shift_id_seq'::regclass);
+
+
+--
+-- TOC entry 3437 (class 0 OID 16486)
+-- Dependencies: 231
+-- Data for Name: bank_details; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+
+
+--
+-- TOC entry 3431 (class 0 OID 16441)
+-- Dependencies: 225
+-- Data for Name: car; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.car VALUES (7, 'М842НК   ', 2000000, 3000, 'Вася Пупкин', '2023-01-10', 9);
+INSERT INTO public.car VALUES (8, 'А018АА   ', 20000000, 500, 'Бандит', '2022-12-15', 8);
+INSERT INTO public.car VALUES (9, 'Х228АМ   ', 200000000, 5000, 'Бандит', '2022-12-17', 8);
+
+
+--
+-- TOC entry 3429 (class 0 OID 16428)
+-- Dependencies: 223
+-- Data for Name: car_type; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.car_type VALUES (8, 'Logan', 'Renault', '2000-12-12', 'Russia', 'Седан', 50, 15);
+INSERT INTO public.car_type VALUES (9, 'miDo', 'Datsun', '2010-01-02', 'Russia', 'Седан', 40, 16);
+INSERT INTO public.car_type VALUES (10, 'a180', 'Mercedes Benz', '2021-10-10', 'Germany', 'Long', 80, 16);
+
+
+--
+-- TOC entry 3439 (class 0 OID 16499)
+-- Dependencies: 233
+-- Data for Name: ordr; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.ordr VALUES (1, 2, 25, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (2, 3, 24, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (3, 1, 24, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (4, 3, 24, 8, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (5, 1, 25, 9, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (6, 3, 26, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (7, 3, 24, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (8, 2, 24, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (9, 2, 25, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (10, 2, 26, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (11, 3, 25, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (12, 2, 25, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (13, 3, 26, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (14, 3, 23, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (15, 2, 25, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (16, 1, 25, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (17, 1, 25, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (18, 1, 25, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (19, 2, 24, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (20, 3, 25, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (21, 1, 24, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (22, 1, 26, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (23, 1, 25, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (24, 1, 25, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (25, 3, 25, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (26, 3, 26, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (27, 1, 23, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (28, 1, 25, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (29, 1, 24, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (30, 1, 26, 9, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (31, 1, 24, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (32, 3, 25, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (33, 2, 25, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (34, 3, 24, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (35, 1, 23, 7, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (36, 3, 25, 9, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (37, 1, 25, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (38, 2, 25, 7, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (39, 3, 24, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (40, 3, 23, 7, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (41, 1, 26, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (42, 3, 24, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (43, 1, 26, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (44, 2, 23, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (45, 1, 23, 7, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (46, 2, 26, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (47, 1, 26, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (48, 1, 25, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (49, 2, 24, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (50, 3, 25, 8, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (51, 1, 26, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (52, 1, 25, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (53, 2, 26, 9, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (54, 3, 23, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (55, 2, 24, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (56, 2, 26, 9, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (57, 3, 24, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (58, 1, 24, 8, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (59, 2, 26, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (60, 2, 25, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (61, 1, 25, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (62, 2, 25, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (63, 3, 25, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (64, 2, 24, 7, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (65, 1, 24, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (66, 3, 23, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (67, 2, 23, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (68, 3, 24, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (69, 3, 23, 8, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (70, 3, 23, 9, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (71, 2, 25, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (72, 2, 24, 8, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (73, 1, 24, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (74, 1, 24, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (75, 1, 24, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (76, 3, 26, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (77, 1, 26, 9, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (78, 1, 23, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (79, 1, 26, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (80, 3, 23, 9, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (81, 1, 26, 7, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (82, 1, 23, 8, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (83, 2, 24, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (84, 2, 23, 7, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (85, 1, 26, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (86, 2, 25, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (87, 2, 26, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (88, 2, 23, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (89, 3, 25, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (90, 3, 23, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (91, 3, 23, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (92, 2, 24, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (93, 3, 26, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (94, 1, 26, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (95, 1, 25, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (96, 2, 23, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (97, 1, 23, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (98, 2, 26, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (99, 2, 24, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (100, 1, 25, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (101, 1, 26, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (102, 1, 26, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (103, 2, 26, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (104, 2, 25, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (105, 2, 23, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (106, 2, 24, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (107, 1, 25, 7, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (108, 3, 23, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (109, 1, 24, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (110, 1, 26, 8, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (111, 3, 23, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (112, 1, 25, 7, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (113, 2, 23, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (114, 1, 25, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (115, 1, 26, 8, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (116, 1, 26, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (117, 2, 24, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (118, 1, 24, 9, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (119, 1, 26, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (120, 1, 25, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (121, 2, 25, 8, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (122, 3, 25, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (123, 2, 24, 9, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (124, 2, 26, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (125, 3, 25, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (126, 1, 26, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (127, 3, 23, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (128, 2, 26, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (129, 2, 23, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (130, 3, 25, 9, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (131, 1, 26, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (132, 3, 24, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (133, 3, 25, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (134, 1, 24, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (135, 1, 24, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (136, 2, 23, 8, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (137, 1, 23, 7, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (138, 2, 25, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (139, 2, 24, 7, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (140, 3, 23, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (141, 2, 25, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (142, 1, 26, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (143, 3, 25, 8, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (144, 3, 26, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (145, 1, 25, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (146, 2, 26, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (147, 2, 26, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (148, 2, 23, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (149, 1, 24, 9, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (150, 3, 25, 9, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (151, 3, 24, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (152, 2, 23, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (153, 2, 26, 8, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (154, 2, 25, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (155, 1, 23, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (156, 2, 23, 8, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (157, 3, 26, 8, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (158, 3, 26, 7, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (159, 3, 23, 7, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (160, 3, 25, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (161, 1, 25, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (162, 3, 25, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (163, 1, 26, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (164, 1, 25, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (165, 3, 26, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (166, 1, 26, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (167, 3, 23, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (168, 1, 25, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (169, 2, 26, 7, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (170, 1, 23, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (171, 2, 25, 8, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (172, 3, 26, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (173, 3, 23, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (174, 2, 25, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (175, 2, 26, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (176, 2, 23, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (177, 3, 23, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (178, 1, 24, 7, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (179, 3, 23, 8, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (180, 1, 24, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (181, 3, 23, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (182, 2, 26, 9, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (183, 2, 23, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (184, 3, 24, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (185, 3, 23, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (186, 3, 25, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (187, 3, 25, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (188, 1, 26, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (189, 1, 26, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (190, 3, 24, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (191, 2, 23, 9, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (192, 2, 26, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (193, 2, 23, 8, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (194, 3, 23, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (195, 2, 25, 9, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (196, 2, 25, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (197, 2, 23, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (198, 1, 26, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (199, 1, 25, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (200, 1, 23, 9, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (201, 2, 25, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (202, 1, 24, 7, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (203, 1, 25, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (204, 1, 25, 8, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (205, 3, 25, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (206, 1, 24, 8, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (207, 2, 26, 8, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (208, 1, 26, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (209, 2, 26, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (210, 2, 26, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (211, 3, 24, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (212, 2, 25, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (213, 1, 25, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (214, 2, 24, 9, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (215, 3, 25, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (216, 2, 26, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (217, 1, 23, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (218, 1, 25, 9, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (219, 1, 23, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (220, 2, 25, 7, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (221, 1, 26, 9, '2023-03-14 09:05:00', '521521', '5215215', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (222, 3, 26, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (223, 1, 24, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (224, 3, 25, 7, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (225, 2, 26, 9, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (226, 3, 23, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (227, 2, 24, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (228, 2, 26, 8, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (229, 3, 24, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (230, 2, 23, 7, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (231, 1, 24, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (232, 2, 26, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (233, 3, 24, 9, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (234, 2, 23, 7, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (235, 1, 25, 8, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (236, 2, 24, 8, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (237, 2, 25, 7, '2023-03-14 09:05:00', '124', 'МСГ', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (238, 2, 26, 8, '2023-03-14 09:05:00', 'СПБ', 'Москва', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (239, 3, 24, 9, '2023-03-14 09:05:00', 'Привет)', 'Придумывать адреса - сложно', 'Наличными', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (240, 3, 23, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (241, 3, 25, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (242, 3, 26, 9, '2023-03-14 09:05:00', 'Addr from', 'Addr to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (243, 3, 25, 7, '2023-03-14 09:05:00', '214', '251521', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (244, 2, 26, 8, '2023-03-14 09:05:00', 'Биржа', 'Домой в кроватку', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (245, 1, 23, 8, '2023-03-14 09:05:00', 'Hello', 'Hello to', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (246, 2, 25, 9, '2023-03-14 09:05:00', 'Example', 'Example to', 'Наличные', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (247, 3, 26, 7, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (248, 3, 26, 7, '2023-03-14 09:05:00', 'Ул Пушкина, дом Колотушкина', 'ИТМО Гривцова', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (249, 1, 26, 8, '2023-03-14 09:05:00', '412421', '42141241', 'СБП', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+INSERT INTO public.ordr VALUES (250, 2, 25, 8, '2023-03-14 09:05:00', 'Я не знаю какой адрес написать)', 'Ооооооочень длинный адрес', 'По карте', 1.14, NULL, NULL, '2023-03-14 09:10:00', '2023-03-14 09:20:00');
+
+
+--
+-- TOC entry 3427 (class 0 OID 16418)
+-- Dependencies: 221
+-- Data for Name: rate; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.rate VALUES (14, 'Эконом', 1.2);
+INSERT INTO public.rate VALUES (15, 'Комфорт', 2.5);
+INSERT INTO public.rate VALUES (16, 'Бизнес', 5);
+INSERT INTO public.rate VALUES (17, 'Детский', 2.2);
+
+
+--
+-- TOC entry 3425 (class 0 OID 16410)
+-- Dependencies: 219
+-- Data for Name: shift; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.shift VALUES (1, '2023-03-15 09:00:00', '2023-03-15 17:00:00');
+INSERT INTO public.shift VALUES (2, '2023-03-15 09:00:00', '2023-03-15 17:00:00');
+INSERT INTO public.shift VALUES (3, '2023-03-15 09:00:00', '2023-03-15 17:00:00');
+INSERT INTO public.shift VALUES (4, '2023-03-15 09:00:00', '2023-03-15 17:00:00');
+INSERT INTO public.shift VALUES (5, '2023-03-15 09:00:00', '2023-03-15 17:00:00');
+
+
+--
+-- TOC entry 3435 (class 0 OID 16479)
+-- Dependencies: 229
+-- Data for Name: usr; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.usr VALUES (1, 'Вася', 'Пупкин');
+INSERT INTO public.usr VALUES (2, '123421', '412421');
+INSERT INTO public.usr VALUES (3, 'Alexey', '4124');
+
+
+--
+-- TOC entry 3423 (class 0 OID 16394)
+-- Dependencies: 217
+-- Data for Name: worker; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.worker VALUES (23, 'Имя', 'Фамилия', 'Отчество', '+79107439027', '1234567890', 50, 18);
+INSERT INTO public.worker VALUES (24, '123', '444', '4124', '+79107439952', '0987654321', 50, 19);
+INSERT INTO public.worker VALUES (25, '421', 'Bruh', 'Last_name', '+79105259427', '0666644447', 50, 19);
+INSERT INTO public.worker VALUES (26, 'Крутое имя', 'Нереальная фамилия', 'Бомбезное отчество', '+79109999027', '4214892184', 50, 19);
+
+
+--
+-- TOC entry 3421 (class 0 OID 16386)
+-- Dependencies: 215
+-- Data for Name: worker_position; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.worker_position VALUES (2, 'Водитель', 12345);
+INSERT INTO public.worker_position VALUES (3, 'Водитель', 12345);
+INSERT INTO public.worker_position VALUES (4, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (5, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (6, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (7, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (8, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (9, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (10, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (11, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (12, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (13, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (14, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (15, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (16, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (17, 'Старший водитель', 50000);
+INSERT INTO public.worker_position VALUES (18, 'Водитель', 20000);
+INSERT INTO public.worker_position VALUES (19, 'Старший водитель', 50000);
+
+
+--
+-- TOC entry 3433 (class 0 OID 16457)
+-- Dependencies: 227
+-- Data for Name: worker_shift; Type: TABLE DATA; Schema: public; Owner: root
+--
+
+INSERT INTO public.worker_shift VALUES (1, 25, 5, 9, '2023-03-15 09:15:00', 'Опоздал');
+
+
+--
+-- TOC entry 3456 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: bank_details_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.bank_details_id_seq', 1, false);
+
+
+--
+-- TOC entry 3457 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: car_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.car_id_seq', 9, true);
+
+
+--
+-- TOC entry 3458 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: car_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.car_type_id_seq', 10, true);
+
+
+--
+-- TOC entry 3459 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: ordr_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.ordr_id_seq', 250, true);
+
+
+--
+-- TOC entry 3460 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: rate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.rate_id_seq', 17, true);
+
+
+--
+-- TOC entry 3461 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: shift_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.shift_id_seq', 5, true);
+
+
+--
+-- TOC entry 3462 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: usr_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.usr_id_seq', 3, true);
+
+
+--
+-- TOC entry 3463 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: worker_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.worker_id_seq', 26, true);
+
+
+--
+-- TOC entry 3464 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: worker_position_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.worker_position_id_seq', 19, true);
+
+
+--
+-- TOC entry 3465 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: worker_shift_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
+--
+
+SELECT pg_catalog.setval('public.worker_shift_id_seq', 1, true);
+
+
+--
+-- TOC entry 3265 (class 2606 OID 16491)
+-- Name: bank_details bank_details_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.bank_details
+    ADD CONSTRAINT bank_details_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3257 (class 2606 OID 16448)
+-- Name: car car_government_number_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car
+    ADD CONSTRAINT car_government_number_key UNIQUE (government_number);
+
+
+--
+-- TOC entry 3259 (class 2606 OID 16446)
+-- Name: car car_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car
+    ADD CONSTRAINT car_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3255 (class 2606 OID 16433)
+-- Name: car_type car_type_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car_type
+    ADD CONSTRAINT car_type_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3267 (class 2606 OID 16504)
+-- Name: ordr ordr_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.ordr
+    ADD CONSTRAINT ordr_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3251 (class 2606 OID 16425)
+-- Name: rate rate_name_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.rate
+    ADD CONSTRAINT rate_name_key UNIQUE (name);
+
+
+--
+-- TOC entry 3253 (class 2606 OID 16423)
+-- Name: rate rate_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.rate
+    ADD CONSTRAINT rate_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3249 (class 2606 OID 16415)
+-- Name: shift shift_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.shift
+    ADD CONSTRAINT shift_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3263 (class 2606 OID 16484)
+-- Name: usr usr_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.usr
+    ADD CONSTRAINT usr_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3245 (class 2606 OID 16402)
+-- Name: worker worker_passport_number_key; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT worker_passport_number_key UNIQUE (passport_number);
+
+
+--
+-- TOC entry 3247 (class 2606 OID 16400)
+-- Name: worker worker_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT worker_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3243 (class 2606 OID 16391)
+-- Name: worker_position worker_position_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_position
+    ADD CONSTRAINT worker_position_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3261 (class 2606 OID 16462)
+-- Name: worker_shift worker_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_shift
+    ADD CONSTRAINT worker_shift_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3274 (class 2606 OID 16492)
+-- Name: bank_details fk_bank_details_on_usr; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.bank_details
+    ADD CONSTRAINT fk_bank_details_on_usr FOREIGN KEY (usr_id) REFERENCES public.usr(id);
+
+
+--
+-- TOC entry 3270 (class 2606 OID 16451)
+-- Name: car fk_car_on_car_type; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car
+    ADD CONSTRAINT fk_car_on_car_type FOREIGN KEY (type_id) REFERENCES public.car_type(id);
+
+
+--
+-- TOC entry 3269 (class 2606 OID 16435)
+-- Name: car_type fk_car_type_on_type; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.car_type
+    ADD CONSTRAINT fk_car_type_on_type FOREIGN KEY (rate_id) REFERENCES public.rate(id);
+
+
+--
+-- TOC entry 3275 (class 2606 OID 16515)
+-- Name: ordr fk_ordr_on_car; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.ordr
+    ADD CONSTRAINT fk_ordr_on_car FOREIGN KEY (car_id) REFERENCES public.car(id);
+
+
+--
+-- TOC entry 3276 (class 2606 OID 16505)
+-- Name: ordr fk_ordr_on_usr; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.ordr
+    ADD CONSTRAINT fk_ordr_on_usr FOREIGN KEY (usr_id) REFERENCES public.usr(id);
+
+
+--
+-- TOC entry 3277 (class 2606 OID 16510)
+-- Name: ordr fk_ordr_on_worker; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.ordr
+    ADD CONSTRAINT fk_ordr_on_worker FOREIGN KEY (worker_id) REFERENCES public.worker(id);
+
+
+--
+-- TOC entry 3268 (class 2606 OID 16403)
+-- Name: worker fk_worker_on_worker_position; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker
+    ADD CONSTRAINT fk_worker_on_worker_position FOREIGN KEY (position_id) REFERENCES public.worker_position(id);
+
+
+--
+-- TOC entry 3271 (class 2606 OID 16473)
+-- Name: worker_shift fk_worker_shift_on_car; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_shift
+    ADD CONSTRAINT fk_worker_shift_on_car FOREIGN KEY (car_id) REFERENCES public.car(id);
+
+
+--
+-- TOC entry 3272 (class 2606 OID 16468)
+-- Name: worker_shift fk_worker_shift_on_shift; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_shift
+    ADD CONSTRAINT fk_worker_shift_on_shift FOREIGN KEY (shift_id) REFERENCES public.shift(id);
+
+
+--
+-- TOC entry 3273 (class 2606 OID 16463)
+-- Name: worker_shift fk_worker_shift_on_worker; Type: FK CONSTRAINT; Schema: public; Owner: root
+--
+
+ALTER TABLE ONLY public.worker_shift
+    ADD CONSTRAINT fk_worker_shift_on_worker FOREIGN KEY (worker_id) REFERENCES public.worker(id);
+
+
+-- Completed on 2023-03-15 18:44:57 UTC
+
+--
+-- PostgreSQL database dump complete
+--
+
