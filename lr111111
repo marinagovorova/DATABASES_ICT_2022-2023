@@ -1,0 +1,912 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.7 (Homebrew)
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-05-31 21:18:16 MSK
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 7 (class 2615 OID 16542)
+-- Name: lr1.2; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA "lr1.2";
+
+
+ALTER SCHEMA "lr1.2" OWNER TO postgres;
+
+--
+-- TOC entry 6 (class 2615 OID 16660)
+-- Name: popa; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA popa;
+
+
+ALTER SCHEMA popa OWNER TO postgres;
+
+--
+-- TOC entry 4 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: elizaveta
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+ALTER SCHEMA public OWNER TO elizaveta;
+
+--
+-- TOC entry 224 (class 1255 OID 16804)
+-- Name: orders_employee_for_date(date, integer); Type: FUNCTION; Schema: public; Owner: elizaveta
+--
+
+CREATE FUNCTION public.orders_employee_for_date(date date, id_person integer) RETURNS TABLE(id_order integer, price double precision, id_table integer, date_order date)
+    LANGUAGE plpgsql
+    AS $$ BEGIN
+return query
+select "lr1.2".order.id_order,"lr1.2".order.price, "lr1.2".order.id_table, "lr1.2".order.date_order from  "lr1.2".order where "lr1.2".order.date_order = date and  "lr1.2".order.id_employee = id_person;
+END;
+$$;
+
+
+ALTER FUNCTION public.orders_employee_for_date(date date, id_person integer) OWNER TO elizaveta;
+
+--
+-- TOC entry 225 (class 1255 OID 16806)
+-- Name: total_price_for_order(integer); Type: FUNCTION; Schema: public; Owner: elizaveta
+--
+
+CREATE FUNCTION public.total_price_for_order(id integer) RETURNS integer
+    LANGUAGE plpgsql
+    AS $$ BEGIN
+return 
+(select sum(total_sum_for_dish) from (select "lr1.2".order_list.id_order, "lr1.2".order_list.id_dish, "lr1.2".order_list.amount * "lr1.2".dish.price as total_sum_for_dish from "lr1.2".order_list join "lr1.2".dish using(id_dish) where "lr1.2".order_list.id_order = id ) as h);
+END;
+$$;
+
+
+ALTER FUNCTION public.total_price_for_order(id integer) OWNER TO elizaveta;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 214 (class 1259 OID 16569)
+-- Name: customer; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".customer (
+    id_customer integer NOT NULL,
+    full_name text NOT NULL,
+    contacts text NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".customer OWNER TO postgres;
+
+--
+-- TOC entry 211 (class 1259 OID 16543)
+-- Name: dish; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".dish (
+    id_dish integer NOT NULL,
+    name_dish text NOT NULL,
+    calories double precision NOT NULL,
+    price double precision NOT NULL,
+    id_employee integer NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".dish OWNER TO postgres;
+
+--
+-- TOC entry 221 (class 1259 OID 16750)
+-- Name: dish_list; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".dish_list (
+    id_dish integer NOT NULL,
+    id_ingredient integer NOT NULL,
+    amount double precision NOT NULL,
+    id_dish_list integer NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".dish_list OWNER TO postgres;
+
+--
+-- TOC entry 215 (class 1259 OID 16576)
+-- Name: employee; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".employee (
+    id_employee integer NOT NULL,
+    full_name text NOT NULL,
+    passport_datas text NOT NULL,
+    id_position integer NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".employee OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16595)
+-- Name: ingredient; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".ingredient (
+    id_ingredient integer NOT NULL,
+    type_ingredient text NOT NULL,
+    necessary_margin double precision NOT NULL,
+    quantity_in_stock double precision NOT NULL,
+    price_100_gramm integer
+);
+
+
+ALTER TABLE "lr1.2".ingredient OWNER TO postgres;
+
+--
+-- TOC entry 213 (class 1259 OID 16557)
+-- Name: order; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2"."order" (
+    id_order integer NOT NULL,
+    date_order date NOT NULL,
+    date_booking date,
+    id_employee integer NOT NULL,
+    employment_status text NOT NULL,
+    id_table integer NOT NULL,
+    id_customer integer NOT NULL,
+    price double precision NOT NULL
+);
+
+
+ALTER TABLE "lr1.2"."order" OWNER TO postgres;
+
+--
+-- TOC entry 212 (class 1259 OID 16550)
+-- Name: order_list; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".order_list (
+    id_order integer NOT NULL,
+    id_employee integer NOT NULL,
+    id_dish integer NOT NULL,
+    status text NOT NULL,
+    comment text,
+    amount integer NOT NULL,
+    id_order_list integer NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".order_list OWNER TO postgres;
+
+--
+-- TOC entry 216 (class 1259 OID 16583)
+-- Name: position; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2"."position" (
+    id_position integer NOT NULL,
+    name_position text NOT NULL,
+    category text NOT NULL,
+    salary double precision NOT NULL
+);
+
+
+ALTER TABLE "lr1.2"."position" OWNER TO postgres;
+
+--
+-- TOC entry 219 (class 1259 OID 16607)
+-- Name: supplier; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".supplier (
+    name text NOT NULL,
+    country text NOT NULL,
+    id_supplier integer NOT NULL,
+    address text NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".supplier OWNER TO postgres;
+
+--
+-- TOC entry 218 (class 1259 OID 16602)
+-- Name: supply; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2".supply (
+    id_supply integer NOT NULL,
+    id_supplier integer NOT NULL,
+    id_ingredient integer NOT NULL,
+    date_supply date NOT NULL,
+    price double precision NOT NULL,
+    shelf_ife date NOT NULL,
+    volume double precision NOT NULL
+);
+
+
+ALTER TABLE "lr1.2".supply OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16678)
+-- Name: table; Type: TABLE; Schema: lr1.2; Owner: postgres
+--
+
+CREATE TABLE "lr1.2"."table" (
+    id_table integer NOT NULL,
+    id_employee integer NOT NULL
+);
+
+
+ALTER TABLE "lr1.2"."table" OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16791)
+-- Name: amount_dishes_for_date; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.amount_dishes_for_date AS
+ SELECT f.id_dish,
+    dish.name_dish,
+    f.sum_amount
+   FROM (( SELECT order_list.id_dish,
+            sum(order_list.amount) AS sum_amount
+           FROM ("lr1.2"."order"
+             JOIN "lr1.2".order_list USING (id_order))
+          WHERE ("order".date_order = '2023-04-05'::date)
+          GROUP BY order_list.id_dish) f
+     JOIN "lr1.2".dish USING (id_dish));
+
+
+ALTER TABLE public.amount_dishes_for_date OWNER TO postgres;
+
+--
+-- TOC entry 222 (class 1259 OID 16785)
+-- Name: price_for_ingredient; Type: VIEW; Schema: public; Owner: postgres
+--
+
+CREATE VIEW public.price_for_ingredient AS
+ SELECT dish.name_dish,
+    sum(ingredient.price_100_gramm) AS sum
+   FROM (((( SELECT dish_1.id_dish
+           FROM "lr1.2".dish dish_1
+          WHERE (dish_1.name_dish = 'сопли'::text)) s
+     JOIN "lr1.2".dish_list USING (id_dish))
+     JOIN "lr1.2".ingredient USING (id_ingredient))
+     JOIN "lr1.2".dish USING (id_dish))
+  GROUP BY dish.name_dish;
+
+
+ALTER TABLE public.price_for_ingredient OWNER TO postgres;
+
+--
+-- TOC entry 3703 (class 0 OID 16569)
+-- Dependencies: 214
+-- Data for Name: customer; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".customer (id_customer, full_name, contacts) FROM stdin;
+6	ецаворуца	телефон
+5	н	телефон
+4	г	телефон
+3	р	телефон
+2	в\n	телефон
+1	Попейг Олегович\n	+ 7 111 111 11 11
+\.
+
+
+--
+-- TOC entry 3700 (class 0 OID 16543)
+-- Dependencies: 211
+-- Data for Name: dish; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".dish (id_dish, name_dish, calories, price, id_employee) FROM stdin;
+1	сопли	5	9000	3
+2	кирпичи	9685895	578	9
+3	яйца	68	58	10
+4	паша	6569	867	11
+6	волосы капибары	345	56785	9
+5	цианистый калий	578	546	3
+7	стекло	7658	5597	3
+\.
+
+
+--
+-- TOC entry 3710 (class 0 OID 16750)
+-- Dependencies: 221
+-- Data for Name: dish_list; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".dish_list (id_dish, id_ingredient, amount, id_dish_list) FROM stdin;
+3	2	8	3
+1	1	58	1
+2	3	6943	7
+1	3	789	6
+2	4	534	2
+4	4	5	4
+1	4	68	5
+\.
+
+
+--
+-- TOC entry 3704 (class 0 OID 16576)
+-- Dependencies: 215
+-- Data for Name: employee; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".employee (id_employee, full_name, passport_datas, id_position) FROM stdin;
+5	лоурпашгкураш	дшцпувлоу3иатуа	5
+4	шдкрапдлк3иаол	удршаплодиуцба	4
+3	шрукашпукла	урдлкаоилукобм	3
+2	ыаорикуолимлоук	шукдалпгуклдицаьс	2
+1	рашщрклдабукыы	дцграпоапвждурдкиплоц	1
+8	овна	блорпвачстми	1
+6	попейг	шгнервачспоаплр	1
+11	а я повар	какова твоя проффесссияапшг	3
+10	а ты не повар	какова твоя проффесссия повар	3
+9	я такйо повар	какова твоя проффесссия	3
+7	Марина Михайловна 💕 лучшая	длпгаонрачспм	1
+12	паляхова жанна олеговна	5617 676756 pasport	3
+\.
+
+
+--
+-- TOC entry 3706 (class 0 OID 16595)
+-- Dependencies: 217
+-- Data for Name: ingredient; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".ingredient (id_ingredient, type_ingredient, necessary_margin, quantity_in_stock, price_100_gramm) FROM stdin;
+1	молочка	200	600	20
+2	овощ	400	400	50
+3	фрукт	700	800	100
+4	человечина	600	500	60000
+\.
+
+
+--
+-- TOC entry 3702 (class 0 OID 16557)
+-- Dependencies: 213
+-- Data for Name: order; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2"."order" (id_order, date_order, date_booking, id_employee, employment_status, id_table, id_customer, price) FROM stdin;
+3	2023-05-16	2005-05-09	1	занят	3	3	87933
+8	2023-04-05	2023-04-05	7	занят	1	1	8
+7	2023-04-05	2023-04-05	6	занят	3	1	69
+4	2023-04-05	2023-04-05	6	пгл	3	1	78
+2	2023-05-09	2005-05-09	1	холост	2	2	3900
+9	2023-04-05	2023-04-05	8	занят	1	2	450000
+6	2023-04-05	2023-04-05	8	занят	1	1	40000
+1	2023-05-05	2005-05-09	1	занят	1	1	1950
+5	2023-04-05	2023-04-05	7	лло	2	1	450
+\.
+
+
+--
+-- TOC entry 3701 (class 0 OID 16550)
+-- Dependencies: 212
+-- Data for Name: order_list; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".order_list (id_order, id_employee, id_dish, status, comment, amount, id_order_list) FROM stdin;
+3	3	3	не готово	без слез	8	3
+2	2	2	не готово	без денег	7	2
+1	1	1	готово	без людей	4	1
+1	1	3	готов	\N	2	12
+5	1	1	готов	\N	4	11
+9	1	3	готов	\N	1	10
+6	1	2	готов	\N	1	9
+9	1	1	готов	\N	5	8
+5	3	3	готов	\N	1	7
+1	2	2	готов	\N	1	6
+2	3	1	готов	\N	1	5
+1	2	1	готов	\N	1	4
+\.
+
+
+--
+-- TOC entry 3705 (class 0 OID 16583)
+-- Dependencies: 216
+-- Data for Name: position; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2"."position" (id_position, name_position, category, salary) FROM stdin;
+5	пианист	бог	5
+4	шев	низшая	4
+3	повар	высшая	3
+2	менеджер	2	2
+1	официант	1	1
+\.
+
+
+--
+-- TOC entry 3708 (class 0 OID 16607)
+-- Dependencies: 219
+-- Data for Name: supplier; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".supplier (name, country, id_supplier, address) FROM stdin;
+клгапр ушкгшщекп	сша	5	дом у дома
+агуркащшвраукшдгп	америка	4	дом в доме
+ушанрштг украпщшду	сша	3	дом на улице
+ещкерееее	америка	2	вилла
+шщуаршлкп	сша	1	какой то дом
+\.
+
+
+--
+-- TOC entry 3707 (class 0 OID 16602)
+-- Dependencies: 218
+-- Data for Name: supply; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2".supply (id_supply, id_supplier, id_ingredient, date_supply, price, shelf_ife, volume) FROM stdin;
+3	3	3	2006-05-05	400	2006-05-05	900
+2	2	2	2006-05-05	500	2006-05-05	700
+1	1	1	2006-05-05	500	2006-05-05	600
+4	2	4	2006-05-05	6000000	2006-05-05	100
+\.
+
+
+--
+-- TOC entry 3709 (class 0 OID 16678)
+-- Dependencies: 220
+-- Data for Name: table; Type: TABLE DATA; Schema: lr1.2; Owner: postgres
+--
+
+COPY "lr1.2"."table" (id_table, id_employee) FROM stdin;
+1	1
+2	6
+3	7
+4	8
+5	1
+6	1
+7	6
+8	8
+9	7
+10	6
+\.
+
+
+--
+-- TOC entry 3503 (class 2606 OID 16617)
+-- Name: dish calories; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".dish
+    ADD CONSTRAINT calories CHECK ((calories > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3529 (class 2606 OID 16666)
+-- Name: customer customer_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".customer
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (id_customer);
+
+
+--
+-- TOC entry 3520 (class 2606 OID 16768)
+-- Name: dish_list dish_list_amount_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".dish_list
+    ADD CONSTRAINT dish_list_amount_check CHECK ((amount > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3521 (class 2606 OID 16771)
+-- Name: dish_list dish_list_id_dish_list_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".dish_list
+    ADD CONSTRAINT dish_list_id_dish_list_check CHECK ((id_dish_list > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3545 (class 2606 OID 16770)
+-- Name: dish_list dish_list_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".dish_list
+    ADD CONSTRAINT dish_list_pkey PRIMARY KEY (id_dish_list);
+
+
+--
+-- TOC entry 3523 (class 2606 OID 16549)
+-- Name: dish dish_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".dish
+    ADD CONSTRAINT dish_pkey PRIMARY KEY (id_dish);
+
+
+--
+-- TOC entry 3531 (class 2606 OID 16739)
+-- Name: employee employee_passport_datas_passport_datas1_key; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".employee
+    ADD CONSTRAINT employee_passport_datas_passport_datas1_key UNIQUE (passport_datas) INCLUDE (passport_datas);
+
+
+--
+-- TOC entry 3533 (class 2606 OID 16675)
+-- Name: employee employee_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".employee
+    ADD CONSTRAINT employee_pkey PRIMARY KEY (id_employee);
+
+
+--
+-- TOC entry 3508 (class 2606 OID 16615)
+-- Name: customer id_customer; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".customer
+    ADD CONSTRAINT id_customer CHECK ((id_customer > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3504 (class 2606 OID 16616)
+-- Name: dish id_dish; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".dish
+    ADD CONSTRAINT id_dish CHECK ((id_dish > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3509 (class 2606 OID 16622)
+-- Name: employee id_employee; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".employee
+    ADD CONSTRAINT id_employee CHECK ((id_employee > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3510 (class 2606 OID 16623)
+-- Name: employee id_position; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".employee
+    ADD CONSTRAINT id_position CHECK ((id_position > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3513 (class 2606 OID 16740)
+-- Name: ingredient ingredient_id_ingredient_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".ingredient
+    ADD CONSTRAINT ingredient_id_ingredient_check CHECK ((id_ingredient > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3514 (class 2606 OID 16741)
+-- Name: ingredient ingredient_necessary_margin_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".ingredient
+    ADD CONSTRAINT ingredient_necessary_margin_check CHECK ((necessary_margin > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3537 (class 2606 OID 16601)
+-- Name: ingredient ingredient_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".ingredient
+    ADD CONSTRAINT ingredient_pkey PRIMARY KEY (id_ingredient);
+
+
+--
+-- TOC entry 3515 (class 2606 OID 16742)
+-- Name: ingredient ingredient_quantity_in_stock_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".ingredient
+    ADD CONSTRAINT ingredient_quantity_in_stock_check CHECK ((quantity_in_stock > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3507 (class 2606 OID 16743)
+-- Name: order order_id_order_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2"."order"
+    ADD CONSTRAINT order_id_order_check CHECK ((id_order > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3506 (class 2606 OID 16774)
+-- Name: order_list order_list_id_order_list_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".order_list
+    ADD CONSTRAINT order_list_id_order_list_check CHECK ((id_order_list > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3525 (class 2606 OID 16773)
+-- Name: order_list order_list_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".order_list
+    ADD CONSTRAINT order_list_pkey PRIMARY KEY (id_order_list);
+
+
+--
+-- TOC entry 3527 (class 2606 OID 16673)
+-- Name: order order_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."order"
+    ADD CONSTRAINT order_pkey PRIMARY KEY (id_order);
+
+
+--
+-- TOC entry 3511 (class 2606 OID 16744)
+-- Name: position position_id_position_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2"."position"
+    ADD CONSTRAINT position_id_position_check CHECK ((id_position > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3535 (class 2606 OID 16589)
+-- Name: position position_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."position"
+    ADD CONSTRAINT position_pkey PRIMARY KEY (id_position);
+
+
+--
+-- TOC entry 3512 (class 2606 OID 16745)
+-- Name: position position_salary_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2"."position"
+    ADD CONSTRAINT position_salary_check CHECK ((salary > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3505 (class 2606 OID 16618)
+-- Name: dish price; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".dish
+    ADD CONSTRAINT price CHECK ((price > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3518 (class 2606 OID 16746)
+-- Name: supplier supplier_id_supplier_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".supplier
+    ADD CONSTRAINT supplier_id_supplier_check CHECK ((id_supplier > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3541 (class 2606 OID 16613)
+-- Name: supplier supplier_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".supplier
+    ADD CONSTRAINT supplier_pkey PRIMARY KEY (id_supplier);
+
+
+--
+-- TOC entry 3516 (class 2606 OID 16747)
+-- Name: supply supply_id_supply_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".supply
+    ADD CONSTRAINT supply_id_supply_check CHECK ((id_supply > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3539 (class 2606 OID 16677)
+-- Name: supply supply_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".supply
+    ADD CONSTRAINT supply_pkey PRIMARY KEY (id_supply);
+
+
+--
+-- TOC entry 3517 (class 2606 OID 16748)
+-- Name: supply supply_price_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2".supply
+    ADD CONSTRAINT supply_price_check CHECK ((price > (0)::double precision)) NOT VALID;
+
+
+--
+-- TOC entry 3519 (class 2606 OID 16749)
+-- Name: table table_id_table_check; Type: CHECK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE "lr1.2"."table"
+    ADD CONSTRAINT table_id_table_check CHECK ((id_table > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3543 (class 2606 OID 16682)
+-- Name: table table_pkey; Type: CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."table"
+    ADD CONSTRAINT table_pkey PRIMARY KEY (id_table);
+
+
+--
+-- TOC entry 3550 (class 2606 OID 16693)
+-- Name: order customer; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."order"
+    ADD CONSTRAINT customer FOREIGN KEY (id_customer) REFERENCES "lr1.2".customer(id_customer) NOT VALID;
+
+
+--
+-- TOC entry 3547 (class 2606 OID 16718)
+-- Name: order_list dish; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".order_list
+    ADD CONSTRAINT dish FOREIGN KEY (id_dish) REFERENCES "lr1.2".dish(id_dish) NOT VALID;
+
+
+--
+-- TOC entry 3546 (class 2606 OID 16775)
+-- Name: dish dish_id_employee_fkey; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".dish
+    ADD CONSTRAINT dish_id_employee_fkey FOREIGN KEY (id_employee) REFERENCES "lr1.2".employee(id_employee) NOT VALID;
+
+
+--
+-- TOC entry 3557 (class 2606 OID 16758)
+-- Name: dish_list dish_list_id_dish_fkey; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".dish_list
+    ADD CONSTRAINT dish_list_id_dish_fkey FOREIGN KEY (id_dish) REFERENCES "lr1.2".dish(id_dish) NOT VALID;
+
+
+--
+-- TOC entry 3558 (class 2606 OID 16763)
+-- Name: dish_list dish_list_id_ingredient_fkey; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".dish_list
+    ADD CONSTRAINT dish_list_id_ingredient_fkey FOREIGN KEY (id_ingredient) REFERENCES "lr1.2".ingredient(id_ingredient) NOT VALID;
+
+
+--
+-- TOC entry 3551 (class 2606 OID 16683)
+-- Name: order employee; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."order"
+    ADD CONSTRAINT employee FOREIGN KEY (id_employee) REFERENCES "lr1.2".employee(id_employee) NOT VALID;
+
+
+--
+-- TOC entry 3548 (class 2606 OID 16713)
+-- Name: order_list employee; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".order_list
+    ADD CONSTRAINT employee FOREIGN KEY (id_employee) REFERENCES "lr1.2".employee(id_employee) NOT VALID;
+
+
+--
+-- TOC entry 3554 (class 2606 OID 16733)
+-- Name: supply ingredient; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".supply
+    ADD CONSTRAINT ingredient FOREIGN KEY (id_ingredient) REFERENCES "lr1.2".ingredient(id_ingredient) NOT VALID;
+
+
+--
+-- TOC entry 3549 (class 2606 OID 16708)
+-- Name: order_list order; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".order_list
+    ADD CONSTRAINT "order" FOREIGN KEY (id_order) REFERENCES "lr1.2"."order"(id_order) NOT VALID;
+
+
+--
+-- TOC entry 3553 (class 2606 OID 16723)
+-- Name: employee position; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".employee
+    ADD CONSTRAINT "position" FOREIGN KEY (id_position) REFERENCES "lr1.2"."position"(id_position) NOT VALID;
+
+
+--
+-- TOC entry 3555 (class 2606 OID 16728)
+-- Name: supply supplier; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2".supply
+    ADD CONSTRAINT supplier FOREIGN KEY (id_supplier) REFERENCES "lr1.2".supplier(id_supplier) NOT VALID;
+
+
+--
+-- TOC entry 3552 (class 2606 OID 16688)
+-- Name: order table; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."order"
+    ADD CONSTRAINT "table" FOREIGN KEY (id_table) REFERENCES "lr1.2"."table"(id_table) NOT VALID;
+
+
+--
+-- TOC entry 3556 (class 2606 OID 16796)
+-- Name: table table_id_employee_fkey; Type: FK CONSTRAINT; Schema: lr1.2; Owner: postgres
+--
+
+ALTER TABLE ONLY "lr1.2"."table"
+    ADD CONSTRAINT table_id_employee_fkey FOREIGN KEY (id_employee) REFERENCES "lr1.2".employee(id_employee) ON UPDATE CASCADE ON DELETE CASCADE NOT VALID;
+
+
+--
+-- TOC entry 3716 (class 0 OID 0)
+-- Dependencies: 7
+-- Name: SCHEMA "lr1.2"; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON SCHEMA "lr1.2" TO PUBLIC;
+GRANT ALL ON SCHEMA "lr1.2" TO elizaveta;
+
+
+--
+-- TOC entry 3717 (class 0 OID 0)
+-- Dependencies: 4
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: elizaveta
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2023-05-31 21:18:17 MSK
+
+--
+-- PostgreSQL database dump complete
+--
+
