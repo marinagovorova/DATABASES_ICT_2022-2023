@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <title>Calendar</title>
+
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+            color: #202124;
+        }
+
+        .calendar-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: #4285F4;
+            color: #fff;
+        }
+
+        .calendar-header a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .calendar-table th {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+            background-color: #4285F4;
+        }
+
+        .calendar-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .empty-cell {
+            background-color: #eee;
+        }
+
+        .event-section {
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .event-section a {
+            color: #4285F4;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .event-section .update-button {
+            color: #4285F4;
+            border: 1px solid #4285F4;
+            background-color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .event-section .create-button {
+            color: #fff;
+            border: 1px solid #4285F4;
+            background-color: #4285F4;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .event-section .delete-button {
+            color: #fff;
+            background-color: #dc3545;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
+        .event-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .event-section li {
+            margin-bottom: 10px;
+        }
+
+        .event-section span {
+            margin-right: 10px;
+            color: #202124;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calendar-container">
+        <h1>CALENDAR</h1>
+        <div class="calendar-header">
+            <a href="/calendar?month={{ month-1 if month > 1 else 12 }}&year={{ year if month > 1 else year-1 }}">Previous
+                Month</a>
+            <span>{{ month }} / {{ year }}</span>
+            <a href="/calendar?month={{ month+1 if month < 12 else 1 }}&year={{ year if month < 12 else year+1 }}">Next
+                Month</a>
+        </div>
+
+        <table class="calendar-table">
+            <tr>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+            </tr>
+            % for week in calendar:
+            <tr>
+                % for day in week:
+                % if day == 0:
+                <td class="empty-cell"></td>
+                % else:
+                <td>{{ day }}</td>
+                % end
+                % end
+            </tr>
+            % end
+        </table>
+
+        <div class="event-section">
+            <a href="/create_event" class="create-button">Create Event</a>
+            <ul>
+                % for event in events:
+                <li>
+                    <span>{{ event.date }} | {{ event.title }} {{ event.begin_time}} -
+                        {{event.end_time }}</span>
+                    <a href="/update_event/{{ event.id }}" class="update-button">Edit</a>
+                    <a href="/delete_event/{{ event.id }}" class="delete-button">Delete</a>
+                </li>
+                % end
+            </ul>
+        </div>
+    </div>
+
+</body>
+
+</html>

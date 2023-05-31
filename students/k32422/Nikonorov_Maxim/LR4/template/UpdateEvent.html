@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Update Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .event-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .event-form {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            color: #ff0000;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="event-container">
+        <h1>Update Event</h1>
+        <div class="event-form">
+            <form action="/save_event/{{ event.id }}" method="POST">
+                <input type="hidden" name="event_id" value="{{ event.id }}">
+                <label for="title">Title:</label>
+                <input type="text" id="title" name="title" value="{{ event.title }}" required>
+                <br>
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%d') }}" required>
+                <br>
+                <label for="begin_time">Begin Time:</label>
+                <input type="time" id="begin_time" name="begin_time" value="{{ event.begin_time.strftime('%H:%M:%S') }}"
+                    required>
+                <br>
+                <label for="end_time">End Time:</label>
+                <input type="time" id="end_time" name="end_time" value="{{ event.end_time.strftime('%H:%M:%S') }}"
+                    required>
+                <br>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description">{{ event.description }}</textarea>
+                <br>
+                <input type="submit" value="Update Event">
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
