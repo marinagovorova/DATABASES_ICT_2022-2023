@@ -1,0 +1,18 @@
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Русский язык', 14, 13, 6, 6, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('История', 14, 8, 12, 12, 'Зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Экономика', 10, 11, 11, 11, 'Экзамен');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Экология', 7, 8, 7, 8, 'Зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Философия', 11, 8, 8, 15, 'Зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Общая физика', 13, 16, 10, 8, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Психология', 14, 10, 8, 7, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Социология', 10, 12, 9, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Астрономия', 7, 6, 8, 15, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Дискретная математика', 8, 9, 12, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Теория вероятностей', 6, 14, 14, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Информатика', 14, 11, 10, 11, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Компьютерные сети', 14, 13, 16, 15, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Химия', 16, 12, 16, 10, 'Зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Статистика', 11, 13, 14, 12, 'Зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Оптика', 8, 15, 11, 6, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Средства веб-программирования', 16, 12, 11, 11, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES ('Физкультура', 14, 16, 16, 15, 'Экзамен');

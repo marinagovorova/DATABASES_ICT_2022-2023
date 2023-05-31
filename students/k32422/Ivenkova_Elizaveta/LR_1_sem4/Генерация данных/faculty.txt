@@ -1,0 +1,6 @@
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (1, 'Факультет 1');
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (2, 'Факультет 2');
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (3, 'Факультет 3');
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (4, 'Факультет 4');
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (5, 'Факультет 5');
+INSERT INTO session.faculty (building_id, faculty_name) VALUES (6, 'Факультет 6');
