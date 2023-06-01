@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exercise Tracker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #333333;
+      background-color: #f2f2f2;
+    }
+
+    a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+
+    header {
+      background-color: #ffffff;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .form-container {
+      background-color: #ffffff;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #dddddd;
+    }
+
+    button[type="submit"] {
+      border: none;
+      background-color: #0077cc;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #005fa3;
+    }
+    .exercise-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .exercise-list__item {
+      background-color: #ffffff;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      width: 48%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exercise-list__name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .exercise-list__description {
+      margin-bottom: 10px;
+    }
+
+    .exercise-list__buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .exercise-list__button {
+      border: none;
+      background-color: #ff6666;
+      color: #ffffff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .exercise-list__button:hover {
+      background-color: #e60000;
+    }
+
+    @media (max-width: 768px) {
+      .exercise-list__item {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Exercise Tracker</h1>
+  </header>
+
+  <main>
+    <div class="form-container">
+      <h2>Create Exercise</h2>
+      <form method="post" action="/exercises" id="exercise-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" required>
+
+        <button type="submit">Create</button>
+      </form>
+    </div>
+
+    <ul class="exercise-list" id="exercises"></ul>
+  </main>
+
+  <script>
+    const exercisesList = document.getElementById('exercises');
+    const exerciseForm = document.getElementById('exercise-form');
+
+    const deleteExercise = (id) => {
+      fetch(`/exercises/${id}`, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Exercise deleted:', result);
+          renderExercises();
+        });
+    };
+
+    const editExercise = (id, name, description) => {
+      const updatedName = prompt('Enter the new name', name);
+      const updatedDescription = prompt('Enter the new description', description);
+
+      const data = {
+        name: updatedName,
+        description: updatedDescription
+      };
+
+      fetch(`/exercises/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Exercise updated:', result);
+          renderExercises();
+        });
+    };
+
+    const addExercise = (exercise) => {
+      const li = document.createElement('li');
+      li.classList.add('exercise-list__item');
+      li.innerHTML = `
+        <div>
+          <span class="exercise-list__name">${exercise.name}</span>
+          <p class="exercise-list__description">${exercise.description}</p>
+        </div>
+        <div class="exercise-list__buttons">
+          <button class="exercise-list__button" onclick="deleteExercise(${exercise.id})">Delete</button>
+          <button class="exercise-list__button" onclick="editExercise(${exercise.id}, '${exercise.name}', '${exercise.description}')">Edit</button>
+        </div>
+      `;
+      exercisesList.appendChild(li);
+    };
+
+    const renderExercises = () => {
+      fetch('/exercises')
+        .then(response => response.json())
+        .then(exercises => {
+          exercisesList.innerHTML = '';
+
+          exercises.forEach(exercise => {
+            addExercise(exercise);
+          });
+        });
+    };
+
+    exerciseForm.addEventListener('submit', event => {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const description = document.getElementById('description').value;
+
+      const data = {
+        name: name,
+        description: description
+      };
+
+      fetch('/exercises', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => {
+          console.log('Exercise created:', result);
+          addExercise(result);
+          exerciseForm.reset();
+        });
+    });
+
+    renderExercises();
+  </script>
+</body>
+
+</html>
