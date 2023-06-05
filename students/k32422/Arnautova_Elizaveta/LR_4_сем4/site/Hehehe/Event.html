@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Event</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            padding: 20px 0;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+
+input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+        textarea {
+            height: 100px;
+        }
+        input[type="submit"] {
+            background-color: #4285F4;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .event-list {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .event-list h2 {
+            margin-top: 0;
+        }
+        .event-item {
+            margin-bottom: 10px;
+        }
+        .event-item span {
+            font-weight: bold;
+        }
+        .event-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .event-actions a {
+            color: #4285F4;
+            margin-left: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Event</h1>
+    <form action="/save_event" method="POST">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <label for="begin_time">Begin Time:</label>
+        <input type="time" id="begin_time" name="begin_time" required>
+        <label for="end_time">End Time:</label>
+        <input type="time" id="end_time" name="end_time" required>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+        <input type="submit" value="Create Event">
+    </form>
+    <div class="event-list">
+        <h2>Event List</h2>
+        % for event in events:
+        <div class="event-item">
+            <span>{{ event.title }}</span> ({{ event.date.strftime("%Y-%m-%d") }}) - {{
+            event.begin_time.strftime("%H:%M") }}
+            {% if event.description %}
+            <p>{{ event.description }}</p>
+            {% endif %}
+            <div class="event-actions">
+                <a href="/edit_event/{{ event.id }}">Edit</a>
+                <a href="/delete_event/{{ event.id }}">Delete</a>
+            </div>
+        </div>
+        % end
+    </div>
+</body>
+</html>
