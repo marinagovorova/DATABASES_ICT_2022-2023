@@ -5,7 +5,7 @@
 -- Dumped from database version 15.3
 -- Dumped by pg_dump version 15.3
 
--- Started on 2023-06-05 00:45:56
+-- Started on 2023-06-05 10:56:11
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -39,7 +39,7 @@ ALTER SCHEMA lab OWNER TO pg_database_owner;
 ALTER SCHEMA public OWNER TO postgres;
 
 --
--- TOC entry 3457 (class 0 OID 0)
+-- TOC entry 3459 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -141,8 +141,8 @@ CREATE TABLE lab.is_studying (
     payment_form character varying(10) NOT NULL,
     id_group character varying(32) NOT NULL,
     id_student integer NOT NULL,
-    sch_from date,
-    id_is_studying character varying(32) NOT NULL
+    id_is_studying character varying(32) NOT NULL,
+    id_receiving_sch character varying(8) NOT NULL
 );
 
 
@@ -216,17 +216,19 @@ ALTER TABLE lab.program OWNER TO postgres;
 
 --
 -- TOC entry 228 (class 1259 OID 16460)
--- Name: scholarship; Type: TABLE; Schema: lab; Owner: postgres
+-- Name: receiving_sch; Type: TABLE; Schema: lab; Owner: postgres
 --
 
-CREATE TABLE lab.scholarship (
-    sch_from date NOT NULL,
+CREATE TABLE lab.receiving_sch (
     "to" date,
-    id_sch character varying(10)
+    id_sch character varying(10),
+    id_receiving_sch character varying(8) NOT NULL,
+    sch_from date,
+    id_studying character varying(32) NOT NULL
 );
 
 
-ALTER TABLE lab.scholarship OWNER TO postgres;
+ALTER TABLE lab.receiving_sch OWNER TO postgres;
 
 --
 -- TOC entry 223 (class 1259 OID 16439)
@@ -239,7 +241,8 @@ CREATE TABLE lab.session_tt (
     id_group character varying(32) NOT NULL,
     id_program_disc character varying(16) NOT NULL,
     id_teacher integer NOT NULL,
-    id_classroom character varying(20) NOT NULL
+    id_classroom character varying(20) NOT NULL,
+    id_session character(8) NOT NULL
 );
 
 
@@ -302,7 +305,7 @@ CREATE TABLE lab.type_scholarship (
 ALTER TABLE lab.type_scholarship OWNER TO postgres;
 
 --
--- TOC entry 3442 (class 0 OID 16429)
+-- TOC entry 3444 (class 0 OID 16429)
 -- Dependencies: 221
 -- Data for Name: attestation; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -312,7 +315,7 @@ COPY lab.attestation (att_date, grade, number_attempt, id_program_disc, id_is_st
 
 
 --
--- TOC entry 3446 (class 0 OID 16447)
+-- TOC entry 3448 (class 0 OID 16447)
 -- Dependencies: 225
 -- Data for Name: building; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -332,7 +335,7 @@ COPY lab.building (c_short_name, type) FROM stdin;
 
 
 --
--- TOC entry 3451 (class 0 OID 16517)
+-- TOC entry 3453 (class 0 OID 16517)
 -- Dependencies: 230
 -- Data for Name: classroom; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -346,7 +349,7 @@ room003	220	329	Синьо-Ясская, дом 10, корпус 5	ЯССК
 
 
 --
--- TOC entry 3439 (class 0 OID 16414)
+-- TOC entry 3441 (class 0 OID 16414)
 -- Dependencies: 218
 -- Data for Name: department; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -363,7 +366,7 @@ AD7	ФПУ	Факультет педагогики и управления
 
 
 --
--- TOC entry 3441 (class 0 OID 16424)
+-- TOC entry 3443 (class 0 OID 16424)
 -- Dependencies: 220
 -- Data for Name: discipline; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -380,17 +383,17 @@ R4018QE7RSJJFX3V	37	28	15	География	Экзамен	80
 
 
 --
--- TOC entry 3448 (class 0 OID 16457)
+-- TOC entry 3450 (class 0 OID 16457)
 -- Dependencies: 227
 -- Data for Name: is_studying; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
 
-COPY lab.is_studying (date_end, date_start, status, payment_form, id_group, id_student, sch_from, id_is_studying) FROM stdin;
+COPY lab.is_studying (date_end, date_start, status, payment_form, id_group, id_student, id_is_studying, id_receiving_sch) FROM stdin;
 \.
 
 
 --
--- TOC entry 3445 (class 0 OID 16442)
+-- TOC entry 3447 (class 0 OID 16442)
 -- Dependencies: 224
 -- Data for Name: l_group; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -400,7 +403,7 @@ COPY lab.l_group (id_group, "from", "to", amount_students, year, group_number, i
 
 
 --
--- TOC entry 3438 (class 0 OID 16409)
+-- TOC entry 3440 (class 0 OID 16409)
 -- Dependencies: 217
 -- Data for Name: plan; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -410,7 +413,7 @@ COPY lab.plan (id_plan, year, id_program) FROM stdin;
 
 
 --
--- TOC entry 3440 (class 0 OID 16419)
+-- TOC entry 3442 (class 0 OID 16419)
 -- Dependencies: 219
 -- Data for Name: plan_disc; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -420,7 +423,7 @@ COPY lab.plan_disc (id_program_disc, semester, id_disc, id_plan) FROM stdin;
 
 
 --
--- TOC entry 3437 (class 0 OID 16404)
+-- TOC entry 3439 (class 0 OID 16404)
 -- Dependencies: 216
 -- Data for Name: program; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -440,27 +443,27 @@ PROG010	250	Генетическая инженерия и биотехноло�
 
 
 --
--- TOC entry 3449 (class 0 OID 16460)
+-- TOC entry 3451 (class 0 OID 16460)
 -- Dependencies: 228
--- Data for Name: scholarship; Type: TABLE DATA; Schema: lab; Owner: postgres
+-- Data for Name: receiving_sch; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
 
-COPY lab.scholarship (sch_from, "to", id_sch) FROM stdin;
+COPY lab.receiving_sch ("to", id_sch, id_receiving_sch, sch_from, id_studying) FROM stdin;
 \.
 
 
 --
--- TOC entry 3444 (class 0 OID 16439)
+-- TOC entry 3446 (class 0 OID 16439)
 -- Dependencies: 223
 -- Data for Name: session_tt; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
 
-COPY lab.session_tt (time_start, time_end, id_group, id_program_disc, id_teacher, id_classroom) FROM stdin;
+COPY lab.session_tt (time_start, time_end, id_group, id_program_disc, id_teacher, id_classroom, id_session) FROM stdin;
 \.
 
 
 --
--- TOC entry 3436 (class 0 OID 16399)
+-- TOC entry 3438 (class 0 OID 16399)
 -- Dependencies: 215
 -- Data for Name: specs; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -480,7 +483,7 @@ SPEC010	Бакалавриат	Генетическая инженерия и б
 
 
 --
--- TOC entry 3447 (class 0 OID 16452)
+-- TOC entry 3449 (class 0 OID 16452)
 -- Dependencies: 226
 -- Data for Name: student; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -490,7 +493,7 @@ COPY lab.student (id_student, full_name) FROM stdin;
 
 
 --
--- TOC entry 3443 (class 0 OID 16434)
+-- TOC entry 3445 (class 0 OID 16434)
 -- Dependencies: 222
 -- Data for Name: teacher; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -500,7 +503,7 @@ COPY lab.teacher (id_teacher, name_teacher, "position") FROM stdin;
 
 
 --
--- TOC entry 3450 (class 0 OID 16465)
+-- TOC entry 3452 (class 0 OID 16465)
 -- Dependencies: 229
 -- Data for Name: type_scholarship; Type: TABLE DATA; Schema: lab; Owner: postgres
 --
@@ -528,7 +531,7 @@ ALTER TABLE lab.attestation
 
 
 --
--- TOC entry 3263 (class 2606 OID 16451)
+-- TOC entry 3265 (class 2606 OID 16451)
 -- Name: building building_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -537,7 +540,7 @@ ALTER TABLE ONLY lab.building
 
 
 --
--- TOC entry 3275 (class 2606 OID 16521)
+-- TOC entry 3277 (class 2606 OID 16521)
 -- Name: classroom classroom_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -582,7 +585,7 @@ ALTER TABLE lab.discipline
 
 
 --
--- TOC entry 3261 (class 2606 OID 16446)
+-- TOC entry 3263 (class 2606 OID 16446)
 -- Name: l_group group_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -591,7 +594,16 @@ ALTER TABLE ONLY lab.l_group
 
 
 --
--- TOC entry 3267 (class 2606 OID 16575)
+-- TOC entry 3240 (class 2606 OID 16647)
+-- Name: is_studying is_studying_check; Type: CHECK CONSTRAINT; Schema: lab; Owner: postgres
+--
+
+ALTER TABLE lab.is_studying
+    ADD CONSTRAINT is_studying_check CHECK ((date_start < date_end)) NOT VALID;
+
+
+--
+-- TOC entry 3269 (class 2606 OID 16575)
 -- Name: is_studying is_studying_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -663,21 +675,21 @@ ALTER TABLE ONLY lab.program
 
 
 --
--- TOC entry 3269 (class 2606 OID 16464)
--- Name: scholarship scholarship_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
+-- TOC entry 3271 (class 2606 OID 16634)
+-- Name: receiving_sch receiving_sch_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
-ALTER TABLE ONLY lab.scholarship
-    ADD CONSTRAINT scholarship_pkey PRIMARY KEY (sch_from);
+ALTER TABLE ONLY lab.receiving_sch
+    ADD CONSTRAINT receiving_sch_pkey PRIMARY KEY (id_receiving_sch) INCLUDE (id_receiving_sch);
 
 
 --
--- TOC entry 3240 (class 2606 OID 16623)
--- Name: scholarship scholarship_sch_from_check; Type: CHECK CONSTRAINT; Schema: lab; Owner: postgres
+-- TOC entry 3261 (class 2606 OID 16646)
+-- Name: session_tt session_tt_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
-ALTER TABLE lab.scholarship
-    ADD CONSTRAINT scholarship_sch_from_check CHECK ((sch_from > '2023-01-01'::date)) NOT VALID;
+ALTER TABLE ONLY lab.session_tt
+    ADD CONSTRAINT session_tt_pkey PRIMARY KEY (id_session);
 
 
 --
@@ -690,7 +702,7 @@ ALTER TABLE ONLY lab.specs
 
 
 --
--- TOC entry 3265 (class 2606 OID 16456)
+-- TOC entry 3267 (class 2606 OID 16456)
 -- Name: student student_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -726,7 +738,7 @@ ALTER TABLE lab.type_scholarship
 
 
 --
--- TOC entry 3271 (class 2606 OID 16617)
+-- TOC entry 3273 (class 2606 OID 16617)
 -- Name: type_scholarship type_scholarship_id_sch_id_sch1_key; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -735,7 +747,7 @@ ALTER TABLE ONLY lab.type_scholarship
 
 
 --
--- TOC entry 3273 (class 2606 OID 16469)
+-- TOC entry 3275 (class 2606 OID 16469)
 -- Name: type_scholarship type_scholarship_pkey; Type: CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -744,7 +756,7 @@ ALTER TABLE ONLY lab.type_scholarship
 
 
 --
--- TOC entry 3281 (class 2606 OID 16576)
+-- TOC entry 3283 (class 2606 OID 16576)
 -- Name: attestation attestation_id_is_studying_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -753,7 +765,7 @@ ALTER TABLE ONLY lab.attestation
 
 
 --
--- TOC entry 3282 (class 2606 OID 16581)
+-- TOC entry 3284 (class 2606 OID 16581)
 -- Name: attestation attestation_id_program_disc_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -762,7 +774,7 @@ ALTER TABLE ONLY lab.attestation
 
 
 --
--- TOC entry 3283 (class 2606 OID 16586)
+-- TOC entry 3285 (class 2606 OID 16586)
 -- Name: attestation attestation_id_teacher_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -771,7 +783,7 @@ ALTER TABLE ONLY lab.attestation
 
 
 --
--- TOC entry 3293 (class 2606 OID 16522)
+-- TOC entry 3295 (class 2606 OID 16522)
 -- Name: classroom classroom_short_name_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -780,7 +792,7 @@ ALTER TABLE ONLY lab.classroom
 
 
 --
--- TOC entry 3289 (class 2606 OID 16477)
+-- TOC entry 3291 (class 2606 OID 16477)
 -- Name: is_studying is_studying_id_group_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -789,7 +801,7 @@ ALTER TABLE ONLY lab.is_studying
 
 
 --
--- TOC entry 3290 (class 2606 OID 16507)
+-- TOC entry 3292 (class 2606 OID 16507)
 -- Name: is_studying is_studying_id_student_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -798,16 +810,7 @@ ALTER TABLE ONLY lab.is_studying
 
 
 --
--- TOC entry 3291 (class 2606 OID 16482)
--- Name: is_studying is_studying_sch_from_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
---
-
-ALTER TABLE ONLY lab.is_studying
-    ADD CONSTRAINT is_studying_sch_from_fkey FOREIGN KEY (sch_from) REFERENCES lab.scholarship(sch_from) NOT VALID;
-
-
---
--- TOC entry 3288 (class 2606 OID 16611)
+-- TOC entry 3290 (class 2606 OID 16611)
 -- Name: l_group l_group_id_plan_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -816,7 +819,7 @@ ALTER TABLE ONLY lab.l_group
 
 
 --
--- TOC entry 3279 (class 2606 OID 16549)
+-- TOC entry 3281 (class 2606 OID 16549)
 -- Name: plan_disc plan_disc_id_disc_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -825,7 +828,7 @@ ALTER TABLE ONLY lab.plan_disc
 
 
 --
--- TOC entry 3280 (class 2606 OID 16569)
+-- TOC entry 3282 (class 2606 OID 16569)
 -- Name: plan_disc plan_disc_id_plan_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -834,7 +837,7 @@ ALTER TABLE ONLY lab.plan_disc
 
 
 --
--- TOC entry 3278 (class 2606 OID 16564)
+-- TOC entry 3280 (class 2606 OID 16564)
 -- Name: plan plan_id_program_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -843,7 +846,7 @@ ALTER TABLE ONLY lab.plan
 
 
 --
--- TOC entry 3276 (class 2606 OID 16554)
+-- TOC entry 3278 (class 2606 OID 16554)
 -- Name: program program_id_dep_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -852,7 +855,7 @@ ALTER TABLE ONLY lab.program
 
 
 --
--- TOC entry 3277 (class 2606 OID 16559)
+-- TOC entry 3279 (class 2606 OID 16559)
 -- Name: program program_id_spec_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -861,16 +864,25 @@ ALTER TABLE ONLY lab.program
 
 
 --
--- TOC entry 3292 (class 2606 OID 16470)
--- Name: scholarship sch_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
+-- TOC entry 3293 (class 2606 OID 16640)
+-- Name: receiving_sch receiving_sch_id_studying_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
-ALTER TABLE ONLY lab.scholarship
+ALTER TABLE ONLY lab.receiving_sch
+    ADD CONSTRAINT receiving_sch_id_studying_fkey FOREIGN KEY (id_studying) REFERENCES lab.is_studying(id_is_studying) NOT VALID;
+
+
+--
+-- TOC entry 3294 (class 2606 OID 16470)
+-- Name: receiving_sch sch_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
+--
+
+ALTER TABLE ONLY lab.receiving_sch
     ADD CONSTRAINT sch_fkey FOREIGN KEY (id_sch) REFERENCES lab.type_scholarship(id_sch) NOT VALID;
 
 
 --
--- TOC entry 3284 (class 2606 OID 16601)
+-- TOC entry 3286 (class 2606 OID 16601)
 -- Name: session_tt session_tt_id_classroom_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -879,7 +891,7 @@ ALTER TABLE ONLY lab.session_tt
 
 
 --
--- TOC entry 3285 (class 2606 OID 16606)
+-- TOC entry 3287 (class 2606 OID 16606)
 -- Name: session_tt session_tt_id_group_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -888,7 +900,7 @@ ALTER TABLE ONLY lab.session_tt
 
 
 --
--- TOC entry 3286 (class 2606 OID 16591)
+-- TOC entry 3288 (class 2606 OID 16591)
 -- Name: session_tt session_tt_id_program_disc_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -897,7 +909,7 @@ ALTER TABLE ONLY lab.session_tt
 
 
 --
--- TOC entry 3287 (class 2606 OID 16596)
+-- TOC entry 3289 (class 2606 OID 16596)
 -- Name: session_tt session_tt_id_teacher_fkey; Type: FK CONSTRAINT; Schema: lab; Owner: postgres
 --
 
@@ -906,7 +918,7 @@ ALTER TABLE ONLY lab.session_tt
 
 
 --
--- TOC entry 3458 (class 0 OID 0)
+-- TOC entry 3460 (class 0 OID 0)
 -- Dependencies: 6
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -914,7 +926,7 @@ ALTER TABLE ONLY lab.session_tt
 REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
--- Completed on 2023-06-05 00:45:57
+-- Completed on 2023-06-05 10:56:11
 
 --
 -- PostgreSQL database dump complete
