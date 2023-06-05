@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    {% block title %}
+        <title>Database CRUD</title>
+    {% endblock %}
+
+    <!-- Favicons -->
+    <link href="{{ url_for('static', filename='image/logo.png' ) }}" rel="icon">
+
+    <!-- Common CSS, JS, and other header elements -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    {% block extra_css %}
+    {% endblock %}
+</head>
+
+<body>
+{% block modal %}
+{% endblock %}
+
+{% include 'header.jinja2' %}
+{% include 'sidebar.jinja2' %}
+
+<main id="main" class="main" role="main">
+    {% block main %}{% endblock %}
+</main>
+
+{% include 'footer.jinja2' %}
+
+<a href="#" class="back-to-top d-flex align-items-center justify-content-center" aria-label="Back to top"><i
+        class="bi bi-arrow-up-short" aria-hidden="true"></i></a>
+
+<!-- Common JS files -->
+<script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% block extra_js %}
+{% endblock %}
+
+</body>
+</html>

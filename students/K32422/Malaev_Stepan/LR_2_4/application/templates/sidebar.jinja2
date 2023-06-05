@@ -1,0 +1,13 @@
+<aside id="sidebar" class="sidebar" role="navigation">
+    <ul class="sidebar-nav" id="sidebar-nav">
+
+        {% with url=url_for('main.index'), icon='bi bi-grid', name='General' %}
+            {% include 'sidebar_item.jinja2' %}
+        {% endwith %}
+
+        {% with target='tables-nav', icon='bi bi-table', name='Tables', content='sidebar_tables_content.jinja2' %}
+            {% include 'sidebar_collapsed_item.jinja2' %}
+        {% endwith %}
+
+    </ul>
+</aside>

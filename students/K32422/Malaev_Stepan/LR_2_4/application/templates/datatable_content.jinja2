@@ -1,0 +1,57 @@
+{% macro button(class, label, modal_id, entry_id='') %}
+    <button type="button" class="{{ class }}" data-bs-toggle="modal"
+            data-bs-target="#{{ modal_id }}" data-entry-id="{{ entry_id }}"
+            aria-label="{{ label }}">{{ label }}</button>
+{% endmacro %}
+
+
+{% macro table_row(row) %}
+    <tr>
+        {% for value in row %}
+            <td>{{ value }}</td>
+        {% endfor %}
+        <td>
+            {{ button('btn btn-primary btn-sm updateBtn', 'Update', 'update', row[0]) }}
+            {{ button('btn btn-danger btn-sm deleteBtn', 'Delete', '', row[0]) }}
+        </td>
+    </tr>
+{% endmacro %}
+
+
+{% macro table_header(cols) %}
+    <tr>
+        {% for col in cols %}
+            <th scope="col">{{ col }}</th>
+        {% endfor %}
+        <th scope="col">Operations</th>
+    </tr>
+{% endmacro %}
+
+{% macro no_data(cols) %}
+    <tr>
+        <td colspan="{{ cols|length + 2 }}">No data available</td>
+    </tr>
+{% endmacro %}
+
+
+
+
+{{ button('btn btn-primary btn-lg my-2', 'Add new entry', 'add') }}
+<!-- Data table -->
+<table class="table table-striped table-bordered" id="data-table">
+    <thead>
+    {{ table_header(cols) }}
+    </thead>
+    <tbody>
+    <!-- Table data -->
+    {% if rows|length > 0 %}
+        {% for row in rows %}
+            {{ table_row(row) }}
+        {% endfor %}
+    {% else %}
+        {{ no_data(cols) }}
+    {% endif %}
+
+    </tbody>
+</table>
+
