@@ -1,0 +1,38 @@
+{% macro form_field(col, prefix='', att='required') %}
+    <div class="form-floating mb-3">
+        <input type="text" name="{{ col }}" class="form-control"
+               id="{{ prefix }}FloatingInput{{ col }}"
+               placeholder="{{ col }}" {{ att }}>
+        <label for="{{ prefix }}FloatingInput{{ col }}"
+               id="{{ prefix }}FloatingInputLabel{{ col }}">{{ col }}</label>
+    </div>
+{% endmacro %}
+
+
+<div class="modal fade" id="{{ modal_id }}" tabindex="-1" aria-labelledby="{{ modal_id }}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="{{ modal_id }}Label">{{ modal_title }}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="{{ form_id }}">
+                <div class="modal-body">
+                    <div id="{{ error_id }}" class="alert alert-warning d-none" aria-live="polite"></div>
+
+                    {% if modal_id == "update" %}
+                        {{ form_field(cols[0], 'update', 'readonly') }}
+                    {% endif %}
+
+                    {% for col in cols[1:] %}
+                        {{ form_field(col, input_id_prefix) }}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+{% extends "index.jinja2" %}
+
+{% block extra_css %}
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap-datatables.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block modal %}
+    {% with modal_id="add", modal_title="Add new entry", form_id="addForm", error_id="addError", input_id_prefix="" %}
+        {% include 'datatable_modal.jinja2' %}
+    {% endwith %}
+
+    {% with modal_id="update", modal_title="Update existing entry", form_id="updateForm", error_id="updateError", input_id_prefix="update" %}
+        {% include 'datatable_modal.jinja2' %}
+    {% endwith %}
+{% endblock %}
+
+{% block main %}
+    <section id="table-section" class="section" data-table-name="{{ table_name }}">
+        <!-- Card container -->
+        <div class="card">
+            <div class="card-body">
+                <div id="spinner" class="d-flex justify-content-center">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only"></span>
+                    </div>
+                </div>
+                <div id="datatable-content" class="d-none">
+                    {% include 'datatable_content.jinja2' %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/datatable.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.dataTables.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.datatables.js') }}"></script>
+{% endblock %}

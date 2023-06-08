@@ -1,0 +1,9 @@
+<li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#{{ target }}" data-bs-toggle="collapse" href="#">
+        <i class="{{ icon }}" aria-hidden="true"></i><span>{{ name }}</span>
+        <i class="bi bi-chevron-down ms-auto" aria-hidden="true"></i>
+    </a>
+    <ul id="{{ target }}" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        {% include content %}
+    </ul>
+</li><!-- End Tables Nav -->

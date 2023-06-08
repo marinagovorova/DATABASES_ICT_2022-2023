@@ -1,0 +1,5 @@
+{% for name in tables_info.keys() %}
+    {% with url=url_for('tables.create', name=name), name=name %}
+        {% include 'sidebar_sub_item.jinja2' %}
+    {% endwith %}
+{% endfor %}
