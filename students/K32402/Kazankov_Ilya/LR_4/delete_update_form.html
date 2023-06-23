@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Форма редактирования и удаления данных</title>
+</head>
+<body>
+    <h1>Форма редактирования и удаления данных</h1>
+    <form action="delete_update.php" method="POST">
+        <label for="number">Number:</label>
+        <input type="number" name="number" id="number" required><br><br>
+
+        <label for="name">Название:</label>
+        <input type="text" name="name" id="name" required><br><br>
+
+        <label for="type_flight">Тип рейса:</label>
+        <input type="text" name="type_flight" id="type_flight" required><br><br>
+
+        <label for="type_train">Тип поезда:</label>
+        <input type="number" name="type_train" id="type_train" required><br><br>
+
+        <input type="submit" name="edit" value="Редактировать">
+        <input type="submit" name="delete" value="Удалить">
+    </form>
+</body>
+</html>

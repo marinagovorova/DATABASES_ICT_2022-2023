@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Форма добавления данных в таблицу</title>
+</head>
+<body>
+    <h1>Форма добавления данных в таблицу</h1>
+    <form action="index.php" method="POST">
+        <label for="name">Название:</label>
+        <input type="text" name="name" id="name" required><br><br>
+
+        <label for="type_flight">Тип рейса:</label>
+        <input type="text" name="type_flight" id="type_flight" required><br><br>
+
+        <label for="type_train">Тип поезда:</label>
+        <input type="number" name="type_train" id="type_train" required><br><br>
+
+        <input type="submit" value="Добавить">
+    </form>
+</body>
+</html>
