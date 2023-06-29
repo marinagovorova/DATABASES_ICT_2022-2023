@@ -2,22 +2,25 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Форма редактирования и удаления данных</title>
+    <title>Редактирования и удаления данных</title>
 </head>
 <body>
-    <h1>Форма редактирования и удаления данных</h1>
+    <h2>Редактирования и удаления данных</h2>
     <form action="delete_update.php" method="POST">
-        <label for="number">Number:</label>
-        <input type="number" name="number" id="number" required><br><br>
+        <label for="id">ID:</label>
+        <input type="number" name="id" id="id" required><br><br>
 
-        <label for="name">Название:</label>
-        <input type="text" name="name" id="name" required><br><br>
+        <label for="brand">Type:</label>
+        <input type="text" name="type" id="type" required><br><br>
 
-        <label for="type_flight">Тип рейса:</label>
-        <input type="text" name="type_flight" id="type_flight" required><br><br>
+        <label for="model">model:</label>
+        <input type="text" name="model" id="model" required><br><br>
 
-        <label for="type_train">Тип поезда:</label>
-        <input type="number" name="type_train" id="type_train" required><br><br>
+        <label for="year">manufacturer:</label>
+        <input type="text" name="manufacturer" id="manufacturer" required><br><br>
+
+        <label for="price">number_of_seats:</label>
+        <input type="number" name="number_of_seats" id="number_of_seats" required><br><br>
 
         <input type="submit" name="edit" value="Редактировать">
         <input type="submit" name="delete" value="Удалить">
