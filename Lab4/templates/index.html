@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta chatset="UTF-8">
+    <title>Client List</title>
+</head>
+<body>
+<h1>Client List</h1>
+<form method="POST" action="/create">
+    <label for="passportnumber">Passport Number:</label>
+    <input type="text" id="passportnumber" name="passportnumber" required><br><br>
+    <label for="fullname">Full Name:</label>
+    <input type="text" id="fullname" name="fullname" required><br><br>
+    <label for="phonenumber">Phone Number:</label>
+    <input type="text" id="phonenumber" name="phonenumber" required><br><br>
+    <label for="emailaddress">Email Address:</label>
+    <input type="text" id="emailaddress" name="emailaddress" required><br><br>
+    <input type="submit" value="Add Client">
+</form>
+<br>
+<form method="POST" action="/update">
+    <label for="passportnumber">Current Passport Number:</label>
+    <input type="text" id="passportnumber" name="passportnumber" required><br><br>
+    <label for="new_fullname">New Full Name:</label>
+    <input type="text" id="new_fullname" name="new_fullname" required><br><br>
+    <label for="new_phonenumber">New Phone Number:</label>
+    <input type="text" id="new_phonenumber" name="new_phonenumber" required><br><br>
+    <label for="new_emailaddress">New Email Address:</label>
+    <input type="text" id="new_emailaddress" name="new_emailaddress" required><br><br>
+    <input type="submit" value="Update Client">
+</form>
+<br>
+<form method="POST" action="/delete">
+    <label for="passportnumber">Passport Number:</label>
+    <input type="text" id="passportnumber" name="passportnumber" required><br><br>
+    <input type="submit" value="Delete Client">
+</form>
+<br>
+<table>
+    <thead>
+    <tr>
+        <th>Passport Number</th>
+        <th>Full Name</th>
+        <th>Phone Number</th>
+        <th>Email Address</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for client in client %}
+    <tr>
+        <td>{{ client[0] }}</td>
+        <td>{{ client[1] }}</td>
+        <td>{{ client[2] }}</td>
+        <td>{{ client[3] }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
