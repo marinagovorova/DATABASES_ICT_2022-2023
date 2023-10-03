@@ -1,0 +1,6 @@
+INSERT INTO session.building (address, building_name) VALUES ('Гороховая улица, 35-37', 'Корпус 1');
+INSERT INTO session.building (address, building_name) VALUES ('Литейный проспект, 57', 'Корпус 2');
+INSERT INTO session.building (address, building_name) VALUES ('Лесной проспект, 20к5', 'Корпус 3');
+INSERT INTO session.building (address, building_name) VALUES ('11-я линия Васильевского острова, 38', 'Корпус 4');
+INSERT INTO session.building (address, building_name) VALUES ('Гатчинская улица, 8', 'Корпус 5');
+INSERT INTO session.building (address, building_name) VALUES ('улица Оптиков, 35к2', 'Корпус 6');

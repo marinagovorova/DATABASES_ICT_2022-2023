@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>main page</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <table style="width:100%">
+        <tr>
+            <th>watering id</th>
+            <th>user plant id</th>
+            <th>name</th>
+            <th>surname</th>
+            <th>plant name</th>
+            <th>time</th>
+        </tr>
+
+        {% for row in watering_info %}
+            <tr>
+                <td>{{ row['watering_id']}}</td>
+                <td>{{ row['user_plant_id']}}</td>
+                <td>{{ row['name']}}</td>
+                <td>{{ row['surname'] }}</td>
+                <td>{{ row['plant_name']}}</td>
+                <td>{{ row['watering_time'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

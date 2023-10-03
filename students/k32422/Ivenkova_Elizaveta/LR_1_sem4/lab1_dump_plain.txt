@@ -1,0 +1,2391 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.2
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2023-05-31 17:48:14
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 6 (class 2615 OID 16399)
+-- Name: session; Type: SCHEMA; Schema: -; Owner: postgres
+--
+
+CREATE SCHEMA session;
+
+
+ALTER SCHEMA session OWNER TO postgres;
+
+--
+-- TOC entry 921 (class 1247 OID 16664)
+-- Name: attestation_type; Type: TYPE; Schema: session; Owner: postgres
+--
+
+CREATE TYPE session.attestation_type AS ENUM (
+    'Экзамен',
+    'Зачет',
+    'Дифференцированный зачет'
+);
+
+
+ALTER TYPE session.attestation_type OWNER TO postgres;
+
+--
+-- TOC entry 918 (class 1247 OID 16654)
+-- Name: classroom_type; Type: TYPE; Schema: session; Owner: postgres
+--
+
+CREATE TYPE session.classroom_type AS ENUM (
+    'Лекционная',
+    'Лаборатория',
+    'Практическая',
+    'Другое'
+);
+
+
+ALTER TYPE session.classroom_type OWNER TO postgres;
+
+--
+-- TOC entry 915 (class 1247 OID 16638)
+-- Name: learning_type; Type: TYPE; Schema: session; Owner: postgres
+--
+
+CREATE TYPE session.learning_type AS ENUM (
+    'Очный',
+    'Дистанционный',
+    'Смешанный'
+);
+
+
+ALTER TYPE session.learning_type OWNER TO postgres;
+
+--
+-- TOC entry 3517 (class 0 OID 0)
+-- Dependencies: 915
+-- Name: TYPE learning_type; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TYPE session.learning_type IS 'Форма обучения';
+
+
+--
+-- TOC entry 927 (class 1247 OID 17497)
+-- Name: qualification; Type: TYPE; Schema: session; Owner: postgres
+--
+
+CREATE TYPE session.qualification AS ENUM (
+    'Бакалавр',
+    'Магистр',
+    'Специалист',
+    'Исследователь'
+);
+
+
+ALTER TYPE session.qualification OWNER TO postgres;
+
+--
+-- TOC entry 924 (class 1247 OID 16676)
+-- Name: status; Type: TYPE; Schema: session; Owner: postgres
+--
+
+CREATE TYPE session.status AS ENUM (
+    'Обучается',
+    'Академ',
+    'Отчислен',
+    'Восстановлен',
+    'Выпускник'
+);
+
+
+ALTER TYPE session.status OWNER TO postgres;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 233 (class 1259 OID 16493)
+-- Name: attestation; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.attestation (
+    grade integer NOT NULL,
+    attestation_date date NOT NULL,
+    teacher_id integer NOT NULL,
+    edu_plan_subject_id integer NOT NULL,
+    student_in_group_id integer NOT NULL,
+    attempt_count integer NOT NULL,
+    attestation_id integer NOT NULL
+);
+
+
+ALTER TABLE session.attestation OWNER TO postgres;
+
+--
+-- TOC entry 3518 (class 0 OID 0)
+-- Dependencies: 233
+-- Name: TABLE attestation; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.attestation IS 'Аттестация';
+
+
+--
+-- TOC entry 241 (class 1259 OID 16530)
+-- Name: attestation_attestation_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.attestation_attestation_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.attestation_attestation_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3519 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: attestation_attestation_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.attestation_attestation_id_seq OWNED BY session.attestation.attestation_id;
+
+
+--
+-- TOC entry 234 (class 1259 OID 16498)
+-- Name: attestation_timetable; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.attestation_timetable (
+    group_id integer NOT NULL,
+    edu_plan_subject_id integer NOT NULL,
+    classroom_id integer NOT NULL,
+    exam_date date NOT NULL,
+    teacher_id integer NOT NULL,
+    attestation_timetable_id integer NOT NULL,
+    semester integer NOT NULL
+);
+
+
+ALTER TABLE session.attestation_timetable OWNER TO postgres;
+
+--
+-- TOC entry 3520 (class 0 OID 0)
+-- Dependencies: 234
+-- Name: TABLE attestation_timetable; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.attestation_timetable IS 'Расписание сессии';
+
+
+--
+-- TOC entry 242 (class 1259 OID 16537)
+-- Name: attestation_timetable_attestation_timetable_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.attestation_timetable_attestation_timetable_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.attestation_timetable_attestation_timetable_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3521 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: attestation_timetable_attestation_timetable_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.attestation_timetable_attestation_timetable_id_seq OWNED BY session.attestation_timetable.attestation_timetable_id;
+
+
+--
+-- TOC entry 219 (class 1259 OID 16437)
+-- Name: building; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.building (
+    building_id integer NOT NULL,
+    address character varying(50) NOT NULL,
+    building_name character varying(10) NOT NULL
+);
+
+
+ALTER TABLE session.building OWNER TO postgres;
+
+--
+-- TOC entry 3522 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE building; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.building IS 'Корпус';
+
+
+--
+-- TOC entry 218 (class 1259 OID 16436)
+-- Name: building_building_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.building_building_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.building_building_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3523 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: building_building_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.building_building_id_seq OWNED BY session.building.building_id;
+
+
+--
+-- TOC entry 222 (class 1259 OID 16450)
+-- Name: classroom; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.classroom (
+    classroom_id integer NOT NULL,
+    capacity integer NOT NULL,
+    room integer NOT NULL,
+    building_id integer NOT NULL,
+    classroom_type session.classroom_type NOT NULL
+);
+
+
+ALTER TABLE session.classroom OWNER TO postgres;
+
+--
+-- TOC entry 3524 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE classroom; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.classroom IS 'Аудитория';
+
+
+--
+-- TOC entry 223 (class 1259 OID 16453)
+-- Name: classroom_classroom_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.classroom_classroom_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.classroom_classroom_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3525 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: classroom_classroom_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.classroom_classroom_id_seq OWNED BY session.classroom.classroom_id;
+
+
+--
+-- TOC entry 217 (class 1259 OID 16431)
+-- Name: edu_plan; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.edu_plan (
+    plan_id integer NOT NULL,
+    program_id integer NOT NULL,
+    start_year integer NOT NULL,
+    learning_type session.learning_type NOT NULL
+);
+
+
+ALTER TABLE session.edu_plan OWNER TO postgres;
+
+--
+-- TOC entry 3526 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: TABLE edu_plan; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.edu_plan IS 'Учебный план';
+
+
+--
+-- TOC entry 227 (class 1259 OID 16468)
+-- Name: edu_plan_subject; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.edu_plan_subject (
+    edu_plan_subject_id integer NOT NULL,
+    subject_id integer NOT NULL,
+    edu_plan_id integer NOT NULL,
+    semester integer[] NOT NULL
+);
+
+
+ALTER TABLE session.edu_plan_subject OWNER TO postgres;
+
+--
+-- TOC entry 3527 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: TABLE edu_plan_subject; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.edu_plan_subject IS 'Дисциплина в учебном плане';
+
+
+--
+-- TOC entry 226 (class 1259 OID 16467)
+-- Name: edu_plan_subject_edu_plan_subject_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.edu_plan_subject_edu_plan_subject_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.edu_plan_subject_edu_plan_subject_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3528 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: edu_plan_subject_edu_plan_subject_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.edu_plan_subject_edu_plan_subject_id_seq OWNED BY session.edu_plan_subject.edu_plan_subject_id;
+
+
+--
+-- TOC entry 216 (class 1259 OID 16407)
+-- Name: edu_program; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.edu_program (
+    track_id integer NOT NULL,
+    program_id integer NOT NULL,
+    name character varying(140) NOT NULL
+);
+
+
+ALTER TABLE session.edu_program OWNER TO postgres;
+
+--
+-- TOC entry 3529 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: TABLE edu_program; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.edu_program IS 'Образовательная программа';
+
+
+--
+-- TOC entry 243 (class 1259 OID 16544)
+-- Name: edu_program_program_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.edu_program_program_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.edu_program_program_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3530 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: edu_program_program_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.edu_program_program_id_seq OWNED BY session.edu_program.program_id;
+
+
+--
+-- TOC entry 215 (class 1259 OID 16400)
+-- Name: edu_track; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.edu_track (
+    track_id integer NOT NULL,
+    name character varying(140) NOT NULL,
+    track_code character varying(20),
+    qualification session.qualification
+);
+
+
+ALTER TABLE session.edu_track OWNER TO postgres;
+
+--
+-- TOC entry 3531 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: TABLE edu_track; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.edu_track IS 'Направление подготовки';
+
+
+--
+-- TOC entry 244 (class 1259 OID 16553)
+-- Name: edu_track_track_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.edu_track_track_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.edu_track_track_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3532 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: edu_track_track_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.edu_track_track_id_seq OWNED BY session.edu_track.track_id;
+
+
+--
+-- TOC entry 221 (class 1259 OID 16444)
+-- Name: faculty; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.faculty (
+    faculty_id integer NOT NULL,
+    building_id integer NOT NULL,
+    faculty_name character varying(50) NOT NULL
+);
+
+
+ALTER TABLE session.faculty OWNER TO postgres;
+
+--
+-- TOC entry 3533 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: TABLE faculty; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.faculty IS 'Подразделение вуза';
+
+
+--
+-- TOC entry 220 (class 1259 OID 16443)
+-- Name: faculty_faculty_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.faculty_faculty_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.faculty_faculty_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3534 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: faculty_faculty_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.faculty_faculty_id_seq OWNED BY session.faculty.faculty_id;
+
+
+--
+-- TOC entry 240 (class 1259 OID 16522)
+-- Name: group; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session."group" (
+    group_id integer NOT NULL,
+    study_year integer NOT NULL,
+    group_name character varying(10) NOT NULL,
+    semester integer NOT NULL,
+    edu_plan_id integer NOT NULL
+);
+
+
+ALTER TABLE session."group" OWNER TO postgres;
+
+--
+-- TOC entry 239 (class 1259 OID 16521)
+-- Name: group_group_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.group_group_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.group_group_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3535 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: group_group_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.group_group_id_seq OWNED BY session."group".group_id;
+
+
+--
+-- TOC entry 238 (class 1259 OID 16514)
+-- Name: scholarship_payments; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.scholarship_payments (
+    student_id integer NOT NULL,
+    scholarship_id integer NOT NULL,
+    paid_scholarship_id integer NOT NULL,
+    start_date date NOT NULL,
+    end_date date NOT NULL
+);
+
+
+ALTER TABLE session.scholarship_payments OWNER TO postgres;
+
+--
+-- TOC entry 3536 (class 0 OID 0)
+-- Dependencies: 238
+-- Name: TABLE scholarship_payments; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.scholarship_payments IS 'История выплат';
+
+
+--
+-- TOC entry 237 (class 1259 OID 16513)
+-- Name: scholarship_payments_paid_scholarship_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.scholarship_payments_paid_scholarship_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.scholarship_payments_paid_scholarship_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3537 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: scholarship_payments_paid_scholarship_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.scholarship_payments_paid_scholarship_id_seq OWNED BY session.scholarship_payments.paid_scholarship_id;
+
+
+--
+-- TOC entry 235 (class 1259 OID 16503)
+-- Name: scholarship_type; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.scholarship_type (
+    scholarship_id integer NOT NULL,
+    scholarship_type character varying(30) NOT NULL,
+    amount integer NOT NULL
+);
+
+
+ALTER TABLE session.scholarship_type OWNER TO postgres;
+
+--
+-- TOC entry 3538 (class 0 OID 0)
+-- Dependencies: 235
+-- Name: TABLE scholarship_type; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.scholarship_type IS 'Тип стипендии';
+
+
+--
+-- TOC entry 236 (class 1259 OID 16506)
+-- Name: scholarship_type_scholarship_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.scholarship_type_scholarship_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.scholarship_type_scholarship_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3539 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: scholarship_type_scholarship_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.scholarship_type_scholarship_id_seq OWNED BY session.scholarship_type.scholarship_id;
+
+
+--
+-- TOC entry 229 (class 1259 OID 16475)
+-- Name: student; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.student (
+    surname character varying(30) NOT NULL,
+    name character varying(30) NOT NULL,
+    patronymic character varying(30),
+    student_id integer NOT NULL
+);
+
+
+ALTER TABLE session.student OWNER TO postgres;
+
+--
+-- TOC entry 3540 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: TABLE student; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.student IS 'Студент';
+
+
+--
+-- TOC entry 230 (class 1259 OID 16481)
+-- Name: student_in_group; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.student_in_group (
+    start_date date,
+    end_date date NOT NULL,
+    student_id integer NOT NULL,
+    student_in_group_id integer NOT NULL,
+    status session.status NOT NULL,
+    group_id integer NOT NULL
+);
+
+
+ALTER TABLE session.student_in_group OWNER TO postgres;
+
+--
+-- TOC entry 3541 (class 0 OID 0)
+-- Dependencies: 230
+-- Name: TABLE student_in_group; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.student_in_group IS 'Студент в группе';
+
+
+--
+-- TOC entry 228 (class 1259 OID 16474)
+-- Name: student_student_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.student_student_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.student_student_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3542 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: student_student_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.student_student_id_seq OWNED BY session.student.student_id;
+
+
+--
+-- TOC entry 225 (class 1259 OID 16461)
+-- Name: subject; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.subject (
+    subject_id integer NOT NULL,
+    subject_name character varying(30) NOT NULL,
+    lecture_hours integer NOT NULL,
+    practice_hours integer NOT NULL,
+    lab_hours integer NOT NULL,
+    edu_practice_hours integer NOT NULL,
+    attestation_type session.attestation_type NOT NULL
+);
+
+
+ALTER TABLE session.subject OWNER TO postgres;
+
+--
+-- TOC entry 3543 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: TABLE subject; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.subject IS 'Дисциплина';
+
+
+--
+-- TOC entry 224 (class 1259 OID 16460)
+-- Name: subject_subject_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.subject_subject_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.subject_subject_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3544 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: subject_subject_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.subject_subject_id_seq OWNED BY session.subject.subject_id;
+
+
+--
+-- TOC entry 232 (class 1259 OID 16487)
+-- Name: teacher; Type: TABLE; Schema: session; Owner: postgres
+--
+
+CREATE TABLE session.teacher (
+    teacher_id integer NOT NULL,
+    surname character varying(30) NOT NULL,
+    name character varying(30) NOT NULL,
+    patronymic character varying(30),
+    "position" character varying(30) NOT NULL,
+    faculty_id integer NOT NULL
+);
+
+
+ALTER TABLE session.teacher OWNER TO postgres;
+
+--
+-- TOC entry 3545 (class 0 OID 0)
+-- Dependencies: 232
+-- Name: TABLE teacher; Type: COMMENT; Schema: session; Owner: postgres
+--
+
+COMMENT ON TABLE session.teacher IS 'Преподаватель';
+
+
+--
+-- TOC entry 231 (class 1259 OID 16486)
+-- Name: teacher_teacher_id_seq; Type: SEQUENCE; Schema: session; Owner: postgres
+--
+
+CREATE SEQUENCE session.teacher_teacher_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE session.teacher_teacher_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 3546 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: teacher_teacher_id_seq; Type: SEQUENCE OWNED BY; Schema: session; Owner: postgres
+--
+
+ALTER SEQUENCE session.teacher_teacher_id_seq OWNED BY session.teacher.teacher_id;
+
+
+--
+-- TOC entry 3271 (class 2604 OID 17214)
+-- Name: attestation attestation_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation ALTER COLUMN attestation_id SET DEFAULT nextval('session.attestation_attestation_id_seq'::regclass);
+
+
+--
+-- TOC entry 3272 (class 2604 OID 17215)
+-- Name: attestation_timetable attestation_timetable_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable ALTER COLUMN attestation_timetable_id SET DEFAULT nextval('session.attestation_timetable_attestation_timetable_id_seq'::regclass);
+
+
+--
+-- TOC entry 3264 (class 2604 OID 17216)
+-- Name: building building_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.building ALTER COLUMN building_id SET DEFAULT nextval('session.building_building_id_seq'::regclass);
+
+
+--
+-- TOC entry 3266 (class 2604 OID 17217)
+-- Name: classroom classroom_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.classroom ALTER COLUMN classroom_id SET DEFAULT nextval('session.classroom_classroom_id_seq'::regclass);
+
+
+--
+-- TOC entry 3268 (class 2604 OID 17218)
+-- Name: edu_plan_subject edu_plan_subject_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan_subject ALTER COLUMN edu_plan_subject_id SET DEFAULT nextval('session.edu_plan_subject_edu_plan_subject_id_seq'::regclass);
+
+
+--
+-- TOC entry 3263 (class 2604 OID 17219)
+-- Name: edu_program program_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_program ALTER COLUMN program_id SET DEFAULT nextval('session.edu_program_program_id_seq'::regclass);
+
+
+--
+-- TOC entry 3262 (class 2604 OID 17220)
+-- Name: edu_track track_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_track ALTER COLUMN track_id SET DEFAULT nextval('session.edu_track_track_id_seq'::regclass);
+
+
+--
+-- TOC entry 3265 (class 2604 OID 17221)
+-- Name: faculty faculty_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.faculty ALTER COLUMN faculty_id SET DEFAULT nextval('session.faculty_faculty_id_seq'::regclass);
+
+
+--
+-- TOC entry 3275 (class 2604 OID 17222)
+-- Name: group group_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session."group" ALTER COLUMN group_id SET DEFAULT nextval('session.group_group_id_seq'::regclass);
+
+
+--
+-- TOC entry 3274 (class 2604 OID 17223)
+-- Name: scholarship_payments paid_scholarship_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_payments ALTER COLUMN paid_scholarship_id SET DEFAULT nextval('session.scholarship_payments_paid_scholarship_id_seq'::regclass);
+
+
+--
+-- TOC entry 3273 (class 2604 OID 17224)
+-- Name: scholarship_type scholarship_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_type ALTER COLUMN scholarship_id SET DEFAULT nextval('session.scholarship_type_scholarship_id_seq'::regclass);
+
+
+--
+-- TOC entry 3269 (class 2604 OID 17225)
+-- Name: student student_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.student ALTER COLUMN student_id SET DEFAULT nextval('session.student_student_id_seq'::regclass);
+
+
+--
+-- TOC entry 3267 (class 2604 OID 17226)
+-- Name: subject subject_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.subject ALTER COLUMN subject_id SET DEFAULT nextval('session.subject_subject_id_seq'::regclass);
+
+
+--
+-- TOC entry 3270 (class 2604 OID 17227)
+-- Name: teacher teacher_id; Type: DEFAULT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.teacher ALTER COLUMN teacher_id SET DEFAULT nextval('session.teacher_teacher_id_seq'::regclass);
+
+
+--
+-- TOC entry 3500 (class 0 OID 16493)
+-- Dependencies: 233
+-- Data for Name: attestation; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (97, '2018-06-23', 5, 24, 32, 0, 68);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (90, '2020-06-25', 36, 12, 14, 2, 69);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (2, '2019-06-27', 8, 34, 40, 1, 70);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (38, '2019-06-29', 28, 23, 33, 3, 71);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (32, '2018-06-30', 36, 3, 55, 3, 72);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (22, '2018-06-22', 37, 2, 47, 2, 73);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (98, '2019-06-30', 9, 50, 18, 2, 74);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (100, '2018-06-16', 26, 32, 40, 0, 75);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (41, '2019-06-19', 8, 39, 50, 1, 76);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (61, '2020-06-16', 20, 25, 13, 1, 77);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (1, '2020-06-24', 35, 35, 37, 2, 78);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (100, '2020-06-16', 29, 19, 3, 0, 79);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (88, '2018-06-27', 21, 33, 51, 3, 80);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (78, '2019-06-27', 22, 20, 32, 0, 81);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (5, '2018-06-17', 34, 49, 52, 1, 82);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (100, '2018-06-23', 7, 37, 6, 1, 83);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (21, '2018-06-18', 25, 13, 6, 0, 84);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (102, '2020-06-23', 37, 41, 1, 1, 85);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (33, '2018-06-21', 27, 19, 51, 2, 86);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (94, '2018-06-25', 19, 46, 58, 0, 87);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (65, '2020-06-28', 22, 36, 30, 0, 88);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (38, '2018-06-17', 29, 49, 52, 1, 89);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (78, '2018-06-18', 24, 48, 20, 1, 90);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (96, '2018-06-21', 27, 35, 42, 3, 91);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (61, '2020-06-24', 2, 8, 28, 2, 92);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (21, '2019-06-18', 29, 44, 16, 3, 93);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (88, '2020-06-23', 25, 15, 34, 0, 94);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (102, '2019-06-28', 13, 5, 3, 1, 95);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (32, '2020-06-16', 3, 34, 19, 2, 96);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (62, '2020-06-21', 27, 5, 47, 2, 97);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (79, '2020-06-20', 7, 33, 5, 1, 98);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (16, '2019-06-21', 16, 39, 37, 2, 99);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (38, '2020-06-21', 24, 20, 42, 2, 100);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (49, '2020-06-18', 31, 48, 57, 0, 101);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (77, '2020-06-30', 36, 25, 55, 0, 102);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (39, '2018-06-25', 23, 42, 53, 1, 103);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (67, '2019-06-18', 3, 2, 49, 3, 104);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (79, '2018-06-23', 10, 22, 11, 1, 105);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (9, '2020-06-24', 34, 21, 17, 1, 106);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (56, '2020-06-25', 19, 6, 46, 3, 107);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (61, '2019-06-27', 10, 16, 55, 1, 108);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (21, '2020-06-18', 2, 12, 50, 0, 109);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (60, '2019-06-29', 23, 46, 23, 1, 110);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (36, '2019-06-30', 32, 42, 33, 2, 111);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (58, '2019-06-29', 12, 48, 51, 1, 112);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (30, '2019-06-22', 17, 24, 6, 3, 113);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (83, '2018-06-25', 14, 50, 18, 0, 114);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (41, '2018-06-20', 13, 29, 34, 1, 115);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2019-06-21', 14, 32, 25, 3, 116);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (23, '2018-06-24', 25, 5, 18, 0, 117);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (72, '2020-06-19', 32, 9, 34, 2, 118);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (67, '2020-06-19', 11, 14, 46, 3, 119);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (62, '2020-06-26', 15, 36, 43, 0, 120);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (49, '2018-06-22', 23, 47, 10, 1, 121);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (44, '2020-06-23', 6, 15, 46, 0, 122);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (16, '2019-06-30', 5, 50, 52, 2, 123);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (102, '2019-06-22', 28, 24, 16, 2, 124);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2019-06-17', 22, 20, 36, 1, 125);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (99, '2020-06-22', 18, 46, 2, 0, 126);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (97, '2018-06-24', 2, 35, 44, 1, 127);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (95, '2020-06-25', 32, 12, 51, 0, 128);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (70, '2018-06-19', 36, 20, 40, 2, 129);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (24, '2020-06-24', 25, 32, 47, 0, 130);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (17, '2018-06-30', 33, 50, 13, 1, 131);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (79, '2019-06-29', 33, 37, 18, 3, 132);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (47, '2018-06-16', 20, 36, 19, 2, 133);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (0, '2018-06-27', 29, 1, 6, 1, 134);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (43, '2020-06-21', 3, 28, 25, 1, 135);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (52, '2020-06-20', 29, 9, 20, 2, 136);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (6, '2019-06-18', 11, 39, 49, 1, 137);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (74, '2018-06-29', 23, 48, 43, 2, 138);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (39, '2020-06-23', 34, 16, 37, 2, 139);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (17, '2020-06-17', 32, 46, 54, 2, 140);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2018-06-29', 9, 18, 52, 3, 141);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (96, '2020-06-27', 36, 35, 30, 1, 142);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (94, '2018-06-17', 5, 48, 11, 3, 143);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (27, '2018-06-23', 6, 35, 3, 0, 144);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (58, '2019-06-26', 19, 3, 32, 3, 145);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (96, '2020-06-25', 17, 10, 10, 0, 146);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (15, '2020-06-22', 35, 45, 42, 1, 147);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (102, '2018-06-17', 7, 16, 31, 1, 148);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2019-06-24', 32, 40, 18, 3, 149);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (53, '2018-06-22', 32, 5, 15, 0, 150);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (94, '2019-06-26', 26, 6, 13, 3, 151);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (47, '2019-06-27', 10, 3, 17, 3, 152);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (33, '2020-06-23', 28, 31, 20, 1, 153);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (86, '2019-06-27', 23, 23, 52, 1, 154);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (46, '2018-06-18', 12, 29, 55, 2, 155);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (39, '2020-06-24', 33, 39, 43, 1, 156);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (51, '2018-06-18', 25, 16, 38, 3, 157);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (58, '2020-06-23', 14, 39, 9, 1, 158);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (94, '2018-06-21', 2, 39, 6, 1, 159);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (46, '2020-06-18', 3, 14, 34, 3, 160);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (14, '2019-06-24', 14, 25, 25, 3, 161);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (43, '2019-06-27', 30, 15, 60, 1, 162);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (60, '2019-06-23', 11, 29, 60, 0, 163);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (9, '2020-06-28', 35, 20, 42, 2, 164);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (88, '2019-06-22', 6, 10, 6, 2, 165);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (34, '2019-06-24', 13, 2, 39, 0, 166);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (78, '2018-06-16', 33, 6, 44, 2, 167);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (24, '2020-06-17', 29, 44, 30, 0, 168);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (46, '2020-06-25', 20, 49, 21, 0, 169);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (42, '2018-06-25', 13, 10, 58, 2, 170);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (5, '2020-06-21', 3, 42, 26, 2, 171);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (29, '2020-06-26', 33, 22, 4, 0, 172);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (66, '2018-06-29', 26, 29, 57, 0, 173);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (78, '2018-06-26', 33, 18, 16, 0, 174);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (67, '2020-06-29', 10, 35, 6, 1, 175);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (7, '2018-06-16', 29, 40, 30, 1, 176);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (93, '2018-06-29', 1, 28, 30, 0, 177);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (56, '2018-06-17', 31, 2, 20, 2, 178);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (85, '2018-06-18', 19, 32, 15, 3, 179);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (35, '2018-06-26', 13, 26, 18, 2, 180);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (83, '2019-06-23', 6, 25, 10, 2, 181);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (102, '2018-06-27', 33, 50, 15, 0, 182);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (71, '2018-06-24', 15, 17, 43, 1, 183);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (10, '2020-06-26', 24, 3, 31, 1, 184);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (20, '2019-06-28', 31, 1, 33, 2, 185);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (53, '2019-06-21', 24, 29, 36, 0, 186);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (88, '2019-06-29', 24, 44, 10, 1, 187);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (43, '2020-06-19', 27, 40, 12, 2, 188);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (40, '2018-06-28', 30, 50, 24, 3, 189);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (17, '2018-06-25', 29, 18, 15, 3, 190);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (17, '2019-06-29', 1, 38, 60, 3, 191);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (100, '2019-06-24', 13, 10, 29, 0, 192);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (56, '2020-06-26', 20, 33, 23, 0, 193);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (49, '2018-06-22', 21, 49, 16, 2, 194);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2020-06-22', 20, 2, 36, 3, 195);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (97, '2020-06-29', 24, 11, 44, 3, 196);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (54, '2020-06-26', 26, 16, 32, 1, 197);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (91, '2018-06-22', 4, 29, 57, 0, 198);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (22, '2020-06-30', 14, 32, 56, 3, 199);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (61, '2018-06-23', 1, 43, 17, 0, 200);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (12, '2020-06-20', 21, 28, 8, 1, 201);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (39, '2019-06-23', 25, 9, 40, 1, 202);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (24, '2019-06-30', 26, 25, 32, 1, 203);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (72, '2020-06-28', 34, 8, 23, 0, 204);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (18, '2019-06-25', 15, 11, 5, 3, 205);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (85, '2019-06-22', 5, 45, 34, 0, 206);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (39, '2018-06-22', 6, 3, 29, 1, 207);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (15, '2018-06-29', 2, 38, 36, 3, 208);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (86, '2019-06-27', 35, 37, 24, 0, 209);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (58, '2020-06-25', 18, 18, 57, 0, 210);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (82, '2018-06-16', 11, 33, 18, 1, 211);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (50, '2019-06-29', 10, 28, 52, 1, 212);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (67, '2019-06-16', 16, 24, 58, 3, 213);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (62, '2020-06-18', 11, 21, 47, 1, 214);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (61, '2020-06-24', 12, 18, 30, 3, 215);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (4, '2019-06-23', 29, 14, 12, 3, 216);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (68, '2020-06-26', 25, 50, 19, 0, 217);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (9, '2019-06-21', 17, 28, 7, 3, 218);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (46, '2020-06-27', 21, 24, 43, 1, 219);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (2, '2019-06-21', 8, 37, 6, 3, 220);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (67, '2020-06-25', 13, 32, 10, 2, 221);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (18, '2019-06-17', 33, 49, 46, 2, 222);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (54, '2020-06-16', 5, 41, 17, 3, 223);
+INSERT INTO session.attestation (grade, attestation_date, teacher_id, edu_plan_subject_id, student_in_group_id, attempt_count, attestation_id) VALUES (37, '2020-06-17', 17, 10, 46, 1, 224);
+
+
+--
+-- TOC entry 3501 (class 0 OID 16498)
+-- Dependencies: 234
+-- Data for Name: attestation_timetable; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (14, 27, 75, '2020-06-16', 19, 1, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (6, 30, 54, '2018-06-29', 16, 2, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (13, 24, 75, '2018-06-24', 17, 3, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (13, 40, 5, '2020-06-20', 20, 4, 3);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (6, 45, 12, '2020-06-17', 6, 5, 7);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (12, 9, 89, '2018-06-24', 17, 6, 8);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (8, 17, 66, '2019-06-16', 35, 7, 2);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (17, 25, 6, '2020-06-22', 13, 8, 3);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (1, 18, 74, '2019-06-29', 37, 9, 8);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (5, 25, 93, '2020-06-22', 17, 10, 3);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (1, 37, 83, '2019-06-22', 31, 11, 2);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (14, 19, 4, '2020-06-17', 4, 12, 6);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (3, 6, 97, '2020-06-22', 13, 13, 7);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (8, 18, 61, '2020-06-18', 3, 14, 8);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (19, 50, 86, '2019-06-17', 24, 15, 3);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (10, 43, 64, '2020-06-24', 12, 16, 6);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (19, 30, 36, '2018-06-30', 35, 17, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (5, 5, 64, '2018-06-27', 31, 18, 8);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (13, 37, 86, '2019-06-20', 34, 19, 2);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (12, 41, 74, '2019-06-16', 25, 20, 2);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (11, 33, 47, '2020-06-18', 36, 21, 2);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (10, 44, 37, '2020-06-16', 28, 22, 7);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (17, 3, 33, '2019-06-24', 36, 23, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (17, 26, 73, '2018-06-20', 1, 24, 7);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (9, 7, 64, '2018-06-18', 32, 25, 5);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (5, 33, 47, '2020-06-17', 17, 26, 4);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (2, 36, 96, '2018-06-29', 35, 27, 4);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (7, 41, 93, '2018-06-30', 23, 28, 1);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (14, 13, 25, '2019-06-29', 23, 29, 3);
+INSERT INTO session.attestation_timetable (group_id, edu_plan_subject_id, classroom_id, exam_date, teacher_id, attestation_timetable_id, semester) VALUES (15, 35, 92, '2020-06-28', 9, 30, 7);
+
+
+--
+-- TOC entry 3486 (class 0 OID 16437)
+-- Dependencies: 219
+-- Data for Name: building; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.building (building_id, address, building_name) VALUES (1, 'Гороховая улица, 35-37', 'Корпус 1');
+INSERT INTO session.building (building_id, address, building_name) VALUES (2, 'Литейный проспект, 57', 'Корпус 2');
+INSERT INTO session.building (building_id, address, building_name) VALUES (3, 'Лесной проспект, 20к5', 'Корпус 3');
+INSERT INTO session.building (building_id, address, building_name) VALUES (4, '11-я линия Васильевского острова, 38', 'Корпус 4');
+INSERT INTO session.building (building_id, address, building_name) VALUES (5, 'Гатчинская улица, 8', 'Корпус 5');
+INSERT INTO session.building (building_id, address, building_name) VALUES (6, 'улица Оптиков, 35к2', 'Корпус 6');
+
+
+--
+-- TOC entry 3489 (class 0 OID 16450)
+-- Dependencies: 222
+-- Data for Name: classroom; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (1, 87, 4479, 1, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (2, 20, 6136, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (3, 7, 4366, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (4, 11, 2257, 1, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (5, 94, 1371, 2, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (6, 52, 2216, 5, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (7, 59, 5148, 1, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (8, 15, 1175, 6, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (9, 92, 5349, 2, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (10, 31, 4186, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (11, 2, 1189, 2, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (12, 73, 6414, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (13, 81, 1142, 6, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (14, 61, 4221, 1, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (15, 39, 3441, 1, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (16, 49, 6236, 4, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (17, 83, 1375, 1, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (18, 31, 1297, 6, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (19, 29, 5379, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (20, 53, 3426, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (21, 98, 1223, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (22, 91, 2281, 4, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (23, 68, 5136, 5, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (24, 56, 5469, 2, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (25, 32, 6330, 3, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (26, 49, 4148, 6, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (27, 82, 6193, 1, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (28, 37, 5191, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (29, 89, 3186, 3, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (30, 29, 6268, 2, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (31, 18, 3313, 5, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (32, 27, 5493, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (33, 57, 6393, 6, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (34, 66, 6438, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (35, 32, 6321, 3, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (36, 99, 3475, 5, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (37, 17, 1158, 3, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (38, 42, 2443, 4, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (39, 78, 1219, 2, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (40, 79, 3356, 2, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (41, 31, 4139, 3, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (42, 32, 4479, 1, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (43, 64, 1172, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (44, 20, 5372, 1, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (45, 99, 3469, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (46, 4, 1194, 1, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (47, 8, 3148, 2, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (48, 23, 4319, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (49, 81, 3216, 2, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (50, 87, 4114, 6, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (51, 61, 1243, 2, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (52, 94, 6481, 2, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (53, 13, 3134, 3, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (54, 15, 4196, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (55, 55, 6171, 1, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (56, 64, 5440, 3, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (57, 56, 5479, 1, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (58, 95, 4353, 6, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (59, 13, 3282, 3, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (60, 100, 1242, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (61, 35, 3182, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (62, 81, 6177, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (63, 98, 4273, 3, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (64, 17, 1423, 3, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (65, 15, 1166, 5, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (66, 77, 3220, 2, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (67, 86, 6138, 6, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (68, 24, 5367, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (69, 88, 1256, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (70, 89, 2234, 1, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (71, 20, 3163, 2, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (72, 75, 1448, 5, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (73, 68, 2292, 1, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (74, 90, 2483, 6, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (75, 70, 4248, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (76, 13, 4347, 5, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (77, 100, 1229, 3, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (78, 82, 1454, 3, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (79, 66, 3394, 3, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (80, 17, 3247, 6, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (81, 23, 6435, 2, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (82, 40, 4281, 1, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (83, 21, 2230, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (84, 57, 6142, 5, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (85, 66, 4462, 6, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (86, 8, 3366, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (87, 24, 3352, 2, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (88, 6, 5222, 6, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (89, 37, 2283, 4, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (90, 91, 1187, 1, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (91, 7, 2257, 6, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (92, 19, 6288, 4, 'Лаборатория');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (93, 84, 3445, 1, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (94, 63, 4382, 4, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (95, 90, 4394, 5, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (96, 44, 5399, 2, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (97, 19, 4141, 5, 'Лекционная');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (98, 57, 2152, 5, 'Другое');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (99, 16, 1222, 5, 'Практическая');
+INSERT INTO session.classroom (classroom_id, capacity, room, building_id, classroom_type) VALUES (100, 39, 1244, 2, 'Лаборатория');
+
+
+--
+-- TOC entry 3484 (class 0 OID 16431)
+-- Dependencies: 217
+-- Data for Name: edu_plan; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (1, 16, 2016, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (2, 9, 2018, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (3, 1, 2017, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (4, 16, 2019, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (5, 13, 2019, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (6, 6, 2017, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (7, 7, 2019, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (8, 7, 2019, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (9, 2, 2017, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (10, 14, 2018, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (11, 14, 2018, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (12, 15, 2016, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (13, 7, 2017, 'Дистанционный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (14, 4, 2019, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (15, 9, 2019, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (16, 13, 2020, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (17, 8, 2017, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (18, 18, 2017, 'Смешанный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (19, 8, 2017, 'Очный');
+INSERT INTO session.edu_plan (plan_id, program_id, start_year, learning_type) VALUES (20, 17, 2019, 'Дистанционный');
+
+
+--
+-- TOC entry 3494 (class 0 OID 16468)
+-- Dependencies: 227
+-- Data for Name: edu_plan_subject; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (1, 13, 17, '{5,6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (2, 18, 18, '{2,3,4}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (3, 18, 17, '{5}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (4, 1, 5, '{2}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (5, 10, 5, '{3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (6, 4, 4, '{6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (7, 17, 3, '{2,3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (8, 5, 6, '{7,8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (9, 5, 13, '{4,5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (10, 15, 4, '{4,5}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (11, 10, 8, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (12, 11, 11, '{1}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (13, 2, 20, '{3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (14, 15, 13, '{7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (15, 1, 13, '{1}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (16, 5, 7, '{7,8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (17, 14, 15, '{2,3,4}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (18, 12, 7, '{7,8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (19, 6, 18, '{1}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (20, 13, 7, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (21, 13, 17, '{6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (22, 12, 15, '{1}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (23, 2, 16, '{1,2,3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (24, 17, 17, '{4,5}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (25, 7, 10, '{5,6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (26, 11, 1, '{6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (27, 5, 10, '{4,5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (28, 1, 12, '{5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (29, 18, 3, '{3,4}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (30, 14, 12, '{3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (31, 6, 14, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (32, 15, 14, '{7,8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (33, 3, 3, '{3}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (34, 8, 4, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (35, 11, 19, '{5,6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (36, 14, 7, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (37, 2, 11, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (38, 1, 2, '{4,5}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (39, 18, 10, '{6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (40, 6, 10, '{5,6,7}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (41, 14, 20, '{2}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (42, 15, 7, '{4,5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (43, 18, 6, '{1,2}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (44, 17, 5, '{4,5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (45, 5, 14, '{4,5,6}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (46, 4, 9, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (47, 10, 3, '{8}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (48, 17, 11, '{3,4}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (49, 11, 8, '{2}');
+INSERT INTO session.edu_plan_subject (edu_plan_subject_id, subject_id, edu_plan_id, semester) VALUES (50, 17, 15, '{8}');
+
+
+--
+-- TOC entry 3483 (class 0 OID 16407)
+-- Dependencies: 216
+-- Data for Name: edu_program; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (4, 1, 'Системное и прикладное программное обеспечение');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (3, 2, 'Компьютерные системы и технологии');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (6, 3, 'Теоретическая и экспериментальная физика');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (7, 4, 'Разработка программного обеспечения');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (7, 5, 'Фотоника и оптоинформатика');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (3, 6, 'Лазерные технологии');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (5, 7, 'Инфохимия');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (5, 8, 'Иностранные языки и информационные технологии');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (6, 9, 'Бизнес-информатика');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (7, 10, 'Экотехнологии и устойчивое развитие');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (2, 11, 'Мобильные и сетевые технологии');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (2, 12, 'Механика и математическое моделирование');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (2, 13, 'Математика и компьютерные науки');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (3, 14, 'Физика');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (6, 15, 'Дифференциальные уравнения, динамические системы и оптимальное управление');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (3, 16, 'Квантовые вычислительные системы');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (7, 17, 'Физика быстропротекающих процессов ');
+INSERT INTO session.edu_program (track_id, program_id, name) VALUES (5, 18, 'Безопасность компьютерных систем');
+
+
+--
+-- TOC entry 3482 (class 0 OID 16400)
+-- Dependencies: 215
+-- Data for Name: edu_track; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (1, 'Прикладная математика и информатика', '14.05.37', 'Специалист');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (2, 'Механика и математическое моделирование', '41.06.42', 'Исследователь');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (3, 'Прикладные математика и физика', '56.03.17', 'Бакалавр');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (4, 'Картография и геоинформатика', '29.06.45', 'Исследователь');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (5, 'Прикладная информатика', '17.03.56', 'Бакалавр');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (6, 'Программная инженерия', '19.05.42', 'Специалист');
+INSERT INTO session.edu_track (track_id, name, track_code, qualification) VALUES (7, 'Фотоника и оптоинформатика', '20.06.17', 'Исследователь');
+
+
+--
+-- TOC entry 3488 (class 0 OID 16444)
+-- Dependencies: 221
+-- Data for Name: faculty; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (1, 1, 'Факультет 1');
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (2, 2, 'Факультет 2');
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (3, 3, 'Факультет 3');
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (4, 4, 'Факультет 4');
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (5, 5, 'Факультет 5');
+INSERT INTO session.faculty (faculty_id, building_id, faculty_name) VALUES (6, 6, 'Факультет 6');
+
+
+--
+-- TOC entry 3507 (class 0 OID 16522)
+-- Dependencies: 240
+-- Data for Name: group; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (1, 2018, 'V4115', 2, 4);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (2, 2018, 'R4210', 4, 18);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (3, 2021, 'V3113', 1, 17);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (4, 2021, 'R4118', 2, 3);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (5, 2021, 'K3210', 4, 16);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (6, 2018, 'R3211', 3, 4);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (7, 2021, 'V3212', 3, 4);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (8, 2017, 'K4112', 1, 7);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (9, 2019, 'M3216', 4, 18);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (10, 2016, 'T4114', 2, 6);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (11, 2020, 'D3215', 4, 15);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (12, 2018, 'T3115', 1, 18);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (13, 2021, 'M4213', 3, 15);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (14, 2018, 'K4119', 1, 19);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (15, 2019, 'V3118', 2, 8);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (16, 2019, 'K4113', 2, 20);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (17, 2016, 'R3212', 3, 13);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (18, 2016, 'T3216', 3, 4);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (19, 2016, 'R3118', 1, 3);
+INSERT INTO session."group" (group_id, study_year, group_name, semester, edu_plan_id) VALUES (20, 2022, 'K3112', 2, 6);
+
+
+--
+-- TOC entry 3505 (class 0 OID 16514)
+-- Dependencies: 238
+-- Data for Name: scholarship_payments; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (98, 5, 1, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (72, 1, 2, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (62, 3, 3, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (99, 2, 4, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (14, 4, 5, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (29, 3, 6, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (13, 4, 7, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (89, 2, 8, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (69, 4, 9, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (78, 5, 10, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (11, 2, 11, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (70, 2, 12, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (27, 3, 13, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (66, 3, 14, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (56, 3, 15, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (32, 4, 16, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (32, 5, 17, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (41, 2, 18, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (80, 2, 19, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (87, 2, 20, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (2, 1, 21, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (10, 3, 22, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (79, 4, 23, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (47, 3, 24, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (86, 2, 25, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (40, 5, 26, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (92, 4, 27, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (43, 3, 28, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (97, 2, 29, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (6, 4, 30, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (49, 4, 31, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (41, 2, 32, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (24, 1, 33, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (10, 3, 34, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (88, 5, 35, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (11, 1, 36, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (19, 1, 37, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (21, 2, 38, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (98, 3, 39, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (93, 1, 40, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (51, 4, 41, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (52, 5, 42, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (35, 2, 43, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (95, 5, 44, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (38, 4, 45, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (6, 2, 46, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (45, 2, 47, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (68, 2, 48, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (86, 3, 49, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (73, 2, 50, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (10, 2, 51, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (47, 1, 52, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (1, 2, 53, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (3, 5, 54, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (94, 1, 55, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (84, 1, 56, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (17, 4, 57, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (95, 5, 58, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (32, 3, 59, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (15, 2, 60, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (34, 4, 61, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (54, 1, 62, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (25, 3, 63, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (25, 4, 64, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (22, 3, 65, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (24, 4, 66, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (66, 3, 67, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (41, 4, 68, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (37, 3, 69, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (29, 5, 70, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (98, 2, 71, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (86, 2, 72, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (67, 1, 73, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (21, 3, 74, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (48, 1, 75, '2020-02-01', '2021-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (81, 5, 76, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (3, 3, 77, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (54, 1, 78, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (41, 2, 79, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (73, 4, 80, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (30, 4, 81, '2018-09-01', '2019-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (70, 5, 82, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (44, 3, 83, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (8, 3, 84, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (29, 3, 85, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (39, 1, 86, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (14, 5, 87, '2020-09-01', '2021-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (21, 1, 88, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (93, 3, 89, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (7, 2, 90, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (11, 1, 91, '2018-02-01', '2019-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (70, 3, 92, '2016-02-01', '2017-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (57, 5, 93, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (19, 3, 94, '2016-09-01', '2017-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (98, 1, 95, '2017-09-01', '2018-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (19, 4, 96, '2017-02-01', '2018-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (87, 5, 97, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (9, 2, 98, '2019-02-01', '2020-06-30');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (81, 1, 99, '2019-09-01', '2020-01-31');
+INSERT INTO session.scholarship_payments (student_id, scholarship_id, paid_scholarship_id, start_date, end_date) VALUES (1, 5, 100, '2018-02-01', '2019-06-30');
+
+
+--
+-- TOC entry 3502 (class 0 OID 16503)
+-- Dependencies: 235
+-- Data for Name: scholarship_type; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.scholarship_type (scholarship_id, scholarship_type, amount) VALUES (1, 'Культурно-творческая', 12000);
+INSERT INTO session.scholarship_type (scholarship_id, scholarship_type, amount) VALUES (2, 'Спортивная', 14000);
+INSERT INTO session.scholarship_type (scholarship_id, scholarship_type, amount) VALUES (3, 'Общественная', 11000);
+INSERT INTO session.scholarship_type (scholarship_id, scholarship_type, amount) VALUES (4, 'Научно-исследовательская', 13000);
+INSERT INTO session.scholarship_type (scholarship_id, scholarship_type, amount) VALUES (5, 'Учебная', 18000);
+
+
+--
+-- TOC entry 3496 (class 0 OID 16475)
+-- Dependencies: 229
+-- Data for Name: student; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Павлова', 'Анна', 'Валентиновна', 1);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Алексеев', 'Алексей', 'Игоревич', 2);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Орлов', 'Иван', 'Олегович', 3);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Иван', 'Викторович', 4);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Орлов', 'Илья', 'Матвеевич', 5);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Миронова', 'Ангелина', 'Витальевна', 6);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Овчинников', 'Григорий', 'Юрьевич', 7);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Орлов', 'Сергей', 'Олегович', 8);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Захаров', 'Кирилл', 'Андреевич', 9);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Волкова', 'Дарья', 'Алексеевна', 10);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Лебедев', 'Кирилл', 'Юрьевич', 11);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Иван', 'Игоревич', 12);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Алексеев', 'Андрей', 'Матвеевич', 13);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Виноградов', 'Григорий', 'Викторович', 14);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Новиков', 'Артём', 'Сергеевич', 15);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Малышев', 'Егор', 'Ильич', 16);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Орлов', 'Павел', 'Матвеевич', 17);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Румянцева', 'Полина', 'Алексеевна', 18);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Соловьёва', 'Наталья', 'Максимовна', 19);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Захаров', 'Константин', 'Андреевич', 20);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Полякова', 'Анна', 'Эдуардовна', 21);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Лебедев', 'Иван', 'Борисович', 22);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Кирилл', 'Андреевич', 23);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Егор', 'Сергеевич', 24);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Леонов', 'Илья', 'Ильич', 25);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Осипов', 'Максим', 'Игоревич', 26);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Овчинников', 'Михаил', 'Юрьевич', 27);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Филиппов', 'Григорий', 'Матвеевич', 28);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнова', 'Полина', 'Игоревна', 29);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Олег', 'Игоревич', 30);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Олег', 'Максимович', 31);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Илья', 'Игоревич', 32);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Павлова', 'Дарья', 'Витальевна', 33);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнова', 'Софья', 'Борисовна', 34);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Плотникова', 'Анна', 'Александровна', 35);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Анна', 'Валентиновна', 36);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Гончарова', 'Дарья', 'Эдуардовна', 37);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнова', 'Елена', 'Алексеевна', 38);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнова', 'Полина', 'Эдуардовна', 39);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Соловьёва', 'Ангелина', 'Борисовна', 40);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Илья', 'Матвеевич', 41);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Плотникова', 'Наталья', 'Борисовна', 42);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Илья', 'Борисович', 43);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Наталья', 'Игоревна', 44);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Лебедев', 'Алексей', 'Борисович', 45);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Волкова', 'Наталья', 'Витальевна', 46);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Леонов', 'Максим', 'Сергеевич', 47);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Волкова', 'Ирина', 'Эдуардовна', 48);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Соловьёва', 'Екатерина', 'Витальевна', 49);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Виноградов', 'Михаил', 'Юрьевич', 50);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Виктор', 'Игоревич', 51);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Иванов', 'Алексей', 'Максимович', 52);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Андрей', 'Олегович', 53);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Осипов', 'Алексей', 'Ильич', 54);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Полякова', 'Елена', 'Александровна', 55);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Алексеев', 'Дмитрий', 'Ильич', 56);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Павлова', 'Полина', 'Валентиновна', 57);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Ирина', 'Эдуардовна', 58);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Полякова', 'Екатерина', 'Георгиевна', 59);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Леонов', 'Константин', 'Юрьевич', 60);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Малышев', 'Константин', 'Олегович', 61);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Соловьёва', 'Александра', 'Владимировна', 62);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Полякова', 'Наталья', 'Борисовна', 63);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Полякова', 'Анна', 'Анатольевна', 64);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Павлова', 'Полина', 'Александровна', 65);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Наталья', 'Олеговна', 66);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Олег', 'Ильич', 67);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Филиппов', 'Михаил', 'Олегович', 68);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Сидоров', 'Александр', 'Ильич', 69);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Егор', 'Матвеевич', 70);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Овчинников', 'Дмитрий', 'Сергеевич', 71);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Лебедев', 'Максим', 'Максимович', 72);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Соловьёва', 'Полина', 'Валентиновна', 73);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Максим', 'Юрьевич', 74);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Котов', 'Сергей', 'Максимович', 75);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Малышев', 'Андрей', 'Олегович', 76);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Дарья', 'Игоревна', 77);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Румянцева', 'Ирина', 'Георгиевна', 78);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Осипов', 'Дмитрий', 'Олегович', 79);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Леонов', 'Михаил', 'Викторович', 80);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Румянцева', 'Екатерина', 'Игоревна', 81);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Румянцева', 'Екатерина', 'Павловна', 82);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Волкова', 'Елена', 'Алексеевна', 83);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Михаил', 'Борисович', 84);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Миронова', 'Полина', 'Эдуардовна', 85);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Миронова', 'Наталья', 'Георгиевна', 86);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Виноградов', 'Олег', 'Викторович', 87);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Александра', 'Борисовна', 88);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Филиппов', 'Константин', 'Эдуардович', 89);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Гончарова', 'Ксения', 'Валентиновна', 90);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смирнов', 'Максим', 'Сергеевич', 91);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Леонов', 'Олег', 'Игоревич', 92);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Овчинников', 'Александр', 'Максимович', 93);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Смородина', 'Софья', 'Игоревна', 94);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Миронова', 'Ангелина', 'Олеговна', 95);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Павлова', 'Александра', 'Георгиевна', 96);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Румянцева', 'Ксения', 'Павловна', 97);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Гончарова', 'Наталья', 'Алексеевна', 98);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Жданова', 'Анна', 'Александровна', 99);
+INSERT INTO session.student (surname, name, patronymic, student_id) VALUES ('Овчинников', 'Михаил', 'Ильич', 100);
+
+
+--
+-- TOC entry 3497 (class 0 OID 16481)
+-- Dependencies: 230
+-- Data for Name: student_in_group; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 76, 1, 'Обучается', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 54, 2, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 50, 3, 'Обучается', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 34, 4, 'Академ', 15);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 1, 5, 'Обучается', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 61, 6, 'Академ', 6);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 41, 7, 'Академ', 10);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 20, 8, 'Академ', 6);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 63, 9, 'Обучается', 15);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 9, 10, 'Академ', 6);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 100, 11, 'Академ', 14);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 34, 12, 'Академ', 9);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 9, 13, 'Обучается', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 39, 14, 'Обучается', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 32, 15, 'Академ', 12);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 68, 16, 'Обучается', 12);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 44, 17, 'Академ', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 83, 18, 'Обучается', 9);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 33, 19, 'Академ', 12);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 99, 20, 'Обучается', 15);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 53, 21, 'Обучается', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 45, 22, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 78, 23, 'Академ', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 76, 24, 'Академ', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 70, 25, 'Обучается', 16);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 60, 26, 'Академ', 13);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 80, 27, 'Академ', 10);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 97, 28, 'Обучается', 8);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 52, 29, 'Академ', 14);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 29, 30, 'Академ', 9);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 51, 31, 'Академ', 16);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 43, 32, 'Обучается', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 85, 33, 'Обучается', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 16, 34, 'Обучается', 6);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 56, 35, 'Обучается', 10);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 21, 36, 'Академ', 9);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 12, 37, 'Обучается', 7);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 92, 38, 'Обучается', 8);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 13, 39, 'Обучается', 7);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 48, 40, 'Обучается', 10);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 55, 41, 'Академ', 14);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 11, 42, 'Академ', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 20, 43, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 75, 44, 'Академ', 13);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 53, 45, 'Академ', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 77, 46, 'Академ', 9);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 79, 47, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 98, 48, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 11, 49, 'Академ', 15);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2020-09-01', '2021-08-31', 60, 50, 'Академ', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 17, 51, 'Обучается', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 64, 52, 'Обучается', 10);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 45, 53, 'Академ', 11);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 87, 54, 'Обучается', 16);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 75, 55, 'Академ', 5);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 42, 56, 'Академ', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2018-09-01', '2019-08-31', 34, 57, 'Обучается', 17);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 4, 58, 'Обучается', 6);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2021-09-01', '2022-08-31', 94, 59, 'Академ', 8);
+INSERT INTO session.student_in_group (start_date, end_date, student_id, student_in_group_id, status, group_id) VALUES ('2019-09-01', '2020-08-31', 83, 60, 'Обучается', 16);
+
+
+--
+-- TOC entry 3492 (class 0 OID 16461)
+-- Dependencies: 225
+-- Data for Name: subject; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (1, 'Русский язык', 14, 13, 6, 6, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (2, 'История', 14, 8, 12, 12, 'Зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (3, 'Экономика', 10, 11, 11, 11, 'Экзамен');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (4, 'Экология', 7, 8, 7, 8, 'Зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (5, 'Философия', 11, 8, 8, 15, 'Зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (6, 'Общая физика', 13, 16, 10, 8, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (7, 'Психология', 14, 10, 8, 7, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (8, 'Социология', 10, 12, 9, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (9, 'Астрономия', 7, 6, 8, 15, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (10, 'Дискретная математика', 8, 9, 12, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (11, 'Теория вероятностей', 6, 14, 14, 16, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (12, 'Информатика', 14, 11, 10, 11, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (13, 'Компьютерные сети', 14, 13, 16, 15, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (14, 'Химия', 16, 12, 16, 10, 'Зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (15, 'Статистика', 11, 13, 14, 12, 'Зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (16, 'Оптика', 8, 15, 11, 6, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (17, 'Средства веб-программирования', 16, 12, 11, 11, 'Дифференцированный зачет');
+INSERT INTO session.subject (subject_id, subject_name, lecture_hours, practice_hours, lab_hours, edu_practice_hours, attestation_type) VALUES (18, 'Физкультура', 14, 16, 16, 15, 'Экзамен');
+
+
+--
+-- TOC entry 3499 (class 0 OID 16487)
+-- Dependencies: 232
+-- Data for Name: teacher; Type: TABLE DATA; Schema: session; Owner: postgres
+--
+
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (1, 'Павлова', 'Ирина', 'Павловна', 'Ментор', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (2, 'Плотникова', 'Александра', 'Алексеевна', 'Старший преподаватель', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (3, 'Смирнов', 'Алексей', 'Борисович', 'Лаборант', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (4, 'Жданова', 'Софья', 'Павловна', 'Преподаватель', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (5, 'Миронова', 'Анна', 'Игоревна', 'Старший преподаватель', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (6, 'Гончарова', 'Анна', 'Валентиновна', 'Инженер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (7, 'Иванов', 'Егор', 'Ильич', 'Ментор', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (8, 'Смирнова', 'Екатерина', 'Валентиновна', 'Старший преподаватель', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (9, 'Жданова', 'Полина', 'Александровна', 'Инженер', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (10, 'Смирнов', 'Егор', 'Сергеевич', 'Стажер', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (11, 'Волкова', 'Ирина', 'Борисовна', 'Инженер', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (12, 'Леонов', 'Константин', 'Максимович', 'Преподаватель', 3);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (13, 'Малышев', 'Егор', 'Юрьевич', 'Лаборант', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (14, 'Румянцева', 'Анна', 'Олеговна', 'Старший преподаватель', 3);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (15, 'Филиппов', 'Григорий', 'Максимович', 'Стажер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (16, 'Полякова', 'Александра', 'Витальевна', 'Лаборант', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (17, 'Захаров', 'Григорий', 'Эдуардович', 'Лаборант', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (18, 'Миронова', 'Полина', 'Эдуардовна', 'Стажер', 3);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (19, 'Жданова', 'Наталья', 'Олеговна', 'Лаборант', 1);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (20, 'Соловьёва', 'Елена', 'Владимировна', 'Стажер', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (21, 'Осипов', 'Илья', 'Юрьевич', 'Инженер', 5);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (22, 'Волкова', 'Софья', 'Алексеевна', 'Инженер', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (23, 'Алексеев', 'Дмитрий', 'Викторович', 'Стажер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (24, 'Жданова', 'Александра', 'Эдуардовна', 'Преподаватель', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (25, 'Малышев', 'Артём', 'Игоревич', 'Преподаватель', 4);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (26, 'Иванов', 'Артём', 'Борисович', 'Стажер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (27, 'Леонов', 'Александр', 'Эдуардович', 'Лаборант', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (28, 'Гончарова', 'Александра', 'Витальевна', 'Ментор', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (29, 'Орлов', 'Алексей', 'Викторович', 'Лаборант', 1);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (30, 'Павлова', 'Александра', 'Анатольевна', 'Стажер', 6);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (31, 'Смородина', 'Ирина', 'Павловна', 'Инженер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (32, 'Соловьёва', 'Ирина', 'Олеговна', 'Преподаватель', 3);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (33, 'Котов', 'Андрей', 'Матвеевич', 'Преподаватель', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (34, 'Жданова', 'Екатерина', 'Алексеевна', 'Лаборант', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (35, 'Смирнов', 'Дмитрий', 'Олегович', 'Преподаватель', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (36, 'Иванов', 'Павел', 'Игоревич', 'Инженер', 2);
+INSERT INTO session.teacher (teacher_id, surname, name, patronymic, "position", faculty_id) VALUES (37, 'Алексеев', 'Егор', 'Викторович', 'Стажер', 4);
+
+
+--
+-- TOC entry 3547 (class 0 OID 0)
+-- Dependencies: 241
+-- Name: attestation_attestation_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.attestation_attestation_id_seq', 224, true);
+
+
+--
+-- TOC entry 3548 (class 0 OID 0)
+-- Dependencies: 242
+-- Name: attestation_timetable_attestation_timetable_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.attestation_timetable_attestation_timetable_id_seq', 30, true);
+
+
+--
+-- TOC entry 3549 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: building_building_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.building_building_id_seq', 6, true);
+
+
+--
+-- TOC entry 3550 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: classroom_classroom_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.classroom_classroom_id_seq', 100, true);
+
+
+--
+-- TOC entry 3551 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: edu_plan_subject_edu_plan_subject_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.edu_plan_subject_edu_plan_subject_id_seq', 50, true);
+
+
+--
+-- TOC entry 3552 (class 0 OID 0)
+-- Dependencies: 243
+-- Name: edu_program_program_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.edu_program_program_id_seq', 18, true);
+
+
+--
+-- TOC entry 3553 (class 0 OID 0)
+-- Dependencies: 244
+-- Name: edu_track_track_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.edu_track_track_id_seq', 7, true);
+
+
+--
+-- TOC entry 3554 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: faculty_faculty_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.faculty_faculty_id_seq', 6, true);
+
+
+--
+-- TOC entry 3555 (class 0 OID 0)
+-- Dependencies: 239
+-- Name: group_group_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.group_group_id_seq', 20, true);
+
+
+--
+-- TOC entry 3556 (class 0 OID 0)
+-- Dependencies: 237
+-- Name: scholarship_payments_paid_scholarship_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.scholarship_payments_paid_scholarship_id_seq', 100, true);
+
+
+--
+-- TOC entry 3557 (class 0 OID 0)
+-- Dependencies: 236
+-- Name: scholarship_type_scholarship_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.scholarship_type_scholarship_id_seq', 5, true);
+
+
+--
+-- TOC entry 3558 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: student_student_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.student_student_id_seq', 100, true);
+
+
+--
+-- TOC entry 3559 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: subject_subject_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.subject_subject_id_seq', 18, true);
+
+
+--
+-- TOC entry 3560 (class 0 OID 0)
+-- Dependencies: 231
+-- Name: teacher_teacher_id_seq; Type: SEQUENCE SET; Schema: session; Owner: postgres
+--
+
+SELECT pg_catalog.setval('session.teacher_teacher_id_seq', 37, true);
+
+
+--
+-- TOC entry 3284 (class 2606 OID 16687)
+-- Name: attestation attempt count check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.attestation
+    ADD CONSTRAINT "attempt count check" CHECK (((attempt_count >= 0) AND (attempt_count <= 3))) NOT VALID;
+
+
+--
+-- TOC entry 3311 (class 2606 OID 16536)
+-- Name: attestation attestation_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation
+    ADD CONSTRAINT attestation_pkey PRIMARY KEY (attestation_id);
+
+
+--
+-- TOC entry 3313 (class 2606 OID 16543)
+-- Name: attestation_timetable attestation_timetable_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable
+    ADD CONSTRAINT attestation_timetable_pkey PRIMARY KEY (attestation_timetable_id);
+
+
+--
+-- TOC entry 3295 (class 2606 OID 16442)
+-- Name: building building_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.building
+    ADD CONSTRAINT building_pkey PRIMARY KEY (building_id);
+
+
+--
+-- TOC entry 3277 (class 2606 OID 16652)
+-- Name: classroom capacity  check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.classroom
+    ADD CONSTRAINT "capacity  check" CHECK (((capacity >= 0) AND (capacity <= 1000))) NOT VALID;
+
+
+--
+-- TOC entry 3286 (class 2606 OID 17525)
+-- Name: scholarship_type check amount; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.scholarship_type
+    ADD CONSTRAINT "check amount" CHECK (((amount > 0) AND (amount <= 25000))) NOT VALID;
+
+
+--
+-- TOC entry 3283 (class 2606 OID 16685)
+-- Name: student_in_group check dates; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.student_in_group
+    ADD CONSTRAINT "check dates" CHECK ((start_date < end_date)) NOT VALID;
+
+
+--
+-- TOC entry 3287 (class 2606 OID 16690)
+-- Name: scholarship_payments check dates; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.scholarship_payments
+    ADD CONSTRAINT "check dates" CHECK ((start_date < end_date)) NOT VALID;
+
+
+--
+-- TOC entry 3285 (class 2606 OID 17522)
+-- Name: attestation check_grade; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.attestation
+    ADD CONSTRAINT check_grade CHECK (((grade >= 0) AND (grade <= 103))) NOT VALID;
+
+
+--
+-- TOC entry 3299 (class 2606 OID 16459)
+-- Name: classroom classroom_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.classroom
+    ADD CONSTRAINT classroom_pkey PRIMARY KEY (classroom_id);
+
+
+--
+-- TOC entry 3279 (class 2606 OID 16674)
+-- Name: subject edu practice hours check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.subject
+    ADD CONSTRAINT "edu practice hours check" CHECK ((edu_practice_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3293 (class 2606 OID 16435)
+-- Name: edu_plan edu_plan_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan
+    ADD CONSTRAINT edu_plan_pkey PRIMARY KEY (plan_id);
+
+
+--
+-- TOC entry 3303 (class 2606 OID 16473)
+-- Name: edu_plan_subject edu_plan_subject_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan_subject
+    ADD CONSTRAINT edu_plan_subject_pkey PRIMARY KEY (edu_plan_subject_id);
+
+
+--
+-- TOC entry 3291 (class 2606 OID 16552)
+-- Name: edu_program edu_program_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_program
+    ADD CONSTRAINT edu_program_pkey PRIMARY KEY (program_id);
+
+
+--
+-- TOC entry 3289 (class 2606 OID 16561)
+-- Name: edu_track edu_track_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_track
+    ADD CONSTRAINT edu_track_pkey PRIMARY KEY (track_id);
+
+
+--
+-- TOC entry 3297 (class 2606 OID 16449)
+-- Name: faculty faculty_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.faculty
+    ADD CONSTRAINT faculty_pkey PRIMARY KEY (faculty_id);
+
+
+--
+-- TOC entry 3319 (class 2606 OID 16527)
+-- Name: group group_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session."group"
+    ADD CONSTRAINT group_pkey PRIMARY KEY (group_id);
+
+
+--
+-- TOC entry 3280 (class 2606 OID 16673)
+-- Name: subject labs hours check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.subject
+    ADD CONSTRAINT "labs hours check" CHECK ((lab_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3281 (class 2606 OID 16671)
+-- Name: subject lecture hours check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.subject
+    ADD CONSTRAINT "lecture hours check" CHECK ((lecture_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3282 (class 2606 OID 16672)
+-- Name: subject practice hours check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.subject
+    ADD CONSTRAINT "practice hours check" CHECK ((practice_hours > 0)) NOT VALID;
+
+
+--
+-- TOC entry 3278 (class 2606 OID 17523)
+-- Name: classroom room number check; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.classroom
+    ADD CONSTRAINT "room number check" CHECK (((room > 0) AND (room <= 10000))) NOT VALID;
+
+
+--
+-- TOC entry 3317 (class 2606 OID 16519)
+-- Name: scholarship_payments scholarship_payments_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_payments
+    ADD CONSTRAINT scholarship_payments_pkey PRIMARY KEY (paid_scholarship_id);
+
+
+--
+-- TOC entry 3315 (class 2606 OID 16512)
+-- Name: scholarship_type scholarship_type_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_type
+    ADD CONSTRAINT scholarship_type_pkey PRIMARY KEY (scholarship_id);
+
+
+--
+-- TOC entry 3276 (class 2606 OID 16645)
+-- Name: edu_plan start year constraint; Type: CHECK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.edu_plan
+    ADD CONSTRAINT "start year constraint" CHECK ((start_year > 1899)) NOT VALID;
+
+
+--
+-- TOC entry 3307 (class 2606 OID 16529)
+-- Name: student_in_group student_in_group_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.student_in_group
+    ADD CONSTRAINT student_in_group_pkey PRIMARY KEY (student_in_group_id);
+
+
+--
+-- TOC entry 3305 (class 2606 OID 16480)
+-- Name: student student_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.student
+    ADD CONSTRAINT student_pkey PRIMARY KEY (student_id);
+
+
+--
+-- TOC entry 3301 (class 2606 OID 16466)
+-- Name: subject subject_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.subject
+    ADD CONSTRAINT subject_pkey PRIMARY KEY (subject_id);
+
+
+--
+-- TOC entry 3309 (class 2606 OID 16492)
+-- Name: teacher teacher_pkey; Type: CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.teacher
+    ADD CONSTRAINT teacher_pkey PRIMARY KEY (teacher_id);
+
+
+--
+-- TOC entry 3323 (class 2606 OID 16572)
+-- Name: classroom building; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.classroom
+    ADD CONSTRAINT building FOREIGN KEY (building_id) REFERENCES session.building(building_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3322 (class 2606 OID 17517)
+-- Name: faculty building_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.faculty
+    ADD CONSTRAINT building_id FOREIGN KEY (building_id) REFERENCES session.building(building_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3332 (class 2606 OID 16617)
+-- Name: attestation_timetable classroom_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable
+    ADD CONSTRAINT classroom_id FOREIGN KEY (classroom_id) REFERENCES session.classroom(classroom_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3324 (class 2606 OID 17483)
+-- Name: edu_plan_subject edu_plan_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan_subject
+    ADD CONSTRAINT edu_plan_id FOREIGN KEY (edu_plan_id) REFERENCES session.edu_plan(plan_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3338 (class 2606 OID 17529)
+-- Name: group edu_plan_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session."group"
+    ADD CONSTRAINT edu_plan_id FOREIGN KEY (edu_plan_id) REFERENCES session.edu_plan(plan_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3329 (class 2606 OID 16597)
+-- Name: attestation edu_plan_subject_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation
+    ADD CONSTRAINT edu_plan_subject_id FOREIGN KEY (edu_plan_subject_id) REFERENCES session.edu_plan_subject(edu_plan_subject_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3333 (class 2606 OID 17512)
+-- Name: attestation_timetable edu_plan_subject_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable
+    ADD CONSTRAINT edu_plan_subject_id FOREIGN KEY (edu_plan_subject_id) REFERENCES session.edu_plan_subject(edu_plan_subject_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3321 (class 2606 OID 16567)
+-- Name: edu_plan edu_program; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan
+    ADD CONSTRAINT edu_program FOREIGN KEY (program_id) REFERENCES session.edu_program(program_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3328 (class 2606 OID 16587)
+-- Name: teacher faculty; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.teacher
+    ADD CONSTRAINT faculty FOREIGN KEY (faculty_id) REFERENCES session.faculty(faculty_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3334 (class 2606 OID 16607)
+-- Name: attestation_timetable group_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable
+    ADD CONSTRAINT group_id FOREIGN KEY (group_id) REFERENCES session."group"(group_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3326 (class 2606 OID 17488)
+-- Name: student_in_group group_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.student_in_group
+    ADD CONSTRAINT group_id FOREIGN KEY (group_id) REFERENCES session."group"(group_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3336 (class 2606 OID 16632)
+-- Name: scholarship_payments scholarship_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_payments
+    ADD CONSTRAINT scholarship_id FOREIGN KEY (scholarship_id) REFERENCES session.scholarship_type(scholarship_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3327 (class 2606 OID 16582)
+-- Name: student_in_group student_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.student_in_group
+    ADD CONSTRAINT student_id FOREIGN KEY (student_id) REFERENCES session.student(student_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3337 (class 2606 OID 16627)
+-- Name: scholarship_payments student_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.scholarship_payments
+    ADD CONSTRAINT student_id FOREIGN KEY (student_id) REFERENCES session.student(student_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3330 (class 2606 OID 17507)
+-- Name: attestation student_in_group_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation
+    ADD CONSTRAINT student_in_group_id FOREIGN KEY (student_in_group_id) REFERENCES session.student_in_group(student_in_group_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3325 (class 2606 OID 16577)
+-- Name: edu_plan_subject subject_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_plan_subject
+    ADD CONSTRAINT subject_id FOREIGN KEY (subject_id) REFERENCES session.subject(subject_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3331 (class 2606 OID 16592)
+-- Name: attestation teacher_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation
+    ADD CONSTRAINT teacher_id FOREIGN KEY (teacher_id) REFERENCES session.teacher(teacher_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3335 (class 2606 OID 16622)
+-- Name: attestation_timetable teacher_id; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.attestation_timetable
+    ADD CONSTRAINT teacher_id FOREIGN KEY (teacher_id) REFERENCES session.teacher(teacher_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3320 (class 2606 OID 16562)
+-- Name: edu_program track; Type: FK CONSTRAINT; Schema: session; Owner: postgres
+--
+
+ALTER TABLE ONLY session.edu_program
+    ADD CONSTRAINT track FOREIGN KEY (track_id) REFERENCES session.edu_track(track_id) ON UPDATE CASCADE ON DELETE RESTRICT NOT VALID;
+
+
+--
+-- TOC entry 3481 (class 0 OID 16481)
+-- Dependencies: 230
+-- Name: student_in_group; Type: ROW SECURITY; Schema: session; Owner: postgres
+--
+
+ALTER TABLE session.student_in_group ENABLE ROW LEVEL SECURITY;
+
+-- Completed on 2023-05-31 17:48:14
+
+--
+-- PostgreSQL database dump complete
+--
+

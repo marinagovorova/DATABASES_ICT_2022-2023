@@ -1,0 +1,18 @@
+INSERT INTO session.edu_program (track_id, name) VALUES (4, 'Системное и прикладное программное обеспечение');
+INSERT INTO session.edu_program (track_id, name) VALUES (3, 'Компьютерные системы и технологии');
+INSERT INTO session.edu_program (track_id, name) VALUES (6, 'Теоретическая и экспериментальная физика');
+INSERT INTO session.edu_program (track_id, name) VALUES (7, 'Разработка программного обеспечения');
+INSERT INTO session.edu_program (track_id, name) VALUES (7, 'Фотоника и оптоинформатика');
+INSERT INTO session.edu_program (track_id, name) VALUES (3, 'Лазерные технологии');
+INSERT INTO session.edu_program (track_id, name) VALUES (5, 'Инфохимия');
+INSERT INTO session.edu_program (track_id, name) VALUES (5, 'Иностранные языки и информационные технологии');
+INSERT INTO session.edu_program (track_id, name) VALUES (6, 'Бизнес-информатика');
+INSERT INTO session.edu_program (track_id, name) VALUES (7, 'Экотехнологии и устойчивое развитие');
+INSERT INTO session.edu_program (track_id, name) VALUES (2, 'Мобильные и сетевые технологии');
+INSERT INTO session.edu_program (track_id, name) VALUES (2, 'Механика и математическое моделирование');
+INSERT INTO session.edu_program (track_id, name) VALUES (2, 'Математика и компьютерные науки');
+INSERT INTO session.edu_program (track_id, name) VALUES (3, 'Физика');
+INSERT INTO session.edu_program (track_id, name) VALUES (6, 'Дифференциальные уравнения, динамические системы и оптимальное управление');
+INSERT INTO session.edu_program (track_id, name) VALUES (3, 'Квантовые вычислительные системы');
+INSERT INTO session.edu_program (track_id, name) VALUES (7, 'Физика быстропротекающих процессов ');
+INSERT INTO session.edu_program (track_id, name) VALUES (5, 'Безопасность компьютерных систем');

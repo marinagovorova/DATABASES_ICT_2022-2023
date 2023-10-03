@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add watering</title>
+</head>
+<body>
+    <form method="Post" action="{{ url_for("add_watering") }}" >
+        {{ form.csrf_token }}
+        {{ form.user_plant_id.label }} {{ form.user_plant_id }}
+        <div>
+            {{ form.watering_time.label }} {{ form.watering_time }}
+        </div>
+
+        {% if submit_msg %}
+            <div>
+                {{ submit_msg }}
+            </div>
+        {% endif %}
+
+        {{ form.submit }}
+
+    </form>
+</body>
+</html>

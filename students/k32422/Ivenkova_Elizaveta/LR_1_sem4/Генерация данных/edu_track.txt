@@ -1,0 +1,7 @@
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Прикладная математика и информатика', '14.05.37', 'Специалист');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Механика и математическое моделирование', '41.06.42', 'Исследователь');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Прикладные математика и физика', '56.03.17', 'Бакалавр');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Картография и геоинформатика', '29.06.45', 'Исследователь');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Прикладная информатика', '17.03.56', 'Бакалавр');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Программная инженерия', '19.05.42', 'Специалист');
+INSERT INTO session.edu_track (name, track_code, qualification) VALUES ('Фотоника и оптоинформатика', '20.06.17', 'Исследователь');

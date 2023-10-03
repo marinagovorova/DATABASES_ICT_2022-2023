@@ -1,0 +1,5 @@
+INSERT INTO session.scholarship_type (scholarship_type, amount) VALUES ('Культурно-творческая', 12000);
+INSERT INTO session.scholarship_type (scholarship_type, amount) VALUES ('Спортивная', 14000);
+INSERT INTO session.scholarship_type (scholarship_type, amount) VALUES ('Общественная', 11000);
+INSERT INTO session.scholarship_type (scholarship_type, amount) VALUES ('Научно-исследовательская', 13000);
+INSERT INTO session.scholarship_type (scholarship_type, amount) VALUES ('Учебная', 18000);
