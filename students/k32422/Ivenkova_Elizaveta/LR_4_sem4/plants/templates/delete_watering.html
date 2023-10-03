@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete watering</title>
+</head>
+<body>
+    <form method="Post" action="{{ url_for('delete_watering') }}" >
+        {{ form.csrf_token }}
+        <div>
+            {{ form.delete_id.label }} {{ form.delete_id }}
+        </div>
+
+        {% if submit_msg %}
+            <div>
+                {{ submit_msg }}
+            </div>
+        {% endif %}
+
+        {{ form.submit }}
+    </form>
+</body>
+</html>

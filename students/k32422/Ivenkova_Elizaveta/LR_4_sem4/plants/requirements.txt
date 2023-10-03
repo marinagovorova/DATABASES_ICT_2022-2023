@@ -1,0 +1,7 @@
+Flask
+Flask-WTF==1.1.2
+Jinja2
+psycopg2==2.9.8
+WTForms==2.3.3
+wtforms-html5==0.6.1
+Werkzeug
